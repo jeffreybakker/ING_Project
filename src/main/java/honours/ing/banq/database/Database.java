@@ -1,8 +1,8 @@
 package honours.ing.banq.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import honours.ing.banq.Log;
+
+import java.sql.*;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -10,6 +10,8 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @author Kevin Witlox, Jeffrey Bakker
  */
 public class Database implements Runnable {
+
+    private final String TAG = getClass().getSimpleName();
 
     private static final int QUEUE_SIZE = 128;
 
@@ -24,6 +26,7 @@ public class Database implements Runnable {
 
     /**
      * Initializes a new <code>Database</code> object that will manage the given database file.
+     *
      * @param fileName the path to the file of the database to manage
      */
     private Database(String fileName) {
@@ -48,10 +51,43 @@ public class Database implements Runnable {
                 // Take a query from the queue of queries
                 query = queries.take();
 
+                // Create the statement
+                Statement statement = null;
+                try {
+                    statement = connection.createStatement();
+                } catch (SQLException e) {
+                    Log.e(TAG, "Could not create statement.", e);
+                    System.exit(1);
+                }
+
                 // Execute the query
-                query.onExecute(this);
+                try {
+                    DatabaseCallback callback = query.getCallback();
+                    statement.execute(query.getQuery());
+                    ResultSet resultSet = statement.getResultSet();
+
+                    int updateCount = statement.getUpdateCount();
+                    if (updateCount != -1) {
+                        Log.i(TAG, "Query executed, update count: " + updateCount);
+                    }
+
+                    // Callback
+                    if (callback != null) {
+                        callback.onCallback(resultSet);
+                    }
+                } catch (SQLException e) {
+                    Log.e(TAG, "Could not execute query.", e);
+                    System.exit(1);
+                } finally {
+                    try {
+                        statement.close();
+                    } catch (SQLException e) {
+                        Log.e(TAG, "Could not close statement.");
+                    }
+                }
             } catch (InterruptedException ignored) {
-                // This thread might be interrupted while retrieving a new query from the queue, but we do not need
+                // This thread might be interrupted while retrieving a new query from the queue,
+                // but we do not need
                 // handle that
             }
         }
@@ -71,21 +107,26 @@ public class Database implements Runnable {
     }
 
     /**
-     * Saves the data in the database to the file.
+     * Add a single <code>DatabaseQuery</code> to the queue.
+     * The query will be dropped if the queue is full.
      */
-    public void save() {
-        // TODO: Save the database
+    public void addQuery(DatabaseQuery query) {
+        if (queries.remainingCapacity() > 1) {
+            queries.add(query);
+        } else {
+            System.err.println("Database Queue is full");
+        }
     }
 
     /**
      * Closes and saves the database.
      */
     private void close() {
-        // First save the changes in the database
-        save();
-
-        // Then close the database
-        // TODO: Close the database
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            Log.e(TAG, "Could not close database connection.");
+        }
     }
 
     /**
@@ -110,6 +151,7 @@ public class Database implements Runnable {
 
     /**
      * Stops and saves the database.
+     *
      * @param wait when <code>true</code> this method will wait until the thread is finished
      */
     public synchronized void stop(boolean wait) {
@@ -130,8 +172,9 @@ public class Database implements Runnable {
     }
 
     /**
-     * Returns the <code>Database</code> object for the given <code>fileName</code> and opens a new database connection
-     * if there was no open connection yet.
+     * Returns the <code>Database</code> object for the given <code>fileName</code> and opens a new
+     * database connection if there was no open connection yet.
+     *
      * @param fileName the path to the database file
      * @return the <code>Database</code> object for the given <code>fileName</code>
      */
@@ -150,6 +193,7 @@ public class Database implements Runnable {
 
     /**
      * Returns whether the database is running or not.
+     *
      * @return <code>true</code> if the database is running
      */
     public boolean isRunning() {
