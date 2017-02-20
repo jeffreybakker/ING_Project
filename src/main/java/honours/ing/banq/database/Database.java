@@ -11,9 +11,13 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 public class Database implements Runnable {
 
-    private final String TAG = getClass().getSimpleName();
+    public static final String ERR_CREATE_CONNECTION = "Could not create connection to database";
+    public static final String ERR_CREATE_STATEMENT = "Could not create statement";
 
+    private static final String COMMAND_STOP = "stop";
     private static final int QUEUE_SIZE = 128;
+
+    private final String TAG = getClass().getSimpleName();
 
     private static HashMap<String, Database> databases = new HashMap<>();
 
@@ -26,6 +30,7 @@ public class Database implements Runnable {
 
     /**
      * Initializes a new <code>Database</code> object that will manage the given database file.
+     * Call <code>getDatabase()</code> to create a new <code>Database</code>.
      *
      * @param fileName the path to the file of the database to manage
      */
@@ -34,13 +39,14 @@ public class Database implements Runnable {
         this.running = false;
 
         queries = new ArrayBlockingQueue<>(QUEUE_SIZE, true);
-
     }
 
     @Override
     public void run() {
         // First open the database
-        open();
+        if (!open()) {
+            return;
+        }
 
         // Create variables
         DatabaseQuery query;
@@ -51,12 +57,16 @@ public class Database implements Runnable {
                 // Take a query from the queue of queries
                 query = queries.take();
 
+                if (query.getQuery().equals(COMMAND_STOP)) {
+                    continue;
+                }
+
                 // Create the statement
                 Statement statement = null;
                 try {
                     statement = connection.createStatement();
                 } catch (SQLException e) {
-                    Log.e(TAG, "Could not create statement.", e);
+                    Log.e(TAG, ERR_CREATE_STATEMENT, e);
                     System.exit(1);
                 }
 
@@ -75,6 +85,10 @@ public class Database implements Runnable {
                     if (callback != null) {
                         callback.onCallback(resultSet);
                     }
+
+                    if (statement != null) {
+                        statement.close();
+                    }
                 } catch (SQLException e) {
                     Log.e(TAG, "Could not execute query.", e);
                     System.exit(1);
@@ -86,8 +100,9 @@ public class Database implements Runnable {
                     }
                 }
             } catch (InterruptedException ignored) {
+                Log.i(TAG, "Database take() interrupted");
                 // This thread might be interrupted while retrieving a new query from the queue,
-                // but we do not need
+                // but we do not need to
                 // handle that
             }
         }
@@ -98,11 +113,13 @@ public class Database implements Runnable {
     /**
      * Opens the connection with the database.
      */
-    private void open() {
+    private boolean open() {
         try {
             connection = DriverManager.getConnection(fileName);
+            return true;
         } catch (SQLException e) {
-            System.err.println("Could not create connection to database");
+            Log.e(TAG, ERR_CREATE_CONNECTION);
+            return false;
         }
     }
 
@@ -111,10 +128,10 @@ public class Database implements Runnable {
      * The query will be dropped if the queue is full.
      */
     public void addQuery(DatabaseQuery query) {
-        if (queries.remainingCapacity() > 1) {
+        if (queries.remainingCapacity() >= 1) {
             queries.add(query);
         } else {
-            System.err.println("Database Queue is full");
+            Log.e(TAG, "Database Queue is full");
         }
     }
 
@@ -132,14 +149,14 @@ public class Database implements Runnable {
     /**
      * Starts the database.
      */
-    public synchronized void start() {
+    private synchronized void start() {
         if (running) {
             throw new IllegalStateException("Database is already running");
         }
 
         thread = new Thread(this, "Database");
         running = true;
-        thread.run();
+        thread.start();
     }
 
     /**
@@ -160,6 +177,7 @@ public class Database implements Runnable {
         }
 
         running = false;
+        addQuery(new DatabaseQuery(COMMAND_STOP, null));
 
         if (wait) {
             try {
