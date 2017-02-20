@@ -1,15 +1,17 @@
 package honours.ing.banq.model;
 
+import com.sun.istack.internal.NotNull;
+
 import java.sql.ResultSet;
 
 /**
  * @author Jeffrey Bakker
  */
-public class Person {
+public class Person extends Model {
 
-    private int id;
-
+    @NotNull
     private String firstName;
+    @NotNull
     private String lastName;
 
     public Person(String firstName, String lastName) {
@@ -17,25 +19,6 @@ public class Person {
         this.lastName = lastName;
 
         id = genID();
-    }
-
-    /**
-     * Inserts this person in the database.
-     */
-    private void insert() {
-
-    }
-
-    /**
-     * Updates this person in the database.
-     */
-    public void save() {
-        // TODO: Implement
-    }
-
-    public static int genID() {
-        // TODO: Implement
-        return -1;
     }
 
     public static Person parseRaw(ResultSet raw) {
@@ -49,10 +32,6 @@ public class Person {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
-    }
-
-    public int getID() {
-        return id;
     }
 
     public String getLastName() {
