@@ -1,4 +1,4 @@
-package honours.ing.banq;
+package honours.ing.banq.log;
 
 import java.io.File;
 import java.io.FileOutputStream;
