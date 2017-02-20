@@ -1,5 +1,7 @@
 package honours.ing.banq.database;
 
+import java.io.File;
+
 /**
  * @author Jeffrey Bakker
  */
@@ -13,8 +15,6 @@ public enum Databases {
 
     Databases(String fileName) {
         this.fileName = fileName;
-
-        db = Database.getDatabase(fileName);
     }
 
     public Database getDatabase() {
@@ -22,7 +22,7 @@ public enum Databases {
     }
 
     public String getFileName() {
-        return fileName;
+        return "jdbc:sqlite:" + new File("./" + fileName).getAbsolutePath();
     }
 
 }
