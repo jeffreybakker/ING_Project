@@ -1,5 +1,6 @@
 package honours.ing.banq;
 
+import honours.ing.banq.log.Log;
 import org.junit.Before;
 import org.junit.Test;
 
