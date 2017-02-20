@@ -15,7 +15,7 @@ import java.util.Date;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Log {
 
-    private static final String BASE_MESSAGE = "[%s] %s -> %s";
+    private static final String BASE_MESSAGE = "%s[%s] %s -> %s%s"; // ANSI-SET PRIORITY TAG MSG ANSI-RESET
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
     private static final String LOGS_DIRECTORY = "./log";
 
@@ -23,7 +23,22 @@ public class Log {
     private static PrintStream out;
 
     public enum Priority {
-        DEBUG, VERBOSE, INFO, WARN, ERROR, WTF
+        DEBUG           (Ansi.FG_WHITE),
+        VERBOSE         (Ansi.FG_CYAN),
+        INFO            (Ansi.FG_GREEN),
+        WARN            (Ansi.FG_YELLOW),
+        ERROR           (Ansi.FG_RED),
+        WTF             (Ansi.FG_BLACK + Ansi.BG_RED);
+
+        private String colorCode;
+
+        Priority(String colorCode) {
+            this.colorCode = colorCode;
+        }
+
+        public String getColorCode() {
+            return colorCode;
+        }
     }
 
     public static void d(String tag, String msg) {
@@ -77,20 +92,20 @@ public class Log {
     public static synchronized void log(Priority priority, String tag, String msg, Throwable t) {
         file.println(String.format(
                 BASE_MESSAGE,
-                priority.name(), tag, msg));
+                "", priority.name(), tag, msg, ""));
         out.println(String.format(
                 BASE_MESSAGE,
-                priority.name(), tag, msg));
+                priority.getColorCode(), priority.name(), tag, msg, Ansi.RESET));
 
         if (t != null) {
             String[] lines = getStackTraceString(t).split("\n");
             for (String line : lines) {
                 file.println(String.format(
                         BASE_MESSAGE,
-                        priority.name(), tag, line));
+                        "", priority.name(), tag, line, ""));
                 out.println(String.format(
                         BASE_MESSAGE,
-                        priority.name(), tag, line));
+                        priority.getColorCode(), priority.name(), tag, line, Ansi.RESET));
             }
         }
     }
