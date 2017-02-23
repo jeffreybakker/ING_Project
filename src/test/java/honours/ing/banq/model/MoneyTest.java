@@ -99,4 +99,40 @@ public class MoneyTest {
         assertEquals(0, a.getMinor());
     }
 
+    @Test
+    public void testWithdrawal() {
+        Money amount = new Money(DEFAULT_CURRENCY, 80, (short) 12);
+
+        // TEST A
+        a.withdraw(amount);
+        assertEquals(-amount.getMajor(), a.getMajor());
+        assertEquals(-amount.getMinor(), a.getMinor());
+
+        // TEST B
+        b.withdraw(amount);
+        assertEquals(100 - amount.getMajor(), b.getMajor());
+        assertEquals(10 - amount.getMinor(), b.getMinor());
+    }
+
+    @Test
+    public void testNegativeWithdrawal() {
+        Money amount = new Money(DEFAULT_CURRENCY, -100, (short) -10);
+
+        try {
+            a.withdraw(amount);
+
+            // a.deposit(amount) should have thrown an IllegalArgumentException, if that did not happen run the
+            // following statement:
+            assertTrue(false);
+        } catch (IllegalArgumentException e) {
+            // a.deposit(amount) has thrown an IllegalArgumentException. That is exactly what we wanted to happen, so
+            // run the following statement:
+            assertTrue(true);
+        }
+
+        // Ensure the amount stayed the same
+        assertEquals(0, a.getMajor());
+        assertEquals(0, a.getMinor());
+    }
+
 }

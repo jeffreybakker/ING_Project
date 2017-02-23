@@ -57,6 +57,21 @@ public class Money {
         if (amount.currency != currency) {
             throw new IllegalArgumentException(
                     "You can only do money operations on two Money objects with the same currency");
+        } else if (amount.major < 0 || amount.minor < 0) {
+            throw new IllegalArgumentException("You may not deposit a negative amount of money");
+        }
+
+        major += amount.major;
+        minor += amount.minor;
+
+        if (major >= 0) {
+            major += minor / 100;
+            minor %= 100;
+        } else {
+            while (minor < 0) {
+                minor += 100;
+                major--;
+            }
         }
     }
 
@@ -68,8 +83,22 @@ public class Money {
         if (amount.currency != currency) {
             throw new IllegalArgumentException(
                     "You can only do money operations on two Money objects with the same currency");
+        } else if (amount.major < 0 || amount.minor < 0) {
+            throw new IllegalArgumentException("You may not withdraw a negative amount of money");
         }
 
+        major -= amount.major;
+        minor -= amount.minor;
+
+        if (major < 0) {
+            major += minor / 100;
+            minor %= 100;
+        } else {
+            while (minor > 0) {
+                minor -= 100;
+                major--;
+            }
+        }
     }
 
     /**
