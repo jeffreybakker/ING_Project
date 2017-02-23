@@ -1,6 +1,6 @@
 package honours.ing.banq.database;
 
-import honours.ing.banq.Log;
+import honours.ing.banq.log.Log;
 
 import java.sql.*;
 import java.util.HashMap;

@@ -1,23 +1,20 @@
 package honours.ing.banq.model;
 
 import honours.ing.banq.database.DatabaseQuery;
-import honours.ing.banq.database.annotation.DBIgnored;
-import honours.ing.banq.database.annotation.DBNotNull;
-import honours.ing.banq.database.annotation.DBPrimaryKey;
-import honours.ing.banq.database.annotation.DBUnique;
+import honours.ing.banq.database.annotation.*;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.sql.PreparedStatement;
+import java.util.*;
 
 /**
  * @author Jeffrey Bakker
  */
 public class ModelQuery {
 
-    private enum Constraints {
+    public enum Constraints {
         IGNORED, NOTNULL, PRIMARYKEY, UNIQUE, DEFAULT
     }
 
@@ -25,17 +22,40 @@ public class ModelQuery {
     private static HashMap<Class<? extends Model>, String> updateQueries = new HashMap<>();
 
     private static Class<? extends Model>[] modelClasses = new Class[]{
-            Person.class
+            User.class,
+            CheckingsAccount.class,
+            SavingsAccount.class
     };
 
-    public static DatabaseQuery getInsertQuery(Model model) {
-        String baseQuery = insertQueries.get(model);
-        throw new UnsupportedOperationException("This method has not been implemented yet");
+    public static Map.Entry<String, String[]> getInsertQuery(Model model) {
+        List<String> result = new ArrayList<>();
+
+        Map<Field, Constraints[]> fields = parseFields(model.getClass());
+        for (Field field : fields.keySet()) {
+            if (field.getName().equals("id")) { // TODO: Watch out wen changing field name
+                continue;
+            }
+
+            try {
+                Object object = field.get(model);
+                if (object instanceof Model) {
+                    result.add(String.valueOf(((Model) object).id));
+                } else {
+                    result.add(String.valueOf(object));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String[] resValue = new String[result.size()];
+        resValue[0] = model.getClass().getName();
+        System.arraycopy(result.toArray(new String[] {}), 0, resValue, 1, result.size());
+        return new Entry<>(insertQueries.get(model), resValue);
     }
 
-    public static DatabaseQuery getUpdateQuery(Model model) {
-        String baseQuery = updateQueries.get(model);
-        throw new UnsupportedOperationException("This method has not been implemented yet");
+    public static String getUpdateQuery(Model model) {
+        return updateQueries.get(model);
     }
 
     public static void init() {
@@ -45,20 +65,44 @@ public class ModelQuery {
         }
     }
 
-    private static void genInsertQuery(Class<? extends Model> modelClass) {
-        throw new UnsupportedOperationException("This method has not been implemented yet");
+    public static void genInsertQuery(Class<? extends Model> modelClass) {
+        Map<Field, Constraints[]> fieldConstraints = parseFields(modelClass);
+        StringBuilder builder = new StringBuilder();
+        builder.append("INSERT INTO ? VALUES (?");
+        for (int i = 1; i < fieldConstraints.size(); i++) {
+            builder.append(", ?");
+        }
+        builder.append(")");
+        insertQueries.put(modelClass, builder.toString());
     }
 
-    private static void genUpdateQuery(Class<? extends Model> modelClass) {
-        throw new UnsupportedOperationException("This method has not been implemented yet");
+    public static void genUpdateQuery(Class<? extends Model> modelClass) {
+        Map<Field, Constraints[]> fieldConstraints = parseFields(modelClass);
+        StringBuilder builder = new StringBuilder();
+        builder.append("UPDATE ? SET ");
 
+        boolean first = false;
+        for (Field field : fieldConstraints.keySet()) {
+            if (!first) {
+                builder.append(", ");
+            }
+            builder.append(field.getName()).append("='?'");
+            first = true;
+        }
+        builder.append(" WHERE id=?");
+        updateQueries.put(modelClass, builder.toString());
     }
 
-    private HashMap<Object, Constraints[]> parseFields(Class<? extends Model> modelClass) {
-        HashMap<Object, Constraints[]> fieldConstraints = new HashMap<>();
-        Field[] fields = modelClass.getDeclaredFields();
+    public static Map<Field, Constraints[]> parseFields(Class<? extends Model> modelClass) {
+        Map<Field, Constraints[]> fieldConstraints = new HashMap<>();
+        Field[] subfields = modelClass.getDeclaredFields();
+        Field[] superfields = modelClass.getSuperclass().getDeclaredFields();
+        Field[] fields = new Field[subfields.length + superfields.length];
+        System.arraycopy(subfields, 0, fields, 0, subfields.length);
+        System.arraycopy(superfields, 0, fields, subfields.length, superfields.length);
 
-        fields: for (Field field : fields) {
+        fields:
+        for (Field field : fields) {
             List<Constraints> constraints = new ArrayList<>();
             Annotation[] annotations = field.getAnnotations();
 
@@ -78,7 +122,7 @@ public class ModelQuery {
                 constraints.add(Constraints.DEFAULT);
             }
 
-            fieldConstraints.put(field, constraints.toArray(new Constraints[] {}));
+            fieldConstraints.put(field, constraints.toArray(new Constraints[]{}));
         }
 
         return fieldConstraints;

@@ -17,7 +17,6 @@ public abstract class Model {
      * Inserts this model's instance into the database.
      */
     protected void insert() {
-        DatabaseQuery query = ModelQuery.getInsertQuery(this);
         // TODO: Enqueue query
     }
 
@@ -25,7 +24,6 @@ public abstract class Model {
      * Updates this model's instance in the database to match the data in this object.
      */
     public void save() {
-        DatabaseQuery query = ModelQuery.getUpdateQuery(this);
         // TODO: Enqueue query
     }
 
@@ -67,4 +65,7 @@ public abstract class Model {
         return LAST_ID;
     }
 
+    public int getId() {
+        return id;
+    }
 }
