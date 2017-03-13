@@ -15,8 +15,10 @@ public abstract class Account extends Model {
     @DBNotNull
     private Money balance;
 
-    @DBNotNull
-    private User user;
+    // #8 M1: Customer accounts and bank accounts with many-to-many relationships
+    // This is best implemented with no reference to the user owning the account
+//    @DBNotNull
+//    private User user;
 
     /**
      * Creates a new <code>Account</code> without initializing any variables.
@@ -26,12 +28,10 @@ public abstract class Account extends Model {
     /**
      * Creates a new <code>Account</code> with the given arguments.
      * @param name the name of the account (can be <code>null</code>)
-     * @param user a reference to the user who owns this account
      * @param balance the initial balance for this account
      */
-    Account(String name, User user, Money balance) {
+    Account(String name, Money balance) {
         this.name = name;
-        this.user = user;
         this.balance = balance;
 
         id = genID();
