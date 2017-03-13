@@ -1,8 +1,10 @@
 package honours.ing.banq.model;
 
+import honours.ing.banq.database.annotation.DBIgnored;
 import honours.ing.banq.database.annotation.DBNotNull;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -34,6 +36,10 @@ public class User extends Model {
     @DBNotNull
     private String email;
 
+    // TODO: Add arrays into database
+    @DBIgnored
+    private ArrayList<Account> accounts;
+
     public User(String name, String initials, String surName, Date birthDate, int socialSecurityNumber, String address,
                 String telephoneNumber, String email) {
         this.initials = initials;
@@ -46,6 +52,8 @@ public class User extends Model {
         this.telephoneNumber = telephoneNumber;
         this.email = email;
 
+        accounts = new ArrayList<>();
+
         id = genID();
     }
 
@@ -57,6 +65,18 @@ public class User extends Model {
     public static User parseRaw(ResultSet raw) {
         // TODO: Implement
         return null;
+    }
+
+    public void addAccount(Account account) {
+        accounts.add(account);
+    }
+
+    public ArrayList<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void removeAccount(Account account) {
+        accounts.remove(account);
     }
 
     public String getInitials() {
