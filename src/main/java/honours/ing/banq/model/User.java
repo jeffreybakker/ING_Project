@@ -3,6 +3,7 @@ package honours.ing.banq.model;
 import honours.ing.banq.database.annotation.DBNotNull;
 
 import java.sql.ResultSet;
+import java.util.Date;
 
 /**
  * @author Jeffrey Bakker
@@ -16,12 +17,34 @@ public class User extends Model {
     private String name;
 
     @DBNotNull
-    private String lastName;
+    private String surName;
 
-    public User(String name, String initials, String lastName) {
+    @DBNotNull
+    private Date birthDate;
+
+    @DBNotNull
+    private int socialSecurityNumber;
+
+    @DBNotNull
+    private String address;
+
+    @DBNotNull
+    private String telephoneNumber;
+
+    @DBNotNull
+    private String email;
+
+    public User(String name, String initials, String surName, Date birthDate, int socialSecurityNumber, String address,
+                String telephoneNumber, String email) {
         this.initials = initials;
-        this.lastName = lastName;
+        this.surName = surName;
         this.name = name;
+
+        this.birthDate = birthDate;
+        this.socialSecurityNumber = socialSecurityNumber;
+        this.address = address;
+        this.telephoneNumber = telephoneNumber;
+        this.email = email;
 
         id = genID();
     }
@@ -52,11 +75,51 @@ public class User extends Model {
         this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getSurName() {
+        return surName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setSurName(String surName) {
+        this.surName = surName;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public int getSocialSecurityNumber() {
+        return socialSecurityNumber;
+    }
+
+    public void setSocialSecurityNumber(int socialSecurityNumber) {
+        this.socialSecurityNumber = socialSecurityNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
