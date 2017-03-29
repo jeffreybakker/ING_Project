@@ -1,6 +1,7 @@
 package honours.ing.banq.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Jeffrey Bakker
@@ -9,17 +10,17 @@ import javax.persistence.*;
 public class BankAccount {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
-    @ManyToMany
-    private Customer[] holders;
 
     private Double balance;
 
+    @ManyToMany(targetEntity = Customer.class)
+    private List<Customer> holders;
+
     public BankAccount() { }
 
-    public BankAccount(Customer[] holders, Double balance) {
+    public BankAccount(List<Customer> holders, Double balance) {
         this.holders = holders;
         this.balance = balance;
     }
@@ -28,11 +29,19 @@ public class BankAccount {
         return id;
     }
 
-    public Customer[] getHolders() {
+    public void addHolder(Customer holder) {
+        holders.add(holder);
+    }
+
+    public List<Customer> getHolders() {
         return holders;
     }
 
-    public void setHolder(Customer[] holders) {
+    public void removeHolder(Customer holder) {
+        holders.remove(holder);
+    }
+
+    public void setHolder(List<Customer> holders) {
         this.holders = holders;
     }
 

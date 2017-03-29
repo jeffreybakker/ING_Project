@@ -18,13 +18,26 @@ public class BankAccountService {
     @Autowired
     private BankAccountRepository repository;
 
-    public List<BankAccount> findByCustomer(Customer customer) {
-        return repository.findByHolder(customer);
+    @Transactional
+    public void remove(BankAccount account) {
+        repository.delete(account);
     }
 
     @Transactional
     public BankAccount save(BankAccount account) {
         return repository.save(account);
+    }
+
+    public List<BankAccount> findAccountsByHolder(Customer holder) {
+        return repository.findByHolders(holder);
+    }
+
+    public BankAccount findAccountById(int id) {
+        return repository.findOne(id);
+    }
+
+    public List<BankAccount> findAll() {
+        return repository.findAll();
     }
 
 }
