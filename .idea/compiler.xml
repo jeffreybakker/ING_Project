@@ -27,7 +27,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="banq" target="1.5" />
+      <module name="banq" target="1.8" />
       <module name="ING_Project" target="1.5" />
     </bytecodeTargetLevel>
   </component>
