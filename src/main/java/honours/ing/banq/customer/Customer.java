@@ -1,4 +1,4 @@
-package honours.ing.banq.model;
+package honours.ing.banq.customer;
 
 import javax.persistence.*;
 import java.util.Date;

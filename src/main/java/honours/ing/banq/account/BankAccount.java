@@ -1,4 +1,6 @@
-package honours.ing.banq.model;
+package honours.ing.banq.account;
+
+import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
 import java.util.List;
