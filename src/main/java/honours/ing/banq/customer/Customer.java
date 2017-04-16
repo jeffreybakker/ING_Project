@@ -1,4 +1,4 @@
-package honours.ing.banq.model;
+package honours.ing.banq.customer;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,10 +18,12 @@ public class Customer {
     private String surname;
 
     private Date birthDate;
+    @Column(unique = true)
     private Integer socialSecurityNumber;
 
     private String address;
     private String telephoneNumber;
+    @Column(unique = true)
     private String email;
 
     public Customer() { }
