@@ -18,10 +18,12 @@ public class Customer {
     private String surname;
 
     private Date birthDate;
+    @Column(unique = true)
     private Integer socialSecurityNumber;
 
     private String address;
     private String telephoneNumber;
+    @Column(unique = true)
     private String email;
 
     public Customer() { }
