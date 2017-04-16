@@ -18,6 +18,8 @@ public interface CustomerService {
             @JsonRpcParam("birthDate") Date birthDate, @JsonRpcParam("socialSecurityNumber") Integer socialSecurityNumber,
             @JsonRpcParam("address") String address, @JsonRpcParam("telephoneNumber") String telephoneNumber, @JsonRpcParam("email") String email);
 
+    void deleteCustomer(@JsonRpcParam("id") Integer id);
+
     List<Customer> findByName(@JsonRpcParam("name") String name);
     List<Customer> findBySurname(@JsonRpcParam("surname") String surname);
     List<Customer> findByNameAndSurname(@JsonRpcParam("name") String name, @JsonRpcParam("surname") String surname);
