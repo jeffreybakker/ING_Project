@@ -28,6 +28,12 @@ public class CustomerServiceImpl implements CustomerService {
         return res;
     }
 
+    @Transactional
+    @Override
+    public void deleteCustomer(Integer id) {
+        repository.delete(id);
+    }
+
     @Override
     public List<Customer> findByName(String name) {
         return repository.findByName(name);
