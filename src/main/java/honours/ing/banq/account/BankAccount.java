@@ -43,7 +43,7 @@ public class BankAccount {
         holders.remove(holder);
     }
 
-    public void setHolder(List<Customer> holders) {
+    public void setHolders(List<Customer> holders) {
         this.holders = holders;
     }
 
