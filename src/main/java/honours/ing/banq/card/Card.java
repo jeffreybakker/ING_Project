@@ -1,7 +1,9 @@
-package honours.ing.banq.model;
+package honours.ing.banq.card;
+
+import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * @author Kevin Witlox
@@ -13,41 +15,34 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToMany(targetEntity = Customer.class)
-    private List<Customer> holders;
+    @ManyToOne(targetEntity = Customer.class)
+    private Customer holder;
 
-    @OneToMany(targetEntity = BankAccount.class)
-    private BankAccount bankAccount;
+    @ManyToOne(targetEntity = BankAccount.class)
+    private BankAccount account;
 
     public Card() {}
 
-    public Card(List<Customer> holders, BankAccount bankAccount) {
-        this.holders = holders;
-        this.bankAccount = bankAccount;
+    public Card(Customer holder, BankAccount bankAccount) {
+        this.holder = holder;
+        this.account = bankAccount;
     }
 
     public Integer getId() { return id; }
 
-    public void addHolder(Customer holder) {
-        holders.add(holder);
+    public BankAccount getAccount() {
+        return account;
     }
 
-    public List<Customer> getHolders() { return holders; }
-
-    public void removeHolder(Customer customer) {
-        holders.remove(customer);
+    public void setAccount(BankAccount account) {
+        this.account = account;
     }
 
-    public void setHolders(List<Customer> holders) {
-        this.holders = holders;
+    public Customer getHolder() {
+        return holder;
     }
 
-    public BankAccount getBankAccount() {
-        return bankAccount;
+    public void setHolder(Customer holder) {
+        this.holder = holder;
     }
-
-    public void setBankAccount(BankAccount bankAccount) {
-        this.bankAccount = bankAccount;
-    }
-
 }
