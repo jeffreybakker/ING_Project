@@ -2,16 +2,14 @@ package honours.ing.banq.transaction;
 
 import honours.ing.banq.account.BankAccount;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * @author jeffrey
  * @since 24-4-17
  */
+@Entity
 public class Transaction {
 
     @Id

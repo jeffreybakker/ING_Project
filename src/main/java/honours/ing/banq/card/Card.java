@@ -19,23 +19,23 @@ public class Card {
     private Customer holder;
 
     @ManyToOne(targetEntity = BankAccount.class)
-    private BankAccount bankAccount;
+    private BankAccount account;
 
     public Card() {}
 
     public Card(Customer holder, BankAccount bankAccount) {
         this.holder = holder;
-        this.bankAccount = bankAccount;
+        this.account = bankAccount;
     }
 
     public Integer getId() { return id; }
 
-    public BankAccount getBankAccount() {
-        return bankAccount;
+    public BankAccount getAccount() {
+        return account;
     }
 
-    public void setBankAccount(BankAccount bankAccount) {
-        this.bankAccount = bankAccount;
+    public void setAccount(BankAccount account) {
+        this.account = account;
     }
 
     public Customer getHolder() {
