@@ -1,7 +1,9 @@
-package honours.ing.banq.model;
+package honours.ing.banq.card;
+
+import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * @author Kevin Witlox
@@ -13,34 +15,20 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToMany(targetEntity = Customer.class)
-    private List<Customer> holders;
+    @ManyToOne(targetEntity = Customer.class)
+    private Customer holder;
 
-    @OneToMany(targetEntity = BankAccount.class)
+    @ManyToOne(targetEntity = BankAccount.class)
     private BankAccount bankAccount;
 
     public Card() {}
 
-    public Card(List<Customer> holders, BankAccount bankAccount) {
-        this.holders = holders;
+    public Card(Customer holder, BankAccount bankAccount) {
+        this.holder = holder;
         this.bankAccount = bankAccount;
     }
 
     public Integer getId() { return id; }
-
-    public void addHolder(Customer holder) {
-        holders.add(holder);
-    }
-
-    public List<Customer> getHolders() { return holders; }
-
-    public void removeHolder(Customer customer) {
-        holders.remove(customer);
-    }
-
-    public void setHolders(List<Customer> holders) {
-        this.holders = holders;
-    }
 
     public BankAccount getBankAccount() {
         return bankAccount;
@@ -50,4 +38,11 @@ public class Card {
         this.bankAccount = bankAccount;
     }
 
+    public Customer getHolder() {
+        return holder;
+    }
+
+    public void setHolder(Customer holder) {
+        this.holder = holder;
+    }
 }

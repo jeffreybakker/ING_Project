@@ -1,8 +1,7 @@
-package honours.ing.banq.data;
+package honours.ing.banq.card;
 
-import honours.ing.banq.model.BankAccount;
-import honours.ing.banq.card.Card;
-import honours.ing.banq.model.Customer;
+import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.customer.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,6 +11,8 @@ import java.util.List;
  */
 public interface CardRepository extends JpaRepository<Card, Integer> {
 
-    List<Card> findByHolderAndAccount(Customer holder, BankAccount account);
+    Card findByHolderAndAccount(Customer holder, BankAccount account);
+    List<Card> findByHolder(Customer holder);
+    List<Card> findByAccount(BankAccount account);
 
 }
