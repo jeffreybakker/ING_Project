@@ -1,6 +1,5 @@
-package honours.ing.banq.data;
+package honours.ing.banq.customer;
 
-import honours.ing.banq.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

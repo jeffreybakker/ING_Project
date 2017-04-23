@@ -1,7 +1,7 @@
 package honours.ing.banq.data;
 
 import honours.ing.banq.model.BankAccount;
-import honours.ing.banq.model.Card;
+import honours.ing.banq.card.Card;
 import honours.ing.banq.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
