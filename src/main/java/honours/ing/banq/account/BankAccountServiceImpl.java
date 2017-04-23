@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +27,13 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Transactional
     @Override
-    public BankAccount createAccount(List<Customer> holders, Double balance) {
-        BankAccount res = new BankAccount(holders, balance);
+    public BankAccount createAccount(List<Integer> holders, Double balance) {
+        List<Customer> customers = new ArrayList<>();
+        for (int id : holders) {
+            customers.add(customerRepository.findOne(id));
+        }
+
+        BankAccount res = new BankAccount(customers, balance);
         repository.save(res);
         return res;
     }

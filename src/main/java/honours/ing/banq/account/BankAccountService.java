@@ -13,7 +13,7 @@ import java.util.List;
 @JsonRpcService("/api/account")
 public interface BankAccountService {
 
-    BankAccount createAccount(@JsonRpcParam("holders") List<Customer> holders, @JsonRpcParam("balance") Double balance);
+    BankAccount createAccount(@JsonRpcParam("holders") List<Integer> holders, @JsonRpcParam("balance") Double balance);
 
     Double getBalance(@JsonRpcParam("id") Integer id);
     Double setBalance(@JsonRpcParam("id") Integer id, @JsonRpcParam("balance") Double balance);
