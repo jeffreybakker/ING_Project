@@ -19,44 +19,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CardServiceImpl implements CardService {
 
-    @Autowired
-    private CardRepository repository;
 
-    @Autowired
-    private BankAccountRepository accountRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Transactional
-    @Override
-    public Card createCard(Integer holderId, Integer accountId) {
-        Card res = new Card(customerRepository.findOne(holderId), accountRepository.findOne(accountId));
-        repository.save(res);
-        return res;
-    }
-
-    @Transactional
-    @Override
-    public void deleteCard(Integer id) {
-        repository.delete(id);
-    }
-
-    @Override
-    public Card findByHolderAndAccount(Integer holderId, Integer accountId) {
-        return repository.findByHolderAndAccount(
-                customerRepository.findOne(holderId),
-                accountRepository.findOne(accountId)
-        );
-    }
-
-    @Override
-    public List<Card> findByHolder(Integer holderId) {
-        return repository.findByHolder(customerRepository.findOne(holderId));
-    }
-
-    @Override
-    public List<Card> findByAccount(Integer accountId) {
-        return repository.findByAccount(accountRepository.findOne(accountId));
-    }
 }

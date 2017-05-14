@@ -1,8 +1,11 @@
 package honours.ing.banq.account;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import honours.ing.banq.View;
 import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +19,14 @@ public class BankAccount {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @JsonView(View.OpenAccountView.class)
+    @Column(unique = true)
+    private String iban;
+
     private Double balance;
+
+    @ManyToOne(targetEntity = Customer.class)
+    private Customer primaryHolder;
 
     @ManyToMany(targetEntity = Customer.class)
     private List<Customer> holders;
@@ -29,12 +39,15 @@ public class BankAccount {
 
     /**
      * Creates a new <code>BankAccount</code> with the given parameters.
-     * @param holders a list with the customers that are the holders of the account
-     * @param balance the initial balance of the account
+     * @param iban the IBAN of the bank account
+     * @param primaryHolder the primary holder of the bank account
      */
-    public BankAccount(List<Customer> holders, Double balance) {
-        this.holders = holders;
-        this.balance = balance;
+    public BankAccount(String iban, Customer primaryHolder) {
+        this.iban = iban;
+        this.primaryHolder = primaryHolder;
+
+        holders = new ArrayList<>();
+        balance = 0.0;
     }
 
     /**
@@ -43,6 +56,14 @@ public class BankAccount {
      */
     public Integer getId() {
         return id;
+    }
+
+    public String getIban() {
+        return iban;
+    }
+
+    public Customer getPrimaryHolder() {
+        return primaryHolder;
     }
 
     /**
@@ -67,14 +88,6 @@ public class BankAccount {
      */
     public void removeHolder(Customer holder) {
         holders.remove(holder);
-    }
-
-    /**
-     * Sets the list of holders that can access the account and overrides the old list of holders.
-     * @param holders the new list of holders
-     */
-    public void setHolders(List<Customer> holders) {
-        this.holders = holders;
     }
 
     /**
@@ -107,4 +120,5 @@ public class BankAccount {
     public int hashCode() {
         return id.hashCode();
     }
+
 }

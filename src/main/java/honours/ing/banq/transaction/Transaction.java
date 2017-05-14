@@ -17,14 +17,11 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @OneToOne(targetEntity = BankAccount.class)
-    private BankAccount source;
-    private Double newSourceBalance;
+    private String source;
+    private String destination;
+    private Double amount;
 
-    @OneToOne(targetEntity = BankAccount.class)
-    private BankAccount destination;
-    private Double newDestinationBalance;
-
+    private String description;
     private Date date;
 
     /**
@@ -36,16 +33,14 @@ public class Transaction {
     /**
      * Creates a <code>Transaction</code> with the given parameters.
      * @param source the source account
-     * @param newSourceBalance the new balance of the source account
      * @param destination the destination account
-     * @param newDestinationBalance the new balance of the destination account
      * @param date the date and time of the transaction, can be just <code>Calendar.getInstance().getTime()</code>
      */
-    public Transaction(BankAccount source, Double newSourceBalance, BankAccount destination, Double newDestinationBalance, Date date) {
+    public Transaction(String source, String destination, Double amount, String description, Date date) {
         this.source = source;
-        this.newSourceBalance = newSourceBalance;
         this.destination = destination;
-        this.newDestinationBalance = newDestinationBalance;
+        this.amount = amount;
+        this.description = description;
         this.date = date;
     }
 
@@ -61,32 +56,24 @@ public class Transaction {
      * Returns the source account of the transaction
      * @return the source account
      */
-    public BankAccount getSource() {
+    public String getSource() {
         return source;
-    }
-
-    /**
-     * Returns the new balance of the source account.
-     * @return the new balance of the source account
-     */
-    public Double getNewSourceBalance() {
-        return newSourceBalance;
     }
 
     /**
      * Returns the destination account of the transaction.
      * @return the destination account of the transaction
      */
-    public BankAccount getDestination() {
+    public String getDestination() {
         return destination;
     }
 
-    /**
-     * Returns the new balance of the destination account.
-     * @return the new balance of the destination account
-     */
-    public Double getNewDestinationBalance() {
-        return newDestinationBalance;
+    public Double getAmount() {
+        return amount;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     /**

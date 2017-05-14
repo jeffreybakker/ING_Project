@@ -11,11 +11,6 @@ import java.util.List;
  */
 public interface BankAccountRepository extends JpaRepository<BankAccount, Integer> {
 
-    /**
-     * Returns a list of all accounts that have the given holder.
-     * @param holder the holder
-     * @return a list of all accounts with the given holder
-     */
-    List<BankAccount> findByHolders(Customer holder);
+
 
 }

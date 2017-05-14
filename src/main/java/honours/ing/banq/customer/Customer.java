@@ -27,6 +27,9 @@ public class Customer {
     @Column(unique = true)
     private String email;
 
+    private String username;
+    private String password;
+
     /**
      * Empty constructor for Spring.
      * @deprecated this constructors sole purpose is so that the class can be initialized by spring
@@ -44,7 +47,7 @@ public class Customer {
      * @param telephoneNumber the telephone number of the customer
      * @param email the email address of the customer
      */
-    public Customer(String initials, String name, String surname, Date birthDate, Integer socialSecurityNumber, String address, String telephoneNumber, String email) {
+    public Customer(String initials, String name, String surname, Date birthDate, Integer socialSecurityNumber, String address, String telephoneNumber, String email, String username, String password) {
         this.initials = initials;
         this.name = name;
         this.surname = surname;
@@ -53,6 +56,9 @@ public class Customer {
         this.address = address;
         this.telephoneNumber = telephoneNumber;
         this.email = email;
+
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -191,6 +197,22 @@ public class Customer {
         this.email = email;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -205,4 +227,5 @@ public class Customer {
     public int hashCode() {
         return id.hashCode();
     }
+
 }
