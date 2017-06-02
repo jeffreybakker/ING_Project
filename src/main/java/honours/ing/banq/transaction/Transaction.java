@@ -19,10 +19,11 @@ public class Transaction {
 
     private String source;
     private String destination;
-    private Double amount;
+    private String targetName;
 
-    private String description;
     private Date date;
+    private Double amount;
+    private String description;
 
     /**
      * An empty constructor for the spring framework.
@@ -30,42 +31,33 @@ public class Transaction {
      */
     public Transaction() {}
 
-    /**
-     * Creates a <code>Transaction</code> with the given parameters.
-     * @param source the source account
-     * @param destination the destination account
-     * @param date the date and time of the transaction, can be just <code>Calendar.getInstance().getTime()</code>
-     */
-    public Transaction(String source, String destination, Double amount, String description, Date date) {
+    public Transaction(String source, String destination, String targetName, Date date, Double amount, String description) {
         this.source = source;
         this.destination = destination;
+        this.targetName = targetName;
+        this.date = date;
         this.amount = amount;
         this.description = description;
-        this.date = date;
     }
 
-    /**
-     * Returns the id of the transaction.
-     * @return the id
-     */
     public Integer getId() {
         return id;
     }
 
-    /**
-     * Returns the source account of the transaction
-     * @return the source account
-     */
     public String getSource() {
         return source;
     }
 
-    /**
-     * Returns the destination account of the transaction.
-     * @return the destination account of the transaction
-     */
     public String getDestination() {
         return destination;
+    }
+
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public Date getDate() {
+        return date;
     }
 
     public Double getAmount() {
@@ -74,13 +66,5 @@ public class Transaction {
 
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Returns the date and time at which the transaction was made.
-     * @return the date of the transaction
-     */
-    public Date getDate() {
-        return date;
     }
 }

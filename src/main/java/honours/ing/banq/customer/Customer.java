@@ -14,218 +14,88 @@ public class Customer {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
 
-    private String initials;
+    // Name
     private String name;
     private String surname;
+    private String initials;
 
-    private Date birthDate;
+    // Personal details
+    private Date dob;
+
     @Column(unique = true)
-    private Integer socialSecurityNumber;
+    private String ssn;
 
+    // Physical address
     private String address;
     private String telephoneNumber;
+
+    // Online accessibility
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
     private String username;
     private String password;
 
     /**
-     * Empty constructor for Spring.
-     * @deprecated this constructors sole purpose is so that the class can be initialized by spring
+     * @deprecated empty constructor for spring
      */
     public Customer() { }
 
-    /**
-     * Creates a new <code>Customer</code> with the given parameters.
-     * @param initials the initials of the customer
-     * @param name the first name of the customer
-     * @param surname the surname of the customer
-     * @param birthDate the date of birth of the customer
-     * @param socialSecurityNumber the social security number of the customer
-     * @param address the address of the customer
-     * @param telephoneNumber the telephone number of the customer
-     * @param email the email address of the customer
-     */
-    public Customer(String initials, String name, String surname, Date birthDate, Integer socialSecurityNumber, String address, String telephoneNumber, String email, String username, String password) {
-        this.initials = initials;
+    public Customer(String name, String surname, String initials, Date dob, String ssn, String address, String telephoneNumber, String email, String username, String password) {
         this.name = name;
         this.surname = surname;
-        this.birthDate = birthDate;
-        this.socialSecurityNumber = socialSecurityNumber;
+        this.initials = initials;
+        this.dob = dob;
+        this.ssn = ssn;
         this.address = address;
         this.telephoneNumber = telephoneNumber;
         this.email = email;
-
         this.username = username;
         this.password = password;
     }
 
-    /**
-     * Returns the ID of the customer
-     * @return the ID
-     */
     public Integer getId() {
         return id;
     }
 
-    /**
-     * Returns the initials of the customer.
-     * @return the initials
-     */
-    public String getInitials() {
-        return initials;
-    }
-
-    /**
-     * Sets the initials of the customer.
-     * @param initials the initials
-     */
-    public void setInitials(String initials) {
-        this.initials = initials;
-    }
-
-    /**
-     * Returns the first name of the customer.
-     * @return the first name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Sets the name of the customer.
-     * @param name the name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Returns the surname of the customer.
-     * @return the surname
-     */
     public String getSurname() {
         return surname;
     }
 
-    /**
-     * Sets the surname of the customer.
-     * @param surname the surname
-     */
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public String getInitials() {
+        return initials;
     }
 
-    /**
-     * Returns the date of birth of the customer.
-     * @return the date of birth
-     */
-    public Date getBirthDate() {
-        return birthDate;
+    public Date getDob() {
+        return dob;
     }
 
-    /**
-     * Sets the date of birth of the customer.
-     * @param birthDate the date of birth
-     */
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+    public String getSsn() {
+        return ssn;
     }
 
-    /**
-     * Returns the social security number of the customer.
-     * @return the social security number
-     */
-    public Integer getSocialSecurityNumber() {
-        return socialSecurityNumber;
-    }
-
-    /**
-     * Sets the social security number of the customer.
-     * @param socialSecurityNumber the social security number
-     */
-    public void setSocialSecurityNumber(Integer socialSecurityNumber) {
-        this.socialSecurityNumber = socialSecurityNumber;
-    }
-
-    /**
-     * Returns the address of the customer.
-     * @return the address
-     */
     public String getAddress() {
         return address;
     }
 
-    /**
-     * Sets the address of the customer.
-     * @param address the address
-     */
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    /**
-     * Returns the telephone number of the customer.
-     * @return the telephone number
-     */
     public String getTelephoneNumber() {
         return telephoneNumber;
     }
 
-    /**
-     * Sets the telephone number of the customer.
-     * @param telephoneNumber the telephone number
-     */
-    public void setTelephoneNumber(String telephoneNumber) {
-        this.telephoneNumber = telephoneNumber;
-    }
-
-    /**
-     * Returns the email address of the customer.
-     * @return the email address
-     */
     public String getEmail() {
         return email;
-    }
-
-    /**
-     * Sets the email address of the customer.
-     * @param email the email address
-     */
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
     }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Customer customer = (Customer) o;
-
-        return id.equals(customer.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
 }

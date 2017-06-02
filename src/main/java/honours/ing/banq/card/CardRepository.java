@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface CardRepository extends JpaRepository<Card, Integer> {
 
-
+    List<Card> findByAccount(BankAccount account);
+    Card findByAccountAndHolder(BankAccount account, Customer holder);
+    Card findByAccountAndCardNumber(BankAccount account, Integer cardNumber);
 
 }

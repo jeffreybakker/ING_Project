@@ -1,0 +1,100 @@
+package honours.ing.banq.access;
+
+import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
+import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.access.bean.NewCardBean;
+import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.BankAccountRepository;
+import honours.ing.banq.auth.AuthService;
+import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.card.Card;
+import honours.ing.banq.card.CardRepository;
+import honours.ing.banq.customer.Customer;
+import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.util.IBANUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * @author jeffrey
+ * @since 31-5-17
+ */
+@Service
+@AutoJsonRpcServiceImpl
+@Transactional(readOnly = true)
+public class AccessServiceImpl implements AccessService {
+
+    // Services
+    @Autowired
+    private AuthService auth;
+
+    // Repositories
+    @Autowired
+    private BankAccountRepository accountRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Transactional
+    @Override
+    public NewCardBean provideAccess(String authToken, String iBAN, String username) throws InvalidParamValueError, NotAuthorizedError, NoEffectError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+
+        long accountNumber = IBANUtil.getAccountNumber(iBAN);
+        BankAccount account = accountRepository.findOne((int) accountNumber);
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        Customer holder = customerRepository.findByUsername(username);
+
+        if (account.getPrimaryHolder().equals(holder)) {
+            throw new InvalidParamValueError("You can't provide access to yourself for your own account");
+        }
+
+        if (account.getHolders().contains(holder)) {
+            throw new NoEffectError();
+        }
+
+        account.addHolder(holder);
+        Card card = new Card(holder, account);
+        cardRepository.save(card);
+
+        return new NewCardBean(card);
+    }
+
+    @Transactional
+    @Override
+    public boolean revokeAccess(String authToken, String iBAN, String username) throws InvalidParamValueError, NotAuthorizedError, NoEffectError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+
+        long accountNumber = IBANUtil.getAccountNumber(iBAN);
+        BankAccount account = accountRepository.findOne((int) accountNumber);
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        Customer holder = customerRepository.findByUsername(username);
+
+        if (!account.getPrimaryHolder().equals(holder)) {
+            throw new InvalidParamValueError("You can't revoke access from yourself for your own account");
+        }
+
+        if (!account.getHolders().contains(holder)) {
+            throw new NoEffectError();
+        }
+
+        account.removeHolder(holder);
+        Card card = cardRepository.findByAccountAndHolder(account, holder);
+        cardRepository.delete(card);
+
+        return true;
+    }
+
+}

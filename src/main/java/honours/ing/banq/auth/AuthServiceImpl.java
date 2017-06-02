@@ -1,8 +1,13 @@
 package honours.ing.banq.auth;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
+import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.BankAccountRepository;
+import honours.ing.banq.card.Card;
+import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.util.IBANUtil;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +32,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private AuthRepository repository;
+
+    @Autowired
+    private BankAccountRepository accountRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -63,6 +74,18 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return auth.getCustomer();
+    }
+
+    @Override
+    public BankAccount getAuthorizedAccount(String iBAN, int pinCard, int pinCode) throws InvalidPINError {
+        BankAccount account = accountRepository.findOne((int) IBANUtil.getAccountNumber(iBAN));
+        Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
+
+        if (card.getPin() != pinCode) {
+            throw new InvalidPINError();
+        }
+
+        return account;
     }
 
     private String genToken() {

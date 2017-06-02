@@ -13,6 +13,6 @@ import java.util.List;
 @JsonRpcService("/api")
 public interface TransactionService {
 
-
+    void depositIntoAccount();
 
 }

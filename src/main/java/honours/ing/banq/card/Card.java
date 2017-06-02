@@ -4,7 +4,9 @@ import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Represents a physical card that a holder of an bank account can use to make pin transactions.
@@ -12,6 +14,9 @@ import java.util.Date;
  */
 @Entity
 public class Card {
+
+    @SuppressWarnings("NumericOverflow")
+    private static final long DURABILITY = 1000 * 60 * 60 * 24 * 365 * 5; // 5 years
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,73 +28,46 @@ public class Card {
     @ManyToOne(targetEntity = BankAccount.class)
     private BankAccount account;
 
-    private Integer pin;
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer cardNumber;
+    private Integer pin;
     private Date expirationDate;
 
     /**
-     * An empty constructor for the spring framework.
-     * @deprecated
+     * @deprecated empty constructor for spring
      */
-    public Card() {}
+    public Card() { }
 
-    /**
-     * Creates a new <code>Card</code> with the given parameters.
-     * @param holder the holder of the card
-     * @param bankAccount the account corresponding to the card
-     */
-    public Card(Customer holder, BankAccount bankAccount, Integer pin, Integer cardNumber, Date expirationDate) {
+    public Card(Customer holder, BankAccount account) {
         this.holder = holder;
-        this.account = bankAccount;
-        this.pin = pin;
-        this.cardNumber = cardNumber;
-        this.expirationDate = expirationDate;
-    }
-
-    /**
-     * Returns the id of the card.
-     * @return the id
-     */
-    public Integer getId() { return id; }
-
-    /**
-     * Returns the bank account of the card.
-     * @return the bank account
-     */
-    public BankAccount getAccount() {
-        return account;
-    }
-
-    /**
-     * Sets the bank account of the card.
-     * @param account the bank account
-     */
-    public void setAccount(BankAccount account) {
         this.account = account;
+
+        pin = new Random().nextInt(10000); // 4 number PIN
+
+        Calendar expiration = Calendar.getInstance();
+        expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
+
+        expirationDate = expiration.getTime();
     }
 
-    /**
-     * Returns the customer that is the holder of the card.
-     * @return the holder
-     */
+    public Integer getId() {
+        return id;
+    }
+
     public Customer getHolder() {
         return holder;
     }
 
-    /**
-     * Sets the holder of the card.
-     * @param holder the holder
-     */
-    public void setHolder(Customer holder) {
-        this.holder = holder;
-    }
-
-    public Integer getPin() {
-        return pin;
+    public BankAccount getAccount() {
+        return account;
     }
 
     public Integer getCardNumber() {
         return cardNumber;
+    }
+
+    public Integer getPin() {
+        return pin;
     }
 
     public Date getExpirationDate() {
