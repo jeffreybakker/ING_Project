@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Represents a bank account of one or more customers.
+ *
  * @author Jeffrey Bakker
  */
 @Entity
@@ -28,7 +29,8 @@ public class BankAccount {
     /**
      * @deprecated empty constructor for spring
      */
-    public BankAccount() { }
+    public BankAccount() {
+    }
 
     public BankAccount(Customer primaryHolder) {
         this.primaryHolder = primaryHolder;
@@ -42,6 +44,14 @@ public class BankAccount {
 
     public Double getBalance() {
         return balance;
+    }
+
+    public void subBalance(Double balance) {
+        this.balance -= balance;
+    }
+
+    public void addBalance(Double balance) {
+        this.balance += balance;
     }
 
     public Customer getPrimaryHolder() {
