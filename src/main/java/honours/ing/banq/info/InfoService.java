@@ -9,6 +9,7 @@ import honours.ing.banq.customer.Customer;
 import honours.ing.banq.info.bean.BalanceBean;
 import honours.ing.banq.info.bean.BankAccountAccessBean;
 import honours.ing.banq.info.bean.UserAccessBean;
+import honours.ing.banq.transaction.Transaction;
 
 import java.util.List;
 
@@ -31,6 +32,24 @@ public interface InfoService {
      */
     BalanceBean getBalance(@JsonRpcParam("authToken") String autToken, @JsonRpcParam("iBAN")
             String iBAN) throws InvalidParamValueError, NotAuthorizedError;
+
+    /**
+     * Returns a {@link List} of {@link Transaction} entities for a specific {@link BankAccount}.
+     *
+     * @param authToken        The authorization token identifying the {@link Customer}
+     * @param iBAN             The iBAN of the {@link BankAccount} held by the {@link Customer}
+     * @param nrOfTransactions The number of transactions that should be returned.
+     *                         'nrOfTransactions' = 1 will return the most recent transaction.
+     * @return A {@link List} of {@link Transaction} entities
+     * @throws InvalidParamValueError
+     * @throws NotAuthorizedError     Thrown when something went wrong with the authentication
+     *                                module
+     */
+    List<Transaction> getTransactionsOverview(@JsonRpcParam("authToken") String authToken,
+                                              @JsonRpcParam("iBAN") String iBAN, @JsonRpcParam
+                                                      ("nrOfTransactions") Integer
+                                                      nrOfTransactions) throws
+            InvalidParamValueError, NotAuthorizedError;
 
     /**
      * Returns all {@link BankAccount} entities that can be accessed by the currently authorized
