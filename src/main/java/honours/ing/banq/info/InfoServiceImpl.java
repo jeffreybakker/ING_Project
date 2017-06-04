@@ -7,6 +7,7 @@ import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.info.bean.BalanceBean;
 import honours.ing.banq.info.bean.BankAccountAccessBean;
 import honours.ing.banq.info.bean.UserAccessBean;
 import honours.ing.banq.util.IBANUtil;
@@ -32,6 +33,18 @@ public class InfoServiceImpl implements InfoService {
     // Repositories
     @Autowired
     private BankAccountRepository bankAccountRepository;
+
+    @Override
+    public BalanceBean getBalance(String autToken, String iBAN) throws InvalidParamValueError, NotAuthorizedError {
+        Customer customer = auth.getAuthorizedCustomer(autToken);
+        BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(iBAN));
+
+        if (!bankAccount.getHolders().contains(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        return new BalanceBean(bankAccount);
+    }
 
     @Transactional
     @Override

@@ -6,6 +6,7 @@ import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.info.bean.BalanceBean;
 import honours.ing.banq.info.bean.BankAccountAccessBean;
 import honours.ing.banq.info.bean.UserAccessBean;
 
@@ -16,6 +17,20 @@ import java.util.List;
  */
 @JsonRpcService("/api")
 public interface InfoService {
+
+    /**
+     * Returns the balance of a {@link BankAccount}.
+     *
+     * @param autToken The authorization token of a {@link Customer} holding the {@link
+     *                 BankAccount}
+     * @param iBAN     The iBAN identifying the {@link BankAccount}
+     * @return The balance of the {@link BankAccount}
+     * @throws InvalidParamValueError
+     * @throws NotAuthorizedError     Thrown when something went wrong with the authentication
+     *                                module
+     */
+    BalanceBean getBalance(@JsonRpcParam("authToken") String autToken, @JsonRpcParam("iBAN")
+            String iBAN) throws InvalidParamValueError, NotAuthorizedError;
 
     /**
      * Returns all {@link BankAccount} entities that can be accessed by the currently authorized
