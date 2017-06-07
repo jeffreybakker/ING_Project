@@ -9,6 +9,7 @@ import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
+import honours.ing.banq.card.CardUtil;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
 import honours.ing.banq.util.IBANUtil;
@@ -62,7 +63,7 @@ public class AccessServiceImpl implements AccessService {
         }
 
         account.addHolder(holder);
-        Card card = new Card(holder, account);
+        Card card = new Card(holder, account, CardUtil.generateCardNumber(cardRepository));
         cardRepository.save(card);
 
         return new NewCardBean(card);

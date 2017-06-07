@@ -7,6 +7,7 @@ import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
+import honours.ing.banq.card.CardUtil;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
 import honours.ing.banq.util.IBANUtil;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount account = new BankAccount(customer);
         repository.save(account);
 
-        Card card = new Card(customer, account);
+        Card card = new Card(customer, account, CardUtil.generateCardNumber(cardRepository));
         cardRepository.save(card);
 
         return new NewAccountBean(card);
@@ -67,7 +69,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount account = new BankAccount(customer);
         repository.save(account);
 
-        Card card = new Card(customer, account);
+        Card card = new Card(customer, account, CardUtil.generateCardNumber(cardRepository));
         cardRepository.save(card);
 
         return new NewAccountBean(card);
@@ -91,4 +93,5 @@ public class BankAccountServiceImpl implements BankAccountService {
         repository.delete(account);
         return true;
     }
+
 }
