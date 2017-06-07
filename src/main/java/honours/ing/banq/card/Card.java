@@ -30,7 +30,7 @@ public class Card {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer cardNumber;
-    private Integer pin;
+    private Integer pin; // TODO: add hashing
     private Date expirationDate;
 
     /**
