@@ -15,4 +15,7 @@ public class BalanceBean {
         balance = bankAccount.getBalance();
     }
 
+    public Double getBalance() {
+        return balance;
+    }
 }

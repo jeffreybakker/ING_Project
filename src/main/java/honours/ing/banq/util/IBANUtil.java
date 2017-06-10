@@ -10,7 +10,7 @@ public class IBANUtil {
     private static final int ACCOUNT_NUMBER_LENGTH = 10;
 
     public static boolean isValidIBAN(String iBAN) {
-        if (iBAN.length() <= 6) {
+        if (iBAN.length() <= 10) {
             return false;
         }
 
@@ -52,7 +52,7 @@ public class IBANUtil {
             if (Character.isDigit(c)) {
                 res.insert(0, c);
             } else {
-                res.insert(0,((int) c) - 55);
+                res.insert(0, ((int) c) - 55);
             }
         }
 
