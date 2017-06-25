@@ -48,7 +48,7 @@ public class InfoServiceImpl implements InfoService {
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (iBAN));
 
-        if (!bankAccount.getHolders().contains(customer)) {
+        if (!bankAccount.getHolders().contains(customer) && !bankAccount.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
         }
 
@@ -62,7 +62,7 @@ public class InfoServiceImpl implements InfoService {
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (iBAN));
 
-        if (!bankAccount.getHolders().contains(customer)) {
+        if (!bankAccount.getHolders().contains(customer) && !bankAccount.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
         }
 
