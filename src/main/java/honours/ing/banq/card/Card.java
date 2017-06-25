@@ -29,8 +29,8 @@ public class Card {
     private BankAccount account;
 
     @Column(unique = true, nullable = false)
-    private Integer cardNumber;
-    private Integer pin; // TODO: add hashing
+    private String cardNumber;
+    private String pin; // TODO: add hashing
     private Date expirationDate;
 
     /**
@@ -38,12 +38,12 @@ public class Card {
      */
     public Card() { }
 
-    public Card(Customer holder, BankAccount account, Integer cardNumber) {
+    public Card(Customer holder, BankAccount account, String cardNumber) {
         this.holder = holder;
         this.account = account;
         this.cardNumber = cardNumber;
 
-        pin = new Random().nextInt(10000); // 4 number PIN
+        pin = generatePin();
 
         Calendar expiration = Calendar.getInstance();
         expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
@@ -62,15 +62,27 @@ public class Card {
         return account;
     }
 
-    public Integer getCardNumber() {
+    public String getCardNumber() {
         return cardNumber;
     }
 
-    public Integer getPin() {
+    public String getPin() {
         return pin;
     }
 
     public Date getExpirationDate() {
         return expirationDate;
     }
+
+    private static String generatePin() {
+        StringBuilder res = new StringBuilder();
+        Random rnd = new Random();
+
+        for (int i = 0; i < 4; i++) {
+            res.append(rnd.nextInt(10));
+        }
+
+        return res.toString();
+    }
+
 }

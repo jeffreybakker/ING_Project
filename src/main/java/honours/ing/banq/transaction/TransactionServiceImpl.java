@@ -44,7 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     private CardRepository cardRepository;
 
     @Override
-    public void depositIntoAccount(String iBAN, Integer pinCard, Integer pinCode, Double amount)
+    public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError {
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (iBAN));
@@ -76,7 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void payFromAccount(String sourceIBAN, String targetIBAN, Integer pinCard, Integer
+    public void payFromAccount(String sourceIBAN, String targetIBAN, String pinCard, String
             pinCode, Double amount) throws InvalidParamValueError, InvalidPINError {
         BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil
                 .getAccountNumber(sourceIBAN));
