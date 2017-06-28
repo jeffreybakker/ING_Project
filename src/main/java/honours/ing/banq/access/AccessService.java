@@ -10,7 +10,7 @@ import honours.ing.banq.auth.NotAuthorizedError;
  * @author jeffrey
  * @since 31-5-17
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/access")
 public interface AccessService {
 
     NewCardBean provideAccess(

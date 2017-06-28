@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class InfoServiceImpl implements InfoService {
 
     // Services

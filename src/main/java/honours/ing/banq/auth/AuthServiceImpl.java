@@ -22,7 +22,7 @@ import java.util.Random;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private static final int TOKEN_LENGTH = 255;

@@ -9,7 +9,7 @@ import honours.ing.banq.customer.Customer;
  * @author jeffrey
  * @since 14-5-17
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/auth")
 public interface AuthService {
 
     String getAuthToken(@JsonRpcParam("username") String username, @JsonRpcParam("password") String password) throws AuthenticationError;

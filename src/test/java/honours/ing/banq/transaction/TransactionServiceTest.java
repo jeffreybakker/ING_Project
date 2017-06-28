@@ -52,10 +52,10 @@ public class TransactionServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        account1 = bankAccountService.openAccount("Jan", "Jansen", "J.", new Date(1996, 1, 1),
+        account1 = bankAccountService.openAccount("Jan", "Jansen", "J.", "1996-1-1",
                 "1234567890", "Klaverstraat 1", "0612345678", "janjansen@gmail.com", "jantje96",
                 "1234");
-        account2 = bankAccountService.openAccount("Piet", "Pietersen", "p.p", new Date(1998, 8, 8),
+        account2 = bankAccountService.openAccount("Piet", "Pietersen", "p.p", "1998-8-8",
                 "012345789", "Huisstraat 1", "0607080910", "piet@gmail.com", "piet1", "1234");
 
         tokenAccount1 = authService.getAuthToken("jantje96", "1234");

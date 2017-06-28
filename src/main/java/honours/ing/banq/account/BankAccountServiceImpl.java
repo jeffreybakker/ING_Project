@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class BankAccountServiceImpl implements BankAccountService {
 
     // Services
@@ -44,12 +44,16 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Transactional
     @Override
-    public NewAccountBean openAccount(String name, String surname, String initials, Date dob, String ssn, String address, String telephoneNumber, String email, String username, String password) throws InvalidParamValueError {
+    public NewAccountBean openAccount(String name, String surname, String initials, String dob, String ssn, String address, String telephoneNumber, String email, String username, String password) throws InvalidParamValueError {
+        if (!Customer.checkDate(dob)) {
+            throw new InvalidParamValueError("The given date is not valid.");
+        }
+
         Customer customer = new Customer(name, surname, initials, dob, ssn, address, telephoneNumber, email, username, password);
         try {
             customerRepository.save(customer);
         } catch (Exception e) {
-            throw new InvalidParamValueError("Could not create customer because the given information was invalid");
+            throw new InvalidParamValueError("Customer already exists.");
         }
 
         BankAccount account = new BankAccount(customer);

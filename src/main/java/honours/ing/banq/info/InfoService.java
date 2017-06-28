@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author Kevin Witlox
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/info")
 public interface InfoService {
 
     /**

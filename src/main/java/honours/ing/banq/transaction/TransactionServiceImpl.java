@@ -24,7 +24,7 @@ import java.util.*;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class TransactionServiceImpl implements TransactionService {
 
     // TODO: Sanitize user input

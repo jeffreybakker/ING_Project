@@ -12,7 +12,7 @@ import java.util.Date;
  * @author jeffrey
  * @since 17-4-17
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/account")
 public interface BankAccountService {
 
     /**
@@ -33,7 +33,7 @@ public interface BankAccountService {
      */
     NewAccountBean openAccount(
             @JsonRpcParam("name") String name, @JsonRpcParam("surname") String surname, @JsonRpcParam("initials") String initials,
-            @JsonRpcParam("dob") Date dob, @JsonRpcParam("ssn") String ssn,
+            @JsonRpcParam("dob") String dob, @JsonRpcParam("ssn") String ssn,
             @JsonRpcParam("address") String address, @JsonRpcParam("telephoneNumber") String telephoneNumber,
             @JsonRpcParam("email") String email, @JsonRpcParam("username") String username, @JsonRpcParam("password") String password)
             throws InvalidParamValueError;
