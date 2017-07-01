@@ -1,6 +1,7 @@
 package honours.ing.banq.redirect;
 
 import com.google.gson.Gson;
+import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.access.AccessService;
@@ -22,10 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,7 +35,7 @@ import java.util.Set;
  * @since 22-6-2017.
  */
 @Controller
-public class RedirectService implements ApplicationContextAware{
+public class RedirectService implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -77,10 +79,24 @@ public class RedirectService implements ApplicationContextAware{
                             field.setAccessible(true);
                             try {
                                 Object service = field.get(this);
-                                Object[] array = jsonRequest.getParams().values().toArray();
-                                result = method.invoke(service, jsonRequest.getParams().values().toArray());
-                                returnType = method.getReturnType();
-                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                List<Object> list = new ArrayList<>();
+
+                                Class<?> interfaze = service.getClass().getSuperclass().getInterfaces()[0];
+                                Method interfaceMethod = interfaze.getMethod(method.getName(), method
+                                        .getParameterTypes());
+                                Parameter[] parameters = interfaceMethod.getParameters();
+                                for (Parameter parameter : parameters) {
+                                    for (Map.Entry<String, String> entry : jsonRequest.getParams().entrySet()) {
+                                        JsonRpcParam annotation = AnnotationUtils.findAnnotation(parameter,
+                                                JsonRpcParam.class);
+                                        if (entry.getKey().equals(annotation.value())) {
+                                            list.add(entry.getValue());
+                                        }
+                                    }
+                                }
+
+                                result = method.invoke(service, list.toArray());
+                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                                 e.printStackTrace();
                             }
                         }

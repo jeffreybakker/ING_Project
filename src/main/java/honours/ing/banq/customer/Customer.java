@@ -1,9 +1,11 @@
 package honours.ing.banq.customer;
 
 import javax.persistence.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Represents a customer as a class and contains all the data that we store about a single customer.
@@ -108,8 +110,8 @@ public class Customer {
      * @return True is success, false otherwise
      */
     public static boolean checkDate(String date) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+       try {
+            DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy");
             if (date.equals(dateFormat.format(dateFormat.parse(date)))) {
                 return true;
             }
