@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public String getAuthToken(String username, String password) throws AuthenticationError {
+    public AuthToken getAuthToken(String username, String password) throws AuthenticationError {
         Customer customer = customerRepository.findByUsernameAndPassword(username, password);
         if (customer == null) {
             throw new AuthenticationError();
@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
             } catch (Exception ignored) { }
         }
 
-        return auth.getToken();
+        return new AuthToken(auth.getToken());
     }
 
     @Override

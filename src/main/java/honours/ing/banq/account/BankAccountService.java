@@ -5,7 +5,6 @@ import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.auth.NotAuthorizedError;
-import honours.ing.banq.response.SuperBean;
 
 /**
  * @author jeffrey
@@ -31,7 +30,7 @@ public interface BankAccountService {
      * @return an object containing basic information about the newly created bank account
      * @throws InvalidParamValueError if one or more of the parameters has an invalid value
      */
-    SuperBean<NewAccountBean> openAccount(
+    NewAccountBean openAccount(
             @JsonRpcParam("name") String name, @JsonRpcParam("surname") String surname, @JsonRpcParam("initials")
             String initials,
             @JsonRpcParam("dob") String dob, @JsonRpcParam("ssn") String ssn,
@@ -47,10 +46,9 @@ public interface BankAccountService {
      * @return an object containing basic information about the newly created bank account
      * @throws NotAuthorizedError if something went wrong with the authentication module
      */
-    SuperBean<NewAccountBean> openAdditionalAccount(@JsonRpcParam("authToken") String authToken) throws
-            NotAuthorizedError;
+    NewAccountBean openAdditionalAccount(@JsonRpcParam("authToken") String authToken) throws NotAuthorizedError;
 
-    SuperBean closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN) throws
+    boolean closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN) throws
             NotAuthorizedError, InvalidParamValueError;
 
 }
