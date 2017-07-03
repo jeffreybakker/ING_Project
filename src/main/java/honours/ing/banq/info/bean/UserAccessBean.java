@@ -20,4 +20,19 @@ public class UserAccessBean {
         this.owner = customer.getName();
     }
 
+    public String getiBAN() {
+        return iBAN;
+    }
+
+    public void setiBAN(String iBAN) {
+        this.iBAN = iBAN;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 }

@@ -19,4 +19,15 @@ public class NewAccountBean {
         pinCode = card.getPin();
     }
 
+    public String getiBAN() {
+        return iBAN;
+    }
+
+    public int getPinCard() {
+        return pinCard;
+    }
+
+    public int getPinCode() {
+        return pinCode;
+    }
 }

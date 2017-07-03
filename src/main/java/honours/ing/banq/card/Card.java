@@ -28,7 +28,7 @@ public class Card {
     @ManyToOne(targetEntity = BankAccount.class)
     private BankAccount account;
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(unique = true, nullable = false)
     private Integer cardNumber;
     private Integer pin; // TODO: add hashing
     private Date expirationDate;
@@ -38,15 +38,15 @@ public class Card {
      */
     public Card() { }
 
-    public Card(Customer holder, BankAccount account) {
+    public Card(Customer holder, BankAccount account, Integer cardNumber) {
         this.holder = holder;
         this.account = account;
+        this.cardNumber = cardNumber;
 
         pin = new Random().nextInt(10000); // 4 number PIN
 
         Calendar expiration = Calendar.getInstance();
         expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
-
         expirationDate = expiration.getTime();
     }
 

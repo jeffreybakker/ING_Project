@@ -10,7 +10,7 @@ import honours.ing.banq.auth.NotAuthorizedError;
  * @author jeffrey
  * @since 31-5-17
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/access")
 public interface AccessService {
 
     NewCardBean provideAccess(
@@ -18,7 +18,7 @@ public interface AccessService {
             @JsonRpcParam("username") String username)
             throws InvalidParamValueError, NotAuthorizedError, NoEffectError;
 
-    boolean revokeAccess(
+    void revokeAccess(
             @JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN,
             @JsonRpcParam("username") String username)
             throws InvalidParamValueError, NotAuthorizedError, NoEffectError;

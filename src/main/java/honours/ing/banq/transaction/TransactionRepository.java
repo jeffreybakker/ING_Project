@@ -12,6 +12,6 @@ import java.util.List;
  */
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
 
-    List<Transaction> findBySourceOrDestinationOrderByDateDesc(String iBAN, Pageable pageable);
+    List<Transaction> findBySourceOrDestinationOrderByDateDesc(String src, String dst);
 
 }
