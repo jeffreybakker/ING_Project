@@ -61,7 +61,7 @@ public interface InfoService {
      * @throws NotAuthorizedError     Thrown when something went wrong with the authentication
      *                                module
      */
-    List<UserAccessBean> getUserAcces(@JsonRpcParam("authToken") String authToken) throws
+    List<UserAccessBean> getUserAccess(@JsonRpcParam("authToken") String authToken) throws
             InvalidParamValueError, NotAuthorizedError;
 
     /**

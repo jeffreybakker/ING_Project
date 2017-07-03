@@ -47,12 +47,11 @@ import java.util.Set;
  * @since 22-6-2017.
  */
 @Controller
-public class RedirectService implements ApplicationContextAware {
+public class RedirectService {
 
     private static final String DEFAULT_URL = "http://localhost:8080";
 
     private CloseableHttpClient httpclient = HttpClients.createDefault();
-    private ApplicationContext applicationContext;
 
     @Autowired
     private AccessService accessService;
@@ -123,8 +122,4 @@ public class RedirectService implements ApplicationContextAware {
         return result;
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 }

@@ -12,5 +12,6 @@ import java.util.List;
 public interface BankAccountRepository extends JpaRepository<BankAccount, Integer> {
 
     List<BankAccount> findBankAccountsByHolders(Customer customer);
+    List<BankAccount> findBankAccountsByPrimaryHolder(Customer customer);
 
 }

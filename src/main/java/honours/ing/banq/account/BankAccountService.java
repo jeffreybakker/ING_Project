@@ -48,7 +48,7 @@ public interface BankAccountService {
      */
     NewAccountBean openAdditionalAccount(@JsonRpcParam("authToken") String authToken) throws NotAuthorizedError;
 
-    boolean closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN) throws
+    void closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN) throws
             NotAuthorizedError, InvalidParamValueError;
 
 }

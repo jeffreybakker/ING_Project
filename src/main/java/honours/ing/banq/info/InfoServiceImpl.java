@@ -66,13 +66,15 @@ public class InfoServiceImpl implements InfoService {
             throw new NotAuthorizedError();
         }
 
-        Pageable pageable = (Pageable) new PageRequest(0, nrOfTransactions);
-        return transactionRepository.findBySourceOrDestinationOrderByDateDesc(iBAN, pageable);
+        List<Transaction> list = transactionRepository.findBySourceOrDestinationOrderByDateDesc(iBAN, iBAN);
+        return list.size() > nrOfTransactions ? list.subList(0, nrOfTransactions - 1) : transactionRepository
+                .findBySourceOrDestinationOrderByDateDesc(iBAN,
+                iBAN);
     }
 
     @Transactional
     @Override
-    public List<UserAccessBean> getUserAcces(String authToken) throws NotAuthorizedError {
+    public List<UserAccessBean> getUserAccess(String authToken) throws NotAuthorizedError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
 
         if (customer == null) {
@@ -80,9 +82,14 @@ public class InfoServiceImpl implements InfoService {
         }
 
         List<BankAccount> accounts = bankAccountRepository.findBankAccountsByHolders(customer);
+        List<BankAccount> primaryAccounts = bankAccountRepository.findBankAccountsByPrimaryHolder(customer);
 
         List<UserAccessBean> userAccessBeanList = new ArrayList<>();
         for (BankAccount account : accounts) {
+            userAccessBeanList.add(new UserAccessBean(account, account.getPrimaryHolder()));
+        }
+
+        for (BankAccount account : primaryAccounts) {
             userAccessBeanList.add(new UserAccessBean(account, account.getPrimaryHolder()));
         }
 

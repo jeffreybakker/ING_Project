@@ -78,7 +78,7 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Transactional
     @Override
-    public boolean closeAccount(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
+    public void closeAccount(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
 
         long accountNumber = IBANUtil.getAccountNumber(iBAN);
@@ -92,6 +92,5 @@ public class BankAccountServiceImpl implements BankAccountService {
         cardRepository.delete(cards);
 
         repository.delete(account);
-        return true;
     }
 }
