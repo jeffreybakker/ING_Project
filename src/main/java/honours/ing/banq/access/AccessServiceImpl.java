@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class AccessServiceImpl implements AccessService {
 
     // Services
@@ -71,7 +71,7 @@ public class AccessServiceImpl implements AccessService {
 
     @Transactional
     @Override
-    public boolean revokeAccess(String authToken, String iBAN, String username) throws InvalidParamValueError, NotAuthorizedError, NoEffectError {
+    public void revokeAccess(String authToken, String iBAN, String username) throws InvalidParamValueError, NotAuthorizedError, NoEffectError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
 
         long accountNumber = IBANUtil.getAccountNumber(iBAN);
@@ -83,7 +83,7 @@ public class AccessServiceImpl implements AccessService {
 
         Customer holder = customerRepository.findByUsername(username);
 
-        if (!account.getPrimaryHolder().equals(holder)) {
+        if (account.getPrimaryHolder().equals(holder)) {
             throw new InvalidParamValueError("You can't revoke access from yourself for your own account");
         }
 
@@ -94,8 +94,6 @@ public class AccessServiceImpl implements AccessService {
         account.removeHolder(holder);
         Card card = cardRepository.findByAccountAndHolder(account, holder);
         cardRepository.delete(card);
-
-        return true;
     }
 
 }

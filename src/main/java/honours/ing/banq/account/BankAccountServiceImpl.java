@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,8 +42,11 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Transactional
     @Override
-    public NewAccountBean openAccount(String name, String surname, String initials, Date dob, String ssn, String address, String telephoneNumber, String email, String username, String password) throws InvalidParamValueError {
-        Customer customer = new Customer(name, surname, initials, dob, ssn, address, telephoneNumber, email, username, password);
+    public NewAccountBean openAccount(String name, String surname, String initials, String dob, String ssn, String
+            address, String telephoneNumber, String email, String username, String password) throws
+            InvalidParamValueError {
+        Customer customer = new Customer(name, surname, initials, dob, ssn, address, telephoneNumber, email,
+                username, password);
         try {
             customerRepository.save(customer);
         } catch (Exception e) {
@@ -77,7 +78,7 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Transactional
     @Override
-    public boolean closeAccount(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
+    public void closeAccount(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
 
         long accountNumber = IBANUtil.getAccountNumber(iBAN);
@@ -91,7 +92,5 @@ public class BankAccountServiceImpl implements BankAccountService {
         cardRepository.delete(cards);
 
         repository.delete(account);
-        return true;
     }
-
 }

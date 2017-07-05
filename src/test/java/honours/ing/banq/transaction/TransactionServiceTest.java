@@ -52,14 +52,14 @@ public class TransactionServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        account1 = bankAccountService.openAccount("Jan", "Jansen", "J.", new Date(1996, 1, 1),
+        account1 = bankAccountService.openAccount("Jan", "Jansen", "J.", "1996-1-1",
                 "1234567890", "Klaverstraat 1", "0612345678", "janjansen@gmail.com", "jantje96",
                 "1234");
-        account2 = bankAccountService.openAccount("Piet", "Pietersen", "p.p", new Date(1998, 8, 8),
+        account2 = bankAccountService.openAccount("Piet", "Pietersen", "p.p", "1998-8-8",
                 "012345789", "Huisstraat 1", "0607080910", "piet@gmail.com", "piet1", "1234");
 
-        tokenAccount1 = authService.getAuthToken("jantje96", "1234");
-        tokenAccount2 = authService.getAuthToken("piet1", "1234");
+        tokenAccount1 = authService.getAuthToken("jantje96", "1234").getAuthToken();
+        tokenAccount2 = authService.getAuthToken("piet1", "1234").getAuthToken();
 
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (0d));
@@ -226,7 +226,8 @@ public class TransactionServiceTest {
     public void transferMoney() throws Exception {
         transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
 
-        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen", 200d, "Geld");
+        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+                200d, "Geld");
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (0d));
         assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
@@ -237,7 +238,8 @@ public class TransactionServiceTest {
     public void transferMoneyNotAuthorized() throws Exception {
         transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
 
-        transactionService.transferMoney(tokenAccount2, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen", 200d, "Geld");
+        transactionService.transferMoney(tokenAccount2, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+                200d, "Geld");
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (200d));
         assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
@@ -248,7 +250,8 @@ public class TransactionServiceTest {
     public void transferMoneyUnauthorizedSourceIBAN() throws Exception {
         transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
 
-        transactionService.transferMoney(tokenAccount1, account2.getiBAN(), account2.getiBAN(), "Piet Pietersen", 200d, "Geld");
+        transactionService.transferMoney(tokenAccount1, account2.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+                200d, "Geld");
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (200d));
         assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
@@ -268,7 +271,8 @@ public class TransactionServiceTest {
 
     @Test(expected = InvalidParamValueError.class)
     public void transferMoneyNegativeBalance() throws Exception {
-        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen", -200d, "Geld");
+        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+                -200d, "Geld");
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (200d));
         assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
@@ -279,7 +283,8 @@ public class TransactionServiceTest {
     public void transferMoneyNotEnoughBalance() throws Exception {
         transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
 
-        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen", 201d, "Geld");
+        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+                201d, "Geld");
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (200d));
         assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo

@@ -23,4 +23,12 @@ public class NewCardBean {
     public String getPinCode() {
         return pinCode;
     }
+
+    public void setPinCard(int pinCard) {
+        this.pinCard = pinCard;
+    }
+
+    public void setPinCode(int pinCode) {
+        this.pinCode = pinCode;
+    }
 }
