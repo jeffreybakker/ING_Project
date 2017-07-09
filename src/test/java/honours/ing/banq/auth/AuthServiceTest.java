@@ -6,14 +6,12 @@ import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.customer.Customer;
-import honours.ing.banq.transaction.TransactionService;
 import honours.ing.banq.util.IBANUtil;
 import honours.ing.banq.util.StringUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -22,9 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.*;
 
@@ -55,12 +50,12 @@ public class AuthServiceTest {
 
         NewAccountBean account = accountService.openAccount(
                 "University", "of Twente", "UT",
-                Calendar.getInstance().getTime(), StringUtil.generate(10),
+                Calendar.getInstance().getTime().toString(), StringUtil.generate(10),
                 "Universiteitsstraat 1, Enschede", "06-12345678",
                 StringUtil.generate(10), username, password);
 
         accountInfo = new AccountInfo(account, username, password);
-        accountInfo.token = service.getAuthToken(username, password);
+        accountInfo.token = service.getAuthToken(username, password).getAuthToken();
     }
 
     @After
@@ -70,7 +65,7 @@ public class AuthServiceTest {
 
     @Test
     public void getAuthToken() throws Exception {
-        String token = service.getAuthToken(accountInfo.username, accountInfo.password);
+        String token = service.getAuthToken(accountInfo.username, accountInfo.password).getAuthToken();
         accountInfo.token = token;
 
         assertNotNull(token);
@@ -82,7 +77,8 @@ public class AuthServiceTest {
         try {
             service.getAuthToken("", accountInfo.password);
             fail();
-        } catch (AuthenticationError ignored) { }
+        } catch (AuthenticationError ignored) {
+        }
     }
 
     @Test
@@ -90,7 +86,8 @@ public class AuthServiceTest {
         try {
             service.getAuthToken(accountInfo.username, "");
             fail();
-        } catch (AuthenticationError ignored) { }
+        } catch (AuthenticationError ignored) {
+        }
     }
 
     @Test
@@ -98,12 +95,13 @@ public class AuthServiceTest {
         try {
             service.getAuthToken("", "");
             fail();
-        } catch (AuthenticationError ignored) { }
+        } catch (AuthenticationError ignored) {
+        }
     }
 
     @Test
     public void getAuthorizedCustomer() throws Exception {
-        String token = service.getAuthToken(accountInfo.username, accountInfo.password);
+        String token = service.getAuthToken(accountInfo.username, accountInfo.password).getAuthToken();
 
         assertNotNull(token);
         assertTrue(token.length() > 0);
@@ -118,7 +116,8 @@ public class AuthServiceTest {
         try {
             service.getAuthorizedCustomer(null);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
     }
 
     @Test
@@ -126,7 +125,8 @@ public class AuthServiceTest {
         try {
             service.getAuthorizedCustomer("");
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
     }
 
     @Test
@@ -134,7 +134,8 @@ public class AuthServiceTest {
         try {
             service.getAuthorizedCustomer("invalidToken");
             fail();
-        } catch (NotAuthorizedError ignored) { }
+        } catch (NotAuthorizedError ignored) {
+        }
     }
 
     @Test
@@ -150,17 +151,20 @@ public class AuthServiceTest {
         try {
             service.getAuthorizedAccount(null, accountInfo.cardNumber, accountInfo.pin);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
 
         try {
             service.getAuthorizedAccount("", accountInfo.cardNumber, accountInfo.pin);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
 
         try {
             service.getAuthorizedAccount("NL45INGB0705001903", accountInfo.cardNumber, accountInfo.pin);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
     }
 
     @Test
@@ -168,17 +172,20 @@ public class AuthServiceTest {
         try {
             service.getAuthorizedAccount(accountInfo.iBan, null, accountInfo.pin);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
 
         try {
             service.getAuthorizedAccount(accountInfo.iBan, "", accountInfo.pin);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
 
         try {
             service.getAuthorizedAccount(accountInfo.iBan, "-1", accountInfo.pin);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
     }
 
     @Test
@@ -186,12 +193,14 @@ public class AuthServiceTest {
         try {
             service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, null);
             fail();
-        } catch (InvalidParamValueError ignored) { }
+        } catch (InvalidParamValueError ignored) {
+        }
 
         try {
             service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, "");
             fail();
-        } catch (InvalidPINError ignored) { }
+        } catch (InvalidPINError ignored) {
+        }
     }
 
 }
