@@ -4,8 +4,6 @@ import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Represents a customer as a class and contains all the data that we store about a single customer.
@@ -64,7 +62,7 @@ public class Customer {
     }
 
     public String getName() {
-        return name;
+        return name + " " + surname;
     }
 
     public String getSurname() {

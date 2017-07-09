@@ -63,6 +63,7 @@ public class AccessServiceImpl implements AccessService {
         }
 
         account.addHolder(holder);
+        accountRepository.save(account);
         Card card = new Card(holder, account, CardUtil.generateCardNumber(cardRepository));
         cardRepository.save(card);
 
@@ -92,6 +93,7 @@ public class AccessServiceImpl implements AccessService {
         }
 
         account.removeHolder(holder);
+        accountRepository.save(account);
         Card card = cardRepository.findByAccountAndHolder(account, holder);
         cardRepository.delete(card);
     }
