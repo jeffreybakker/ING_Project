@@ -4,21 +4,14 @@ import honours.ing.banq.BoilerplateTest;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.access.AccessService;
 import honours.ing.banq.auth.NotAuthorizedError;
-import honours.ing.banq.config.TestConfiguration;
 import honours.ing.banq.info.bean.BalanceBean;
 import honours.ing.banq.info.bean.UserAccessBean;
 import honours.ing.banq.transaction.Transaction;
 import honours.ing.banq.transaction.TransactionService;
 import honours.ing.banq.util.IBANUtil;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -28,11 +21,6 @@ import static org.junit.Assert.assertThat;
  * @author Kevin Witlox
  * @since 8-7-2017.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
-@Import(TestConfiguration.class)
-@Transactional
-@ActiveProfiles("test")
 public class InfoServiceTest extends BoilerplateTest {
 
     @Autowired
