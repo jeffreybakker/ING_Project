@@ -7,6 +7,7 @@ import honours.ing.banq.config.TestConfiguration;
 import honours.ing.banq.info.InfoService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kevin Witlox
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @Import(TestConfiguration.class)
