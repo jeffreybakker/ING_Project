@@ -84,6 +84,10 @@ public class BankAccountServiceImpl implements BankAccountService {
         long accountNumber = IBANUtil.getAccountNumber(iBAN);
         BankAccount account = repository.findOne((int) accountNumber);
 
+        if (account == null) {
+            throw new InvalidParamValueError("Bank account does not exist");
+        }
+
         if (!account.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
         }

@@ -1,7 +1,10 @@
 package honours.ing.banq.account;
 
+import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.auth.AuthService;
+import honours.ing.banq.bean.AccountInfo;
+import honours.ing.banq.util.IBANUtil;
 import honours.ing.banq.util.StringUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -39,6 +42,8 @@ public class BankAccountServiceTest {
     private String username;
     private String password;
     private String token;
+    private String ssn;
+    private String email;
 
     private Queue<String> accounts;
 
@@ -46,19 +51,21 @@ public class BankAccountServiceTest {
     public void setUp() throws Exception {
         username = StringUtil.generate(10);
         password = StringUtil.generate(10);
+        ssn = StringUtil.generate(10);
+        email = StringUtil.generate(10);
 
         accounts = new ArrayBlockingQueue<>(10, true);
 
         // First account
         NewAccountBean account = service.openAccount(
                 "University", "of Twente", "UT",
-                Calendar.getInstance().getTime().toString(), StringUtil.generate(10),
+                "1996-1-1", ssn,
                 "Universiteitsstraat 1, Enschede", "06-12345678",
                 StringUtil.generate(10), username, password);
         accounts.add(account.getiBAN());
 
         // Get the auth token
-        authService.getAuthToken(username, password);
+        token = authService.getAuthToken(username, password).getAuthToken();
 
         // And a few more
         for (int i = 0; i < 4; i++) {
@@ -80,20 +87,63 @@ public class BankAccountServiceTest {
 
         username = StringUtil.generate(10);
         password = StringUtil.generate(10);
+        ssn = StringUtil.generate(10);
+        email = StringUtil.generate(10);
 
         NewAccountBean account = service.openAccount(
                 "University", "of Twente", "UT",
-                Calendar.getInstance().getTime().toString(), StringUtil.generate(10),
+                "1996-1-1", StringUtil.generate(10),
                 "Universiteitsstraat 1, Enschede", "06-12345678",
-                StringUtil.generate(10), username, password);
+                email, username, password);
+        accounts.add(account.getiBAN());
+
+        // Get the auth token
+        token = authService.getAuthToken(username, password).getAuthToken();
+    }
+
+    @Test(expected = InvalidParamValueError.class)
+    public void openAccountNonUniqueSSN() throws Exception {
+        service.openAccount(
+                "University", "of Twente", "UT",
+                "1996-1-1", ssn,
+                "Universiteitsstraat 1, Enschede", "06-12345678",
+                StringUtil.generate(10), StringUtil.generate(10), StringUtil.generate(10));
+    }
+
+    @Test
+    public void openAccountNonUniqueEmail() throws Exception {
+        service.openAccount(
+                "University", "of Twente", "UT",
+                "1996-1-1", StringUtil.generate(10),
+                "Universiteitsstraat 1, Enschede", "06-12345678",
+                email, StringUtil.generate(10), password);
+    }
+
+    @Test
+    public void openAccountNonUniqueUsername() throws Exception {
+        service.openAccount(
+                "University", "of Twente", "UT",
+                "1996-1-1", StringUtil.generate(10),
+                "Universiteitsstraat 1, Enschede", "06-12345678",
+                StringUtil.generate(10), StringUtil.generate(10), StringUtil.generate(10));
     }
 
     @Test
     public void openAdditionalAccount() throws Exception {
+        NewAccountBean account = service.openAdditionalAccount(token);
+        accounts.add(account.getiBAN());
     }
 
     @Test
     public void closeAccount() throws Exception {
+        if (!accounts.isEmpty()) {
+            service.closeAccount(token, accounts.poll());
+        }
+    }
+
+    @Test(expected = InvalidParamValueError.class)
+    public void closeNonExistingAccount() throws Exception {
+        service.closeAccount(token, IBANUtil.generateIBAN(123456789));
     }
 
 }

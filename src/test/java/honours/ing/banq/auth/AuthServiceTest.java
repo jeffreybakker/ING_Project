@@ -50,7 +50,7 @@ public class AuthServiceTest {
 
         NewAccountBean account = accountService.openAccount(
                 "University", "of Twente", "UT",
-                Calendar.getInstance().getTime().toString(), StringUtil.generate(10),
+                "1996-1-1", StringUtil.generate(10),
                 "Universiteitsstraat 1, Enschede", "06-12345678",
                 StringUtil.generate(10), username, password);
 
