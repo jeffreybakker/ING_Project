@@ -46,7 +46,7 @@ public class BankAccountServiceImpl implements BankAccountService {
             address, String telephoneNumber, String email, String username, String password) throws
             InvalidParamValueError {
         Customer customer = new Customer(name, surname, initials, dob, ssn, address, telephoneNumber, email,
-                username, password);
+                                         username, password);
         try {
             customerRepository.save(customer);
         } catch (Exception e) {

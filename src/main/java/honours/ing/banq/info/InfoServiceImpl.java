@@ -100,16 +100,14 @@ public class InfoServiceImpl implements InfoService {
         }
 
         List<BankAccount> accounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
-        List<BankAccount> primaryAccounts = bankAccountRepository.findBankAccountsByPrimaryHolder(customer);
+        BankAccount primaryAccount = bankAccountRepository.findBankAccountsByPrimaryHolder(customer);
 
         List<UserAccessBean> userAccessBeanList = new ArrayList<>();
         for (BankAccount account : accounts) {
             userAccessBeanList.add(new UserAccessBean(account, account.getPrimaryHolder()));
         }
 
-        for (BankAccount account : primaryAccounts) {
-            userAccessBeanList.add(new UserAccessBean(account, account.getPrimaryHolder()));
-        }
+            userAccessBeanList.add(new UserAccessBean(primaryAccount, primaryAccount.getPrimaryHolder()));
 
         return userAccessBeanList;
     }
