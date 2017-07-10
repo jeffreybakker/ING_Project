@@ -1,8 +1,8 @@
 package honours.ing.banq;
 
 import honours.ing.banq.account.BankAccountService;
-import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.auth.AuthService;
+import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.config.TestConfiguration;
 import honours.ing.banq.info.InfoService;
 import org.junit.After;
@@ -40,30 +40,29 @@ public class BoilerplateTest {
     protected InfoService infoService;
 
     // Fields
-    protected NewAccountBean account1, account2;
-    protected String tokenAccount1, tokenAccount2;
+    protected AccountInfo account1, account2;
 
     @Before
     public void setUp() throws Exception {
-        account1 = bankAccountService.openAccount("Jan", "Jansen", "J.", "1996-1-1",
+        account1 = new AccountInfo(bankAccountService.openAccount("Jan", "Jansen", "J.", "1996-1-1",
                 "1234567890", "Klaverstraat 1", "0612345678", "janjansen@gmail.com", "jantje96",
-                "1234");
-        account2 = bankAccountService.openAccount("Piet", "Pietersen", "p.p", "1998-8-8",
-                "012345789", "Huisstraat 1", "0607080910", "piet@gmail.com", "piet1", "1234");
+                "1234"), "jantje96", "1234");
+        account2 = new AccountInfo(bankAccountService.openAccount("Piet", "Pietersen", "p.p", "1998-8-8",
+                "012345789", "Huisstraat 1", "0607080910", "piet@gmail.com", "piet1", "1234"), "piet1", "1234");
 
-        tokenAccount1 = authService.getAuthToken("jantje96", "1234").getAuthToken();
-        tokenAccount2 = authService.getAuthToken("piet1", "1234").getAuthToken();
+        account1.token = authService.getAuthToken("jantje96", "1234").getAuthToken();
+        account2.token = authService.getAuthToken("piet1", "1234").getAuthToken();
 
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @After
     public void tearDown() throws Exception {
-        bankAccountService.closeAccount(tokenAccount1, account1.getiBAN());
-        bankAccountService.closeAccount(tokenAccount2, account2.getiBAN());
+        bankAccountService.closeAccount(account1.token, account1.iBan);
+        bankAccountService.closeAccount(account2.token, account2.iBan);
     }
 
 }

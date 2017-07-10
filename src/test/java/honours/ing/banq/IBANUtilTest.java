@@ -2,12 +2,8 @@ package honours.ing.banq;
 
 import org.junit.Test;
 
-import java.util.Random;
-
 import static honours.ing.banq.util.IBANUtil.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by jeffrey on 31-5-17.

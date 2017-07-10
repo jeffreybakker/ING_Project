@@ -21,224 +21,222 @@ public class TransactionServiceTest extends BoilerplateTest {
 
     @Test
     public void depositIntoAccount() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard
-                (), account1.getPinCode(), 200.0d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200.0d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
     }
 
     @Test(expected = InvalidPINError.class)
     public void depositIntoAccountWrongPinCode() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard
-                (), "9999", 200.0d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, "9999", 200.0d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
     public void depositIntoAccountNegativeAmount() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard
-                (), account1.getPinCode(), -200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, -200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
-    public void depositIntoAccountWrongIBAN() throws Exception {
-        transactionService.depositIntoAccount(account2.getiBAN(), account1.getPinCard
-                (), account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+    public void depositIntoAccountWrongiBan() throws Exception {
+        transactionService.depositIntoAccount(account2.iBan, account1.cardNumber, account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
-    public void depositIntoAccountWrongIBANType() throws Exception {
-        transactionService.depositIntoAccount("null", account1.getPinCard(), account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+    public void depositIntoAccountWrongiBanType() throws Exception {
+        transactionService.depositIntoAccount("null", account1.cardNumber, account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
     public void depositIntoAccountWrongPinCard() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), "0", account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.depositIntoAccount(account1.iBan, "0", account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
     }
 
 
     @Test
     public void payFromAccount() throws Exception {
-        // Make sure source iban has balance
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(),
-                account1.getPinCode(), 200d);
+        // Make sure source iBan has balance
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber,
+                account1.pin, 200d);
 
         // Transaction
-        transactionService.payFromAccount(account1.getiBAN(), account2.getiBAN(),
-                account1.getPinCard(), account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.payFromAccount(account1.iBan, account2.iBan,
+                account1.cardNumber, account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (200d));
     }
 
     @Test(expected = InvalidPINError.class)
     public void payFromAccountWrongPinCode() throws Exception {
-        // Make sure source iban has balance
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(),
-                account1.getPinCode(), 200d);
+        // Make sure source iBan has balance
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber,
+                account1.pin, 200d);
 
         // Transaction
-        transactionService.payFromAccount(account1.getiBAN(), account2.getiBAN(),
-                account1.getPinCard(), "-1", 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.payFromAccount(account1.iBan, account2.iBan,
+                account1.cardNumber, "-1", 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
     public void payFromAccountWrongPinCard() throws Exception {
-        // Make sure source iban has balance
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(),
-                account1.getPinCode(), 200d);
+        // Make sure source iBan has balance
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber,
+                account1.pin, 200d);
 
         // Transaction
-        transactionService.payFromAccount(account1.getiBAN(), account2.getiBAN(),
-                "-1", account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.payFromAccount(account1.iBan, account2.iBan,
+                "-1", account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
-    public void payFromAccountWrongSourceIBAN() throws Exception {
-        // Make sure source iban has balance
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(),
-                account1.getPinCode(), 200d);
+    public void payFromAccountWrongSourceiBan() throws Exception {
+        // Make sure source iBan has balance
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber,
+                account1.pin, 200d);
 
         // Transaction
-        transactionService.payFromAccount("null", account2.getiBAN(),
-                account1.getPinCard(), account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.payFromAccount("null", account2.iBan,
+                account1.cardNumber, account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
     }
 
     @Test(expected = InvalidParamValueError.class)
-    public void payFromAccountWrongTargetIBAN() throws Exception {
-        // Make sure source iban has balance
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(),
-                account1.getPinCode(), 200d);
+    public void payFromAccountWrongTargetiBan() throws Exception {
+        // Make sure source iBan has balance
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber,
+                account1.pin, 200d);
 
         // Transaction
-        transactionService.payFromAccount(account1.getiBAN(), "null",
-                account1.getPinCard(), account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.payFromAccount(account1.iBan, "null",
+                account1.cardNumber, account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
     public void payFromAccountNotEnoughBalance() throws Exception {
-        // Make sure source iban has balance
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(),
-                account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        // Make sure source iBan has balance
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber,
+                account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
 
         // Transaction
-        transactionService.payFromAccount(account1.getiBAN(), account2.getiBAN(),
-                account1.getPinCard(), account1.getPinCode(), 201d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.payFromAccount(account1.iBan, account2.iBan,
+                account1.cardNumber, account1.pin, 201d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
     public void payFromAccountNegativeAmount() throws Exception {
-        // Make sure source iban has balance
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(),
-                account1.getPinCode(), 200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        // Make sure source iBan has balance
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber,
+                account1.pin, 200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
 
         // Transaction
-        transactionService.payFromAccount(account1.getiBAN(), account2.getiBAN(),
-                account1.getPinCard(), account1.getPinCode(), -200d);
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        transactionService.payFromAccount(account1.iBan, account2.iBan,
+                account1.cardNumber, account1.pin, -200d);
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test
     public void transferMoney() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200d);
 
-        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+        transactionService.transferMoney(account1.token, account1.iBan, account2.iBan, "Piet Pietersen",
                 200d, "Geld");
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (200d));
     }
 
     @Test(expected = NotAuthorizedError.class)
     public void transferMoneyNotAuthorized() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200d);
 
-        transactionService.transferMoney(tokenAccount2, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+        transactionService.transferMoney(account2.token, account1.iBan, account2.iBan, "Piet Pietersen",
                 200d, "Geld");
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = NotAuthorizedError.class)
-    public void transferMoneyUnauthorizedSourceIBAN() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
+    public void transferMoneyUnauthorizedSourceiBan() throws Exception {
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200d);
 
-        transactionService.transferMoney(tokenAccount1, account2.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+        transactionService.transferMoney(account1.token, account2.iBan, account2.iBan, "Piet Pietersen",
                 200d, "Geld");
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
-    public void transferMoneyNonExistantTargetIBAN() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
+    public void transferMoneyNonExistantTargetiBan() throws Exception
 
-        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), "null", "Piet Pietersen", 200d, "Geld");
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+    {
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200d);
+
+        transactionService.transferMoney(account1.token, account1.iBan, "null", "Piet Pietersen", 200d, "Geld");
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
     public void transferMoneyNegativeBalance() throws Exception {
-        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+        transactionService.transferMoney(account1.token, account1.iBan, account2.iBan, "Piet Pietersen",
                 -200d, "Geld");
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
     public void transferMoneyNotEnoughBalance() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), account1.getPinCode(), 200d);
+        transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200d);
 
-        transactionService.transferMoney(tokenAccount1, account1.getiBAN(), account2.getiBAN(), "Piet Pietersen",
+        transactionService.transferMoney(account1.token, account1.iBan, account2.iBan, "Piet Pietersen",
                 201d, "Geld");
-        assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (200d));
-        assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
     }
 
