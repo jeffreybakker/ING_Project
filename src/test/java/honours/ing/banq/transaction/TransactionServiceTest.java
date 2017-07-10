@@ -77,8 +77,7 @@ public class TransactionServiceTest {
 
     @Test(expected = InvalidPINError.class)
     public void depositIntoAccountWrongPinCode() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard
-                (), 9999, 200.0d);
+        transactionService.depositIntoAccount(account1.getiBAN(), account1.getPinCard(), "9999", 200.0d);
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (0d));
     }
@@ -109,7 +108,7 @@ public class TransactionServiceTest {
 
     @Test(expected = InvalidParamValueError.class)
     public void depositIntoAccountWrongPinCard() throws Exception {
-        transactionService.depositIntoAccount(account1.getiBAN(), 0, account1.getPinCode(), 200d);
+        transactionService.depositIntoAccount(account1.getiBAN(), "0", account1.getPinCode(), 200d);
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (0d));
     }
@@ -138,7 +137,7 @@ public class TransactionServiceTest {
 
         // Transaction
         transactionService.payFromAccount(account1.getiBAN(), account2.getiBAN(),
-                account1.getPinCard(), -1, 200d);
+                account1.getPinCard(), "-1", 200d);
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (200d));
         assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
@@ -153,7 +152,7 @@ public class TransactionServiceTest {
 
         // Transaction
         transactionService.payFromAccount(account1.getiBAN(), account2.getiBAN(),
-                -1, account1.getPinCode(), 200d);
+                "-1", account1.getPinCode(), 200d);
         assertThat(infoService.getBalance(tokenAccount1, account1.getiBAN()).getBalance(), equalTo
                 (200d));
         assertThat(infoService.getBalance(tokenAccount2, account2.getiBAN()).getBalance(), equalTo
