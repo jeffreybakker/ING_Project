@@ -46,7 +46,7 @@ public class BankAccountServiceImpl implements BankAccountService {
             address, String telephoneNumber, String email, String username, String password) throws
             InvalidParamValueError {
         Customer customer = new Customer(name, surname, initials, dob, ssn, address, telephoneNumber, email,
-                username, password);
+                                         username, password);
         try {
             customerRepository.save(customer);
         } catch (Exception e) {
@@ -83,6 +83,10 @@ public class BankAccountServiceImpl implements BankAccountService {
 
         long accountNumber = IBANUtil.getAccountNumber(iBAN);
         BankAccount account = repository.findOne((int) accountNumber);
+
+        if (account == null) {
+            throw new InvalidParamValueError("Bank account does not exist");
+        }
 
         if (!account.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
