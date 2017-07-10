@@ -1,6 +1,7 @@
 package honours.ing.banq.auth;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
+import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.card.Card;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -60,7 +62,9 @@ public class AuthServiceImpl implements AuthService {
             try {
                 auth = new Authentication(customer, genToken(), exp.getTime());
                 repository.save(auth);
-            } catch (Exception ignored) { }
+            } catch (Exception e) {
+                auth = null;
+            }
         }
 
         return new AuthToken(auth.getToken());
@@ -68,8 +72,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Customer getAuthorizedCustomer(String token) throws NotAuthorizedError {
+        if (token == null || token.length() == 0) {
+            throw new InvalidParamValueError("Token cannot be null/empty");
+        }
+
         Authentication auth = repository.findByToken(token);
-        if (auth.hasExpired()) {
+        if (auth == null || auth.hasExpired()) {
             throw new NotAuthorizedError();
         }
 
@@ -77,11 +85,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public BankAccount getAuthorizedAccount(String iBAN, int pinCard, int pinCode) throws InvalidPINError {
+    public BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError {
+        if (iBAN == null || iBAN.length() <= 8 || pinCard == null || pinCode == null) {
+            throw new InvalidParamValueError("One of the parameters is null or the IBAN is not long enough");
+        }
         BankAccount account = accountRepository.findOne((int) IBANUtil.getAccountNumber(iBAN));
-        Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
+        if (account == null) {
+            throw new InvalidParamValueError("Account with the given IBAN does not exist in this system");
+        }
 
-        if (card.getPin() != pinCode) {
+        Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
+        if (card == null) {
+            throw new InvalidParamValueError("Card does not exist");
+        }
+
+        if (!card.getPin().equals(pinCode)) {
             throw new InvalidPINError();
         }
 

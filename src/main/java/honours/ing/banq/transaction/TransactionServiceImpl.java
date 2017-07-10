@@ -44,7 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     private CardRepository cardRepository;
 
     @Override
-    public void depositIntoAccount(String iBAN, Integer pinCard, Integer pinCode, Double amount)
+    public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError {
         if (!IBANUtil.isValidIBAN(iBAN)) {
             throw new InvalidParamValueError("The given IBAN is not valid.");
@@ -80,7 +80,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void payFromAccount(String sourceIBAN, String targetIBAN, Integer pinCard, Integer
+    public void payFromAccount(String sourceIBAN, String targetIBAN, String pinCard, String
             pinCode, Double amount) throws InvalidParamValueError, InvalidPINError {
         if (!IBANUtil.isValidIBAN(sourceIBAN)) {
             throw new InvalidParamValueError("The given source IBAN is not valid.");

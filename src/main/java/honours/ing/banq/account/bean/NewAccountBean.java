@@ -10,8 +10,8 @@ import honours.ing.banq.util.IBANUtil;
 public class NewAccountBean {
 
     private String iBAN;
-    private int pinCard;
-    private int pinCode;
+    private String pinCard;
+    private String pinCode;
 
     public NewAccountBean(Card card) {
         iBAN = IBANUtil.generateIBAN(card.getAccount());
@@ -23,11 +23,11 @@ public class NewAccountBean {
         return iBAN;
     }
 
-    public int getPinCard() {
+    public String getPinCard() {
         return pinCard;
     }
 
-    public int getPinCode() {
+    public String getPinCode() {
         return pinCode;
     }
 }

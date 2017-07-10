@@ -8,27 +8,27 @@ import honours.ing.banq.card.Card;
  */
 public class NewCardBean {
 
-    private int pinCard;
-    private int pinCode;
+    private String pinCard;
+    private String pinCode;
 
     public NewCardBean(Card card) {
         pinCard = card.getCardNumber();
         pinCode = card.getPin();
     }
 
-    public int getPinCard() {
+    public String getPinCard() {
         return pinCard;
     }
 
-    public int getPinCode() {
+    public String getPinCode() {
         return pinCode;
     }
 
-    public void setPinCard(int pinCard) {
+    public void setPinCard(String pinCard) {
         this.pinCard = pinCard;
     }
 
-    public void setPinCode(int pinCode) {
+    public void setPinCode(String pinCode) {
         this.pinCode = pinCode;
     }
 }

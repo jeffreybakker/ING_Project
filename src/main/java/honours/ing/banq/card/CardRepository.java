@@ -13,7 +13,7 @@ public interface CardRepository extends JpaRepository<Card, Integer> {
 
     List<Card> findByAccount(BankAccount account);
     Card findByAccountAndHolder(BankAccount account, Customer holder);
-    Card findByAccountAndCardNumber(BankAccount account, Integer cardNumber);
-    Card findByCardNumber(Integer cardNumber);
+    Card findByAccountAndCardNumber(BankAccount account, String cardNumber);
+    Card findByCardNumber(String cardNumber);
 
 }

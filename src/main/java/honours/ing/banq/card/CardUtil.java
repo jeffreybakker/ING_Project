@@ -9,14 +9,17 @@ public class CardUtil {
 
     private static final String SEED = "SecureRandomSeed";
 
-    public static Integer generateCardNumber(CardRepository repository) {
+    public static String generateCardNumber(CardRepository repository) {
         SecureRandom random = new SecureRandom(SEED.getBytes());
 
         int i = 0;
-        while (i < Integer.MAX_VALUE / 2) {
-            Integer cardNumber = random.nextInt();
-            if (repository.findByCardNumber(cardNumber) == null) {
-                return cardNumber;
+        while (i < 10000) {
+            StringBuilder res = new StringBuilder();
+            for (int j = 0; j < 5; j++) {
+                res.append(random.nextInt(10));
+            }
+            if (repository.findByCardNumber(res.toString()) == null) {
+                return res.toString();
             }
 
             i++;
