@@ -125,10 +125,14 @@ public class InfoServiceImpl implements InfoService {
             throw new NotAuthorizedError();
         }
 
+        // Add all account holders
         List<BankAccountAccessBean> bankAccountAccessBeanList = new ArrayList<>();
         for (Customer holder : bankAccount.getHolders()) {
             bankAccountAccessBeanList.add(new BankAccountAccessBean(holder));
         }
+
+        // Add primary holder
+        bankAccountAccessBeanList.add(new BankAccountAccessBean(customer));
 
         return bankAccountAccessBeanList;
     }
