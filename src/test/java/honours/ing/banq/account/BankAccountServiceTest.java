@@ -13,14 +13,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.Queue;
-import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
-
-import static org.junit.Assert.*;
 
 /**
  * @author jeffrey
@@ -56,7 +52,7 @@ public class BankAccountServiceTest {
         // First account
         NewAccountBean account = service.openAccount(
                 "University", "of Twente", "UT",
-                Calendar.getInstance().getTime(), StringUtil.generate(10),
+                Calendar.getInstance().getTime().toString(), StringUtil.generate(10),
                 "Universiteitsstraat 1, Enschede", "06-12345678",
                 StringUtil.generate(10), username, password);
         accounts.add(account.getiBAN());
@@ -87,7 +83,7 @@ public class BankAccountServiceTest {
 
         NewAccountBean account = service.openAccount(
                 "University", "of Twente", "UT",
-                Calendar.getInstance().getTime(), StringUtil.generate(10),
+                Calendar.getInstance().getTime().toString(), StringUtil.generate(10),
                 "Universiteitsstraat 1, Enschede", "06-12345678",
                 StringUtil.generate(10), username, password);
     }

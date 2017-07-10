@@ -15,7 +15,7 @@ import java.util.List;
  * @author Kevin Witlox
  * @since 4-6-2017
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/transaction")
 public interface TransactionService {
 
     /**

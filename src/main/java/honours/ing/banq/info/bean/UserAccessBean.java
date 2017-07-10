@@ -12,12 +12,27 @@ import honours.ing.banq.util.IBANUtil;
  */
 public class UserAccessBean {
 
-    private String iBAN;
+    private String iBan;
     private String owner;
 
     public UserAccessBean(BankAccount account, Customer customer) {
-        this.iBAN = IBANUtil.generateIBAN(account);
+        this.iBan = IBANUtil.generateIBAN(account);
         this.owner = customer.getName();
     }
 
+    public String getiBan() {
+        return iBan;
+    }
+
+    public void setiBan(String iBan) {
+        this.iBan = iBan;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 }

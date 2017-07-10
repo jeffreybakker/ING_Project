@@ -24,7 +24,7 @@ import java.util.Random;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private static final int TOKEN_LENGTH = 255;
@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public String getAuthToken(String username, String password) throws AuthenticationError {
+    public AuthToken getAuthToken(String username, String password) throws AuthenticationError {
         Customer customer = customerRepository.findByUsernameAndPassword(username, password);
         if (customer == null) {
             throw new AuthenticationError();
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        return auth.getToken();
+        return new AuthToken(auth.getToken());
     }
 
     @Override
