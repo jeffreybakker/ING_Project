@@ -54,6 +54,10 @@ public class AccessServiceImpl implements AccessService {
 
         Customer holder = customerRepository.findByUsername(username);
 
+        if (holder == null) {
+            throw new InvalidParamValueError("The given username does not exist.");
+        }
+
         if (account.getPrimaryHolder().equals(holder)) {
             throw new InvalidParamValueError("You can't provide access to yourself for your own account");
         }
