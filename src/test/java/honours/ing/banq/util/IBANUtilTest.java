@@ -1,4 +1,4 @@
-package honours.ing.banq;
+package honours.ing.banq.util;
 
 import org.junit.Test;
 
