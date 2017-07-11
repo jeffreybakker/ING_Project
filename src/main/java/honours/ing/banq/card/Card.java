@@ -4,6 +4,7 @@ import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
+import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -92,7 +93,7 @@ public class Card {
 
     private static String generatePin() {
         StringBuilder res = new StringBuilder();
-        Random rnd = new Random();
+        Random rnd = new SecureRandom("SecurePinSeed".getBytes());
 
         for (int i = 0; i < 4; i++) {
             res.append(rnd.nextInt(10));
