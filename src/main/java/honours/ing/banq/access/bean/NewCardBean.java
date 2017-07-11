@@ -11,9 +11,13 @@ public class NewCardBean {
     private String pinCard;
     private String pinCode;
 
+    public NewCardBean(String pinCard) {
+        this.pinCard = pinCard;
+    }
+
     public NewCardBean(Card card) {
-        pinCard = card.getCardNumber();
-        pinCode = card.getPin();
+        this.pinCard = card.getCardNumber();
+        this.pinCode = card.getPin();
     }
 
     public String getPinCard() {
