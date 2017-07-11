@@ -33,6 +33,8 @@ public class Card {
     private String pin; // TODO: add hashing
     private Date expirationDate;
 
+    private boolean invalidated;
+
     /**
      * @deprecated empty constructor for spring
      */
@@ -42,12 +44,18 @@ public class Card {
         this.holder = holder;
         this.account = account;
         this.cardNumber = cardNumber;
+        this.invalidated = false;
 
         pin = generatePin();
 
         Calendar expiration = Calendar.getInstance();
         expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
         expirationDate = expiration.getTime();
+    }
+
+    public Card(Customer holder, BankAccount account, String cardNumber, String pin) {
+        this(holder, account, cardNumber);
+        this.pin = pin;
     }
 
     public Integer getId() {
@@ -68,6 +76,14 @@ public class Card {
 
     public String getPin() {
         return pin;
+    }
+
+    public boolean isInvalidated() {
+        return invalidated;
+    }
+
+    public void invalidate() {
+        this.invalidated = true;
     }
 
     public Date getExpirationDate() {
