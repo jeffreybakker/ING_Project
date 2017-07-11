@@ -18,6 +18,9 @@ import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 /**
  * @author Kevin Witlox
  * @since 11-7-2017.
@@ -26,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoJsonRpcServiceImpl
 @Transactional
 public class CardServiceImpl implements CardService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     // Services
     @Autowired
@@ -48,7 +54,7 @@ public class CardServiceImpl implements CardService {
             throw new InvalidParamValueError("The given iBAN does not exist.");
         }
 
-        Card authorizedCard = cardRepository.findByAccountAndHolder(bankAccount, customer);
+        Card authorizedCard = cardRepository.findByAccountAndHolderAndAndInvalidatedIsFalse(bankAccount, customer);
         Card requestedCard = cardRepository.findByCardNumber(cardNumber);
 
         if (!authorizedCard.equals(requestedCard)) {
@@ -57,14 +63,14 @@ public class CardServiceImpl implements CardService {
 
         // Invalidate previous card
         authorizedCard.invalidate();
-        cardRepository.saveAndFlush(authorizedCard);
+        cardRepository.save(authorizedCard);
 
         // Create new Card
         Card newCard;
         if (newPin) {
-            newCard = new Card(customer, bankAccount, cardNumber);
+            newCard = new Card(customer, bankAccount, CardUtil.generateCardNumber(cardRepository));
         } else {
-            newCard = new Card(customer, bankAccount, cardNumber, authorizedCard.getPin());
+            newCard = new Card(customer, bankAccount, CardUtil.generateCardNumber(cardRepository), authorizedCard.getPin());
         }
         cardRepository.save(newCard);
 
