@@ -16,6 +16,6 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Intege
     @Query("SELECT account FROM BankAccount account JOIN account.holders holder WHERE holder.id = ?1")
     List<BankAccount> findBankAccountsByHolders(int customer);
 
-    BankAccount findBankAccountsByPrimaryHolder(Customer customer);
+    BankAccount findBankAccountByPrimaryHolder(Customer customer);
 
 }

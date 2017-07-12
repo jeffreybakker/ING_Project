@@ -3,6 +3,7 @@ package honours.ing.banq.account;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
+import honours.ing.banq.auth.AuthRepository;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.AuthenticationError;
 import honours.ing.banq.auth.NotAuthorizedError;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class BankAccountServiceImpl implements BankAccountService {
 
     // Services
@@ -41,7 +42,12 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @Transactional
+    @Autowired
+    private BankAccountRepository bankAccountRepository;
+
+    @Autowired
+    private AuthRepository authRepository;
+
     @Override
     public NewAccountBean openAccount(String name, String surname, String initials, String dob, String ssn, String
             address, String telephoneNumber, String email, String username, String password) throws
@@ -70,7 +76,6 @@ public class BankAccountServiceImpl implements BankAccountService {
         return new NewAccountBean(card);
     }
 
-    @Transactional
     @Override
     public NewAccountBean openAdditionalAccount(String authToken) throws NotAuthorizedError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
@@ -84,7 +89,6 @@ public class BankAccountServiceImpl implements BankAccountService {
         return new NewAccountBean(card);
     }
 
-    @Transactional
     @Override
     public void closeAccount(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
@@ -100,9 +104,20 @@ public class BankAccountServiceImpl implements BankAccountService {
             throw new NotAuthorizedError();
         }
 
+        // Delete cards
         List<Card> cards = cardRepository.findByAccount(account);
         cardRepository.delete(cards);
 
+        // Delete BankAccount
         repository.delete(account);
+
+        // Delete Customer
+        BankAccount primaryAccount = bankAccountRepository.findBankAccountByPrimaryHolder(customer);
+        List<BankAccount> heldAccounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
+        if (primaryAccount == null && (heldAccounts == null || heldAccounts.isEmpty())) {
+            authRepository.deleteAllByCustomer(customer);
+            customerRepository.delete(customer);
+        }
     }
+
 }

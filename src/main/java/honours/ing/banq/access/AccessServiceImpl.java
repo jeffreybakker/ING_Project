@@ -48,6 +48,10 @@ public class AccessServiceImpl implements AccessService {
         long accountNumber = IBANUtil.getAccountNumber(iBAN);
         BankAccount account = accountRepository.findOne((int) accountNumber);
 
+        if (account == null) {
+            throw new InvalidParamValueError("The given iBAN does not exist.");
+        }
+
         if (!account.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
         }

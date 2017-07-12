@@ -87,7 +87,7 @@ public class InfoServiceImpl implements InfoService {
         List<Transaction> list = transactionRepository.findBySourceOrDestinationOrderByDateDesc(iBAN, iBAN);
         return list.size() > nrOfTransactions ? list.subList(0, nrOfTransactions) : transactionRepository
                 .findBySourceOrDestinationOrderByDateDesc(iBAN,
-                iBAN);
+                                                          iBAN);
     }
 
     @Transactional
@@ -100,14 +100,16 @@ public class InfoServiceImpl implements InfoService {
         }
 
         List<BankAccount> accounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
-        BankAccount primaryAccount = bankAccountRepository.findBankAccountsByPrimaryHolder(customer);
+        BankAccount primaryAccount = bankAccountRepository.findBankAccountByPrimaryHolder(customer);
 
         List<UserAccessBean> userAccessBeanList = new ArrayList<>();
         for (BankAccount account : accounts) {
             userAccessBeanList.add(new UserAccessBean(account, account.getPrimaryHolder()));
         }
 
+        if (primaryAccount != null) {
             userAccessBeanList.add(new UserAccessBean(primaryAccount, primaryAccount.getPrimaryHolder()));
+        }
 
         return userAccessBeanList;
     }
