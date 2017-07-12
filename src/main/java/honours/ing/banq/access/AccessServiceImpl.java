@@ -68,7 +68,7 @@ public class AccessServiceImpl implements AccessService {
 
         account.addHolder(holder);
         accountRepository.save(account);
-        Card card = new Card(holder, account, CardUtil.generateCardNumber(cardRepository));
+        Card card = new Card(authToken, holder, account, CardUtil.generateCardNumber(cardRepository));
         cardRepository.save(card);
 
         return new NewCardBean(card);
@@ -102,7 +102,7 @@ public class AccessServiceImpl implements AccessService {
 
         account.removeHolder(holder);
         accountRepository.save(account);
-        Card card = cardRepository.findByAccountAndHolder(account, holder);
+        Card card = cardRepository.findByAccountAndHolderAndAndInvalidatedIsFalse(account, holder);
         cardRepository.delete(card);
     }
 

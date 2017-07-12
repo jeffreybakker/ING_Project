@@ -3,8 +3,10 @@ package honours.ing.banq;
 import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.bean.AccountInfo;
+import honours.ing.banq.card.CardService;
 import honours.ing.banq.config.TestConfiguration;
 import honours.ing.banq.info.InfoService;
+import honours.ing.banq.transaction.TransactionService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -33,7 +35,13 @@ public class BoilerplateTest {
 
     // Services
     @Autowired
+    protected CardService cardService;
+
+    @Autowired
     protected BankAccountService bankAccountService;
+
+    @Autowired
+    protected TransactionService transactionService;
 
     @Autowired
     protected AuthService authService;

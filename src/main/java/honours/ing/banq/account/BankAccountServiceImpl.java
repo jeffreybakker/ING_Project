@@ -4,6 +4,7 @@ import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.auth.AuthService;
+import honours.ing.banq.auth.AuthenticationError;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
@@ -56,7 +57,14 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount account = new BankAccount(customer);
         repository.save(account);
 
-        Card card = new Card(customer, account, CardUtil.generateCardNumber(cardRepository));
+        Card card = null;
+        try {
+            card = new Card(auth.getAuthToken(username, password).getAuthToken(), customer, account, CardUtil
+                    .generateCardNumber(cardRepository));
+        } catch (AuthenticationError e) {
+            // Should be impossible
+            e.printStackTrace();
+        }
         cardRepository.save(card);
 
         return new NewAccountBean(card);
@@ -70,7 +78,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount account = new BankAccount(customer);
         repository.save(account);
 
-        Card card = new Card(customer, account, CardUtil.generateCardNumber(cardRepository));
+        Card card = new Card(authToken, customer, account, CardUtil.generateCardNumber(cardRepository));
         cardRepository.save(card);
 
         return new NewAccountBean(card);
