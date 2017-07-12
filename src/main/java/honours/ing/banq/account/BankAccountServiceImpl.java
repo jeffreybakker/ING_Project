@@ -3,6 +3,7 @@ package honours.ing.banq.account;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
+import honours.ing.banq.auth.AuthRepository;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.AuthenticationError;
 import honours.ing.banq.auth.NotAuthorizedError;
@@ -40,6 +41,12 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private BankAccountRepository bankAccountRepository;
+
+    @Autowired
+    private AuthRepository authRepository;
 
     @Transactional
     @Override
@@ -100,9 +107,22 @@ public class BankAccountServiceImpl implements BankAccountService {
             throw new NotAuthorizedError();
         }
 
+        // Delete authorization
+        authRepository.deleteAllByCustomer(customer);
+
+        // Delete cards
         List<Card> cards = cardRepository.findByAccount(account);
         cardRepository.delete(cards);
 
+        // Delete BankAccount
         repository.delete(account);
+
+        // Delete Customer
+        BankAccount primaryAccount = bankAccountRepository.findBankAccountByPrimaryHolder(customer);
+        List<BankAccount> heldAccounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
+        if (primaryAccount == null && (heldAccounts == null || heldAccounts.isEmpty())) {
+            customerRepository.delete(customer);
+        }
     }
+
 }
