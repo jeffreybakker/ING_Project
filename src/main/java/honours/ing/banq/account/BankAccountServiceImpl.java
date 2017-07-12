@@ -104,9 +104,6 @@ public class BankAccountServiceImpl implements BankAccountService {
             throw new NotAuthorizedError();
         }
 
-        // Delete authorization
-        authRepository.deleteAllByCustomer(customer);
-
         // Delete cards
         List<Card> cards = cardRepository.findByAccount(account);
         cardRepository.delete(cards);
@@ -118,6 +115,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount primaryAccount = bankAccountRepository.findBankAccountByPrimaryHolder(customer);
         List<BankAccount> heldAccounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
         if (primaryAccount == null && (heldAccounts == null || heldAccounts.isEmpty())) {
+            authRepository.deleteAllByCustomer(customer);
             customerRepository.delete(customer);
         }
     }
