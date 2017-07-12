@@ -57,9 +57,9 @@ public class CardServiceImpl implements CardService {
         // Create new Card
         Card newCard;
         if (newPin) {
-            newCard = new Card(customer, bankAccount, CardUtil.generateCardNumber(cardRepository));
+            newCard = new Card(token, customer, bankAccount, CardUtil.generateCardNumber(cardRepository));
         } else {
-            newCard = new Card(customer, bankAccount, CardUtil.generateCardNumber(cardRepository), authorizedCard
+            newCard = new Card(token, customer, bankAccount, CardUtil.generateCardNumber(cardRepository), authorizedCard
                     .getPin());
         }
         cardRepository.save(newCard);

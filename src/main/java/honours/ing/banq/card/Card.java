@@ -41,21 +41,21 @@ public class Card {
      */
     public Card() { }
 
-    public Card(Customer holder, BankAccount account, String cardNumber) {
+    public Card(String token, Customer holder, BankAccount account, String cardNumber) {
         this.holder = holder;
         this.account = account;
         this.cardNumber = cardNumber;
         this.invalidated = false;
 
-        pin = generatePin();
+        pin = generatePin(token);
 
         Calendar expiration = Calendar.getInstance();
         expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
         expirationDate = expiration.getTime();
     }
 
-    public Card(Customer holder, BankAccount account, String cardNumber, String pin) {
-        this(holder, account, cardNumber);
+    public Card(String token, Customer holder, BankAccount account, String cardNumber, String pin) {
+        this(token, holder, account, cardNumber);
         this.pin = pin;
     }
 
@@ -91,9 +91,9 @@ public class Card {
         return expirationDate;
     }
 
-    private static String generatePin() {
+    private static String generatePin(String authToken) {
         StringBuilder res = new StringBuilder();
-        Random rnd = new SecureRandom("SecurePinSeed".getBytes());
+        Random rnd = new SecureRandom((authToken + System.currentTimeMillis()).getBytes());
 
         for (int i = 0; i < 4; i++) {
             res.append(rnd.nextInt(10));
