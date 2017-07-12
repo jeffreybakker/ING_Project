@@ -36,6 +36,10 @@ public class CardServiceImpl implements CardService {
     @Override
     public NewCardBean invalidateCard(String token, String iBan, String cardNumber,
                                       boolean newPin) throws InvalidParamValueError, NotAuthorizedError {
+        if (!IBANUtil.isValidIBAN(iBan)) {
+            throw new InvalidParamValueError("The given IBAN is invalid.");
+        }
+
         Customer customer = authService.getAuthorizedCustomer(token);
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(iBan));
 
@@ -46,8 +50,20 @@ public class CardServiceImpl implements CardService {
         Card authorizedCard = cardRepository.findByAccountAndHolderAndAndInvalidatedIsFalse(bankAccount, customer);
         Card requestedCard = cardRepository.findByCardNumber(cardNumber);
 
-        if (!authorizedCard.equals(requestedCard)) {
+        if (authorizedCard == null) {
             throw new NotAuthorizedError();
+        }
+
+        if (requestedCard == null) {
+            throw new InvalidParamValueError("The given cardNumber does not exist.");
+        }
+
+        if (!authorizedCard.equals(requestedCard)) {
+            if (requestedCard.getAccount().equals(bankAccount)) {
+                throw new InvalidParamValueError("The given card is already invalidated.");
+            } else {
+                throw new NotAuthorizedError();
+            }
         }
 
         // Invalidate previous card

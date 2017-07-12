@@ -15,10 +15,6 @@ import static org.junit.Assert.assertThat;
  */
 public class TransactionServiceTest extends BoilerplateTest {
 
-    // Services
-    @Autowired
-    private TransactionService transactionService;
-
     @Test
     public void depositIntoAccount() throws Exception {
         transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200.0d);
@@ -41,14 +37,14 @@ public class TransactionServiceTest extends BoilerplateTest {
     }
 
     @Test(expected = InvalidParamValueError.class)
-    public void depositIntoAccountWrongiBan() throws Exception {
+    public void depositIntoAccountWrongIBAN() throws Exception {
         transactionService.depositIntoAccount(account2.iBan, account1.cardNumber, account1.pin, 200d);
         assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
     }
 
     @Test(expected = InvalidParamValueError.class)
-    public void depositIntoAccountWrongiBanType() throws Exception {
+    public void depositIntoAccountWrongIBANType() throws Exception {
         transactionService.depositIntoAccount("null", account1.cardNumber, account1.pin, 200d);
         assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
                 (0d));
