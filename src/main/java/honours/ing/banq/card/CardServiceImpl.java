@@ -9,17 +9,9 @@ import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.util.IBANUtil;
-import org.hibernate.Hibernate;
-import org.hibernate.SessionFactory;
-import org.hibernate.jpa.HibernateEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.provider.HibernateUtils;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * @author Kevin Witlox
@@ -29,9 +21,6 @@ import javax.persistence.PersistenceContext;
 @AutoJsonRpcServiceImpl
 @Transactional
 public class CardServiceImpl implements CardService {
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     // Services
     @Autowired
@@ -70,7 +59,8 @@ public class CardServiceImpl implements CardService {
         if (newPin) {
             newCard = new Card(customer, bankAccount, CardUtil.generateCardNumber(cardRepository));
         } else {
-            newCard = new Card(customer, bankAccount, CardUtil.generateCardNumber(cardRepository), authorizedCard.getPin());
+            newCard = new Card(customer, bankAccount, CardUtil.generateCardNumber(cardRepository), authorizedCard
+                    .getPin());
         }
         cardRepository.save(newCard);
 
@@ -86,4 +76,5 @@ public class CardServiceImpl implements CardService {
             return new NewCardBean(newCard);
         }
     }
+
 }
