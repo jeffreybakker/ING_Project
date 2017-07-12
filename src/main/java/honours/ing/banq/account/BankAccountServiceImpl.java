@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class BankAccountServiceImpl implements BankAccountService {
 
     // Services
@@ -48,7 +48,6 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Autowired
     private AuthRepository authRepository;
 
-    @Transactional
     @Override
     public NewAccountBean openAccount(String name, String surname, String initials, String dob, String ssn, String
             address, String telephoneNumber, String email, String username, String password) throws
@@ -77,7 +76,6 @@ public class BankAccountServiceImpl implements BankAccountService {
         return new NewAccountBean(card);
     }
 
-    @Transactional
     @Override
     public NewAccountBean openAdditionalAccount(String authToken) throws NotAuthorizedError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
@@ -91,7 +89,6 @@ public class BankAccountServiceImpl implements BankAccountService {
         return new NewAccountBean(card);
     }
 
-    @Transactional
     @Override
     public void closeAccount(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
