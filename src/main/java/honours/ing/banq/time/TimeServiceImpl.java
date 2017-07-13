@@ -40,10 +40,10 @@ public class TimeServiceImpl implements TimeService {
         if (times.size() != 1) {
             throw new IllegalStateException("There should only be one time entry in the database.");
         }
-        timeRepository.delete(times);
 
-        // Save new
-        timeRepository.save(new Time(nrOfDays));
+        Time time = times.get(0);
+        time.setShift(time.getShift() + nrOfDays);
+        timeRepository.save(time);
     }
 
     @Override
