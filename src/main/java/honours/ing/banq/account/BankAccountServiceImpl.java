@@ -116,9 +116,9 @@ public class BankAccountServiceImpl implements BankAccountService {
         repository.delete(account);
 
         // Delete Customer
-        BankAccount primaryAccount = bankAccountRepository.findBankAccountByPrimaryHolder(customer);
+        List<BankAccount> primaryAccounts = bankAccountRepository.findBankAccountsByPrimaryHolder(customer);
         List<BankAccount> heldAccounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
-        if (primaryAccount == null && (heldAccounts == null || heldAccounts.isEmpty())) {
+        if ((primaryAccounts == null || primaryAccounts.isEmpty()) && (heldAccounts == null || heldAccounts.isEmpty())) {
             authRepository.deleteAllByCustomer(customer);
             customerRepository.delete(customer);
         }
