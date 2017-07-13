@@ -4,7 +4,6 @@ import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.access.NoEffectError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
-import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.time.bean.DateBean;
 import honours.ing.banq.transaction.Transaction;
 import honours.ing.banq.transaction.TransactionRepository;
@@ -37,25 +36,28 @@ public class TimeServiceImpl implements TimeService {
 
     @Override
     public void simulateTime(int nrOfDays) {
-        Date date = getDate().getDate();
-        long milisec = date.getTime() + nrOfDays * 24 * 60 * 60 * 1000;
-        date.setTime(milisec);
-        timeRepository.save(new Time(date));
+        // Delete previous
+        List<Time> times = timeRepository.findAll();
+        if (times.size() != 1) {
+            throw new IllegalStateException("There should only be one time entry in the database.");
+        }
+        timeRepository.delete(times);
+
+        // Save new
+        timeRepository.save(new Time(nrOfDays));
     }
 
     @Override
     public void reset() throws NoEffectError {
+        // Delete previous entry
         List<Time> times = timeRepository.findAll();
-        Time time = times.get(0);
-        if (times.size() == 1) {
-            throw new NoEffectError();
-        }
-
-        // Assumption: list is returned in order of creation
-        timeRepository.delete(times.subList(1, times.size()));
+        timeRepository.delete(times);
+        // Reset time to current time
+        Time time = new Time(0);
+        timeRepository.save(time);
 
         // Revert transactions
-        List<Transaction> futureTransactions = transactionRepository.findAllByDateAfter(time.getDate());
+        List<Transaction> futureTransactions = transactionRepository.findAllByDateAfter(getDate().getDate());
         for (Transaction transaction : futureTransactions) {
             BankAccount source = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getSource
                     ()));
@@ -75,7 +77,14 @@ public class TimeServiceImpl implements TimeService {
     @Override
     public DateBean getDate() {
         List<Time> times = timeRepository.findAll();
-        return new DateBean(times.get(times.size() - 1).getDate());
+        if (times.size() != 1) {
+            throw new IllegalStateException("There should only be one time entry in the database.");
+        }
+
+        Date date = new Date();
+        long milisec = date.getTime() + times.get(0).getShift() * 24 * 60 * 60 * 1000;
+        date.setTime(milisec);
+        return new DateBean(date);
     }
 
 }

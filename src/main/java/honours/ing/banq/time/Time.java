@@ -20,20 +20,24 @@ public class Time {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private Date date;
+    private int shift;
 
     public Time() {}
 
-    public Time(Date date) {
-        this.date = date;
+    public Time(int shift) {
+        this.shift = shift;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public Date getDate() {
-        return date;
+    public int getShift() {
+        return shift;
+    }
+
+    public void setShift(int shift) {
+        this.shift = shift;
     }
 
     /**

@@ -22,7 +22,7 @@ public class TimeInitializer {
     public void contextRefreshedEvent() {
         List<Time> times = timeRepository.findAll();
         if (times != null && times.size() == 0) {
-            Time initialTime = new Time(new Date());
+            Time initialTime = new Time(0);
             timeRepository.save(initialTime);
         }
     }
