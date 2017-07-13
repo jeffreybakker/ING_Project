@@ -43,6 +43,10 @@ public class TimeServiceTest extends BoilerplateTest {
         assertThat(timeRepository.findAll().size(), equalTo(1));
         time = timeRepository.findAll().get(0);
         assertThat(time.getShift(), equalTo(375));
+
+        // Reset authentication
+        account1.token = authService.getAuthToken(account1.username, account1.password).getAuthToken();
+        account2.token = authService.getAuthToken(account2.username, account2.password).getAuthToken();
     }
 
     @Test(expected = InvalidParamValueError.class)
@@ -78,6 +82,10 @@ public class TimeServiceTest extends BoilerplateTest {
         time = timeRepository.findAll().get(0);
         assertThat(time.getShift(), equalTo(1000));
 
+        // Reset authentication
+        account1.token = authService.getAuthToken(account1.username, account1.password).getAuthToken();
+        account2.token = authService.getAuthToken(account2.username, account2.password).getAuthToken();
+
         // Transactions
         transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 200d);
         transactionService.transferMoney(account1.token, account1.iBan, account2.iBan, account2.username, 100d,
@@ -94,6 +102,10 @@ public class TimeServiceTest extends BoilerplateTest {
         Thread.sleep(1000); // Otherwise the current date will be equal to the date of the first three transactions,
                             // causing them to be deleted
         timeService.simulateTime(1);
+
+        // Reset authentication
+        account1.token = authService.getAuthToken(account1.username, account1.password).getAuthToken();
+        account2.token = authService.getAuthToken(account2.username, account2.password).getAuthToken();
 
         assertThat(infoService.getTransactionsOverview(account1.token, account1.iBan, 10).size(), equalTo(3));
         assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo(50d));
@@ -121,6 +133,10 @@ public class TimeServiceTest extends BoilerplateTest {
         timeService.simulateTime(10000);
         time = timeRepository.findAll().get(0);
         assertThat(time.getShift(), equalTo(10000));
+
+        // Reset authentication
+        account1.token = authService.getAuthToken(account1.username, account1.password).getAuthToken();
+        account2.token = authService.getAuthToken(account2.username, account2.password).getAuthToken();
 
         // Transaction, throws InvalidParamValueError
         transactionService.payFromAccount(account1.iBan, account2.iBan, account1.cardNumber, account1.pin, 25d);
