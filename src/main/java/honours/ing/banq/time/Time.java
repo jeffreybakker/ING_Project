@@ -44,7 +44,7 @@ public class Time {
      */
     public static boolean checkDate(String date) {
         try {
-            DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             if (date.equals(dateFormat.format(dateFormat.parse(date)))) {
                 return true;
             }

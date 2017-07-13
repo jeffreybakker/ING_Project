@@ -17,7 +17,7 @@ import java.util.Random;
 public class Card {
 
     @SuppressWarnings("NumericOverflow")
-    private static final long DURABILITY = 1000 * 60 * 60 * 24 * 365 * 5; // 5 years
+    public static final long DURABILITY = 1000 * 60 * 60 * 24 * 365 * 5; // 5 years
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,7 +41,7 @@ public class Card {
      */
     public Card() { }
 
-    public Card(String token, Customer holder, BankAccount account, String cardNumber) {
+    public Card(String token, Customer holder, BankAccount account, String cardNumber, Date currDate) {
         this.holder = holder;
         this.account = account;
         this.cardNumber = cardNumber;
@@ -49,13 +49,13 @@ public class Card {
 
         pin = generatePin(token);
 
-        Calendar expiration = Calendar.getInstance();
-        expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
-        expirationDate = expiration.getTime();
+        long milisec = currDate.getTime() + Card.DURABILITY;
+        expirationDate = new Date();
+        expirationDate.setTime(milisec);
     }
 
-    public Card(String token, Customer holder, BankAccount account, String cardNumber, String pin) {
-        this(token, holder, account, cardNumber);
+    public Card(String token, Customer holder, BankAccount account, String cardNumber, String pin, Date currDate) {
+        this(token, holder, account, cardNumber, currDate);
         this.pin = pin;
     }
 

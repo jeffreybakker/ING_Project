@@ -12,6 +12,7 @@ import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.card.CardUtil;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class AccessServiceImpl implements AccessService {
     // Services
     @Autowired
     private AuthService auth;
+
+    @Autowired
+    private TimeService timeService;
 
     // Repositories
     @Autowired
@@ -72,7 +76,7 @@ public class AccessServiceImpl implements AccessService {
 
         account.addHolder(holder);
         accountRepository.save(account);
-        Card card = new Card(authToken, holder, account, CardUtil.generateCardNumber(cardRepository));
+        Card card = new Card(authToken, holder, account, CardUtil.generateCardNumber(cardRepository), timeService.getDate().getDate());
         cardRepository.save(card);
 
         return new NewCardBean(card);
