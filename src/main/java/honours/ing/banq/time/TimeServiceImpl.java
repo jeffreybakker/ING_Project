@@ -44,7 +44,29 @@ public class TimeServiceImpl implements TimeService {
 
     @Override
     public void reset() throws NoEffectError {
+        List<Time> times = timeRepository.findAll();
+        Time time = times.get(0);
+        if (times.size() == 1) {
+            throw new NoEffectError();
+        }
 
+        // Assumption: list is returned in order of creation
+        timeRepository.delete(times.subList(1, times.size()));
+
+        // Revert transactions
+        List<Transaction> futureTransactions = transactionRepository.findAllByDateAfter(time.getDate());
+        for (Transaction transaction : futureTransactions) {
+            BankAccount source = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getSource()));
+            BankAccount destination = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getDestination()));
+            if (source != null) {
+                source.addBalance(transaction.getAmount());
+                bankAccountRepository.save(source);
+            }
+
+            destination.subBalance(transaction.getAmount());
+            bankAccountRepository.save(destination);
+        }
+        transactionRepository.delete(futureTransactions);
     }
 
     @Override
