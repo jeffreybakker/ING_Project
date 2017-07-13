@@ -10,6 +10,8 @@ import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.time.Time;
+import honours.ing.banq.time.TimeRepository;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private CardRepository cardRepository;
 
+    @Autowired
+    private TimeRepository timeRepository;
+
     @Override
     public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError {
@@ -50,18 +55,13 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given IBAN is not valid.");
         }
 
-        BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
-                (iBAN));
+        BankAccount bankAccount = auth.getAuthorizedAccount(iBAN, pinCard, pinCode);
         Card card = cardRepository.findByAccountAndCardNumber(bankAccount, pinCard);
 
-        // Check for card matching iBAN
-        if (card == null) {
-            throw new InvalidParamValueError("The given card does not belong to the given iBAN.");
-        }
-
-        // Check pin code
-        if (!Objects.equals(card.getPin(), pinCode)) {
-            throw new InvalidPINError();
+        // Check if card is expired
+        List<Time> times = timeRepository.findAll();
+        if (card.getExpirationDate().after(times.get(times.size() - 1).getDate())) {
+            throw new InvalidParamValueError("The given card is expired.");
         }
 
         // Check balance
@@ -93,6 +93,13 @@ public class TransactionServiceImpl implements TransactionService {
         BankAccount fromBankAccount = auth.getAuthorizedAccount(sourceIBAN, pinCard, pinCode);
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (targetIBAN));
+
+        // Check if card is expired
+        Card card = cardRepository.findByAccountAndCardNumber(fromBankAccount, pinCard);
+        List<Time> times = timeRepository.findAll();
+        if (card.getExpirationDate().after(times.get(times.size() - 1).getDate())) {
+            throw new InvalidParamValueError("The given card is expired.");
+        }
 
         // Check balance
         if (fromBankAccount.getBalance() - amount < 0) {
