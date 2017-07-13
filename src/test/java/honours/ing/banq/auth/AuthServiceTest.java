@@ -1,25 +1,11 @@
 package honours.ing.banq.auth;
 
+import honours.ing.banq.BoilerplateTest;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
-import honours.ing.banq.account.BankAccountService;
-import honours.ing.banq.account.bean.NewAccountBean;
-import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.util.IBANUtil;
-import honours.ing.banq.util.StringUtil;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Calendar;
 
 import static org.junit.Assert.*;
 
@@ -27,180 +13,107 @@ import static org.junit.Assert.*;
  * @author jeffrey
  * @since 9-6-17
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
-@Import(TestConfiguration.class)
-@ActiveProfiles("test")
-public class AuthServiceTest {
-
-    // Services
-    @Autowired
-    private AuthService service;
-
-    @Autowired
-    private BankAccountService accountService;
-
-    // Variables
-    private AccountInfo accountInfo;
-
-    @Before
-    public void setUp() throws Exception {
-        String username = StringUtil.generate(10);
-        String password = StringUtil.generate(10);
-
-        NewAccountBean account = accountService.openAccount(
-                "University", "of Twente", "UT",
-                "1996-1-1", StringUtil.generate(10),
-                "Universiteitsstraat 1, Enschede", "06-12345678",
-                StringUtil.generate(10), username, password);
-
-        accountInfo = new AccountInfo(account, username, password);
-        accountInfo.token = service.getAuthToken(username, password).getAuthToken();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        accountService.closeAccount(accountInfo.token, accountInfo.iBan);
-    }
+public class AuthServiceTest extends BoilerplateTest {
 
     @Test
     public void getAuthToken() throws Exception {
-        String token = service.getAuthToken(accountInfo.username, accountInfo.password).getAuthToken();
-        accountInfo.token = token;
+        String token = authService.getAuthToken(account1.username, account1.password).getAuthToken();
+        account1.token = token;
 
         assertNotNull(token);
         assertTrue(token.length() > 0);
     }
 
-    @Test
+    @Test(expected = AuthenticationError.class)
     public void getAuthTokenInvalidUsername() throws Exception {
-        try {
-            service.getAuthToken("", accountInfo.password);
-            fail();
-        } catch (AuthenticationError ignored) {
-        }
+        authService.getAuthToken("", account1.password);
     }
 
-    @Test
+    @Test(expected = AuthenticationError.class)
     public void getAuthTokenInvalidPassword() throws Exception {
-        try {
-            service.getAuthToken(accountInfo.username, "");
-            fail();
-        } catch (AuthenticationError ignored) {
-        }
+        authService.getAuthToken(account1.username, "");
     }
 
-    @Test
+    @Test(expected = AuthenticationError.class)
     public void getAuthTokenInvalidUsernameAndPassword() throws Exception {
-        try {
-            service.getAuthToken("", "");
-            fail();
-        } catch (AuthenticationError ignored) {
-        }
+        authService.getAuthToken("", "");
     }
 
     @Test
     public void getAuthorizedCustomer() throws Exception {
-        String token = service.getAuthToken(accountInfo.username, accountInfo.password).getAuthToken();
+        String token = authService.getAuthToken(account1.username, account1.password).getAuthToken();
 
         assertNotNull(token);
         assertTrue(token.length() > 0);
 
-        Customer customer = service.getAuthorizedCustomer(token);
-        assertEquals(accountInfo.username, customer.getUsername());
-        assertEquals(accountInfo.password, customer.getPassword());
+        Customer customer = authService.getAuthorizedCustomer(token);
+        assertEquals(account1.username, customer.getUsername());
+        assertEquals(account1.password, customer.getPassword());
     }
 
-    @Test
+    @Test(expected = InvalidParamValueError.class)
     public void getAuthorizedCustomerNullToken() throws Exception {
-        try {
-            service.getAuthorizedCustomer(null);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
+        authService.getAuthorizedCustomer(null);
     }
 
-    @Test
+    @Test(expected = InvalidParamValueError.class)
     public void getAuthorizedCustomerEmptyToken() throws Exception {
-        try {
-            service.getAuthorizedCustomer("");
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
+        authService.getAuthorizedCustomer("");
     }
 
-    @Test
+    @Test(expected = NotAuthorizedError.class)
     public void getAuthorizedCustomerInvalidToken() throws Exception {
-        try {
-            service.getAuthorizedCustomer("invalidToken");
-            fail();
-        } catch (NotAuthorizedError ignored) {
-        }
+        authService.getAuthorizedCustomer("invalidToken");
     }
 
     @Test
     public void getAuthorizedAccount() throws Exception {
-        BankAccount account = service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, accountInfo.pin);
+        BankAccount account = authService.getAuthorizedAccount(account1.iBan, account1.cardNumber,
+                                                               account1.pin);
 
         assertNotNull(account);
-        assertEquals(accountInfo.iBan, IBANUtil.generateIBAN(account));
+        assertEquals(account1.iBan, IBANUtil.generateIBAN(account));
     }
 
-    @Test
-    public void getAuthorizedAccountInvalidIBan() throws Exception {
-        try {
-            service.getAuthorizedAccount(null, accountInfo.cardNumber, accountInfo.pin);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
-
-        try {
-            service.getAuthorizedAccount("", accountInfo.cardNumber, accountInfo.pin);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
-
-        try {
-            service.getAuthorizedAccount("NL45INGB0705001903", accountInfo.cardNumber, accountInfo.pin);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
+    @Test(expected = InvalidParamValueError.class)
+    public void getAuthorizedAccountNullIBAN() throws Exception {
+        authService.getAuthorizedAccount(null, account1.cardNumber, account1.pin);
+        fail();
     }
 
-    @Test
+    @Test(expected = InvalidParamValueError.class)
+    public void getAuthorizedAccountEmptyIBAN() throws Exception {
+        authService.getAuthorizedAccount("", account1.cardNumber, account1.pin);
+    }
+
+    @Test(expected = InvalidParamValueError.class)
+    public void getAuthorizedAccountWrongIBAN() throws Exception {
+        authService.getAuthorizedAccount(account2.iBan, account1.cardNumber, account1.pin);
+    }
+
+    @Test(expected = InvalidParamValueError.class)
+    public void getAuthorizedAccountNullCardNumber() throws Exception {
+        authService.getAuthorizedAccount(account1.iBan, null, account1.pin);
+    }
+
+    @Test(expected = InvalidParamValueError.class)
+    public void getAuthorizedAccountEmptyCardNumber() throws Exception {
+        authService.getAuthorizedAccount(account1.iBan, "", account1.pin);
+    }
+
+    @Test(expected = InvalidParamValueError.class)
     public void getAuthorizedAccountInvalidCardNumber() throws Exception {
-        try {
-            service.getAuthorizedAccount(accountInfo.iBan, null, accountInfo.pin);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
-
-        try {
-            service.getAuthorizedAccount(accountInfo.iBan, "", accountInfo.pin);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
-
-        try {
-            service.getAuthorizedAccount(accountInfo.iBan, "-1", accountInfo.pin);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
+        authService.getAuthorizedAccount(account1.iBan, "-1", account1.pin);
     }
 
-    @Test
-    public void getAuthorizedAccountInvalidPin() throws Exception {
-        try {
-            service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, null);
-            fail();
-        } catch (InvalidParamValueError ignored) {
-        }
+    @Test(expected = InvalidParamValueError.class)
+    public void getAuthorizedAccountNullPin() throws Exception {
+        authService.getAuthorizedAccount(account1.iBan, account1.cardNumber, null);
+    }
 
-        try {
-            service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, "");
-            fail();
-        } catch (InvalidPINError ignored) {
-        }
+    @Test(expected = InvalidPINError.class)
+    public void getAuthorizedAccountEmptyPin() throws Exception {
+        authService.getAuthorizedAccount(account1.iBan, account1.cardNumber, "");
     }
 
 }
