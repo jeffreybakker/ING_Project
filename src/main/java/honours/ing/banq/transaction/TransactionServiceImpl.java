@@ -90,21 +90,9 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given target IBAN is not valid.");
         }
 
-        BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil
-                .getAccountNumber(sourceIBAN));
+        BankAccount fromBankAccount = auth.getAuthorizedAccount(sourceIBAN, pinCard, pinCode);
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (targetIBAN));
-        Card card = cardRepository.findByAccountAndCardNumber(fromBankAccount, pinCard);
-
-        // Check for card matching iBAN
-        if (card == null) {
-            throw new InvalidParamValueError("The given card does not belong to the given iBAN.");
-        }
-
-        // Check pin code
-        if (!Objects.equals(card.getPin(), pinCode)) {
-            throw new InvalidPINError();
-        }
 
         // Check balance
         if (fromBankAccount.getBalance() - amount < 0) {
