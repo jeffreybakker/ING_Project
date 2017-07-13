@@ -62,7 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
         Card card = cardRepository.findByAccountAndCardNumber(bankAccount, pinCard);
 
         // Check if card is expired
-        if (card.getExpirationDate().after(timeService.getDate().getDate())) {
+        if (card.getExpirationDate().after(timeService.getDateObject())) {
             throw new InvalidParamValueError("The given card is expired.");
         }
 
@@ -77,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Save transaction
         Transaction transaction = new Transaction(null, iBAN, bankAccount.getPrimaryHolder()
-                .getName(), timeService.getDate().getDate(), amount, "Deposit");
+                .getName(), timeService.getDateObject(), amount, "Deposit");
         transactionRepository.save(transaction);
     }
 
@@ -98,7 +98,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Check if card is expired
         Card card = cardRepository.findByAccountAndCardNumber(fromBankAccount, pinCard);
-        if (card.getExpirationDate().after(timeService.getDate().getDate())) {
+        if (card.getExpirationDate().after(timeService.getDateObject())) {
             throw new InvalidParamValueError("The given card is expired.");
         }
 
@@ -119,7 +119,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Save Transaction
         Transaction transaction = new Transaction(sourceIBAN, targetIBAN, toBankAccount
-                .getPrimaryHolder().getName(), timeService.getDate().getDate(), amount, "Payment with debit card.");
+                .getPrimaryHolder().getName(), timeService.getDateObject(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
@@ -163,7 +163,7 @@ public class TransactionServiceImpl implements TransactionService {
         bankAccountRepository.save(toBankAccount);
 
         // Save Transaction
-        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, targetName, timeService.getDate().getDate()
+        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, targetName, timeService.getDateObject()
                 , amount, description);
         transactionRepository.save(transaction);
     }

@@ -70,7 +70,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         Card card = null;
         try {
             card = new Card(auth.getAuthToken(username, password).getAuthToken(), customer, account, CardUtil
-                    .generateCardNumber(cardRepository), timeService.getDate().getDate());
+                    .generateCardNumber(cardRepository), timeService.getDateObject());
         } catch (AuthenticationError e) {
             // Should be impossible
             e.printStackTrace();
@@ -87,7 +87,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount account = new BankAccount(customer);
         repository.save(account);
 
-        Card card = new Card(authToken, customer, account, CardUtil.generateCardNumber(cardRepository), timeService.getDate().getDate());
+        Card card = new Card(authToken, customer, account, CardUtil.generateCardNumber(cardRepository), timeService.getDateObject());
         cardRepository.save(card);
 
         return new NewAccountBean(card);

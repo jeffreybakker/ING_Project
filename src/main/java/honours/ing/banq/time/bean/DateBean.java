@@ -1,5 +1,6 @@
 package honours.ing.banq.time.bean;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -8,17 +9,17 @@ import java.util.Date;
  */
 public class DateBean {
 
-    private Date date;
+    private String date;
 
     public DateBean(Date date) {
-        this.date = date;
+        this.date = (new SimpleDateFormat("yyyy-MM-dd")).format(date);
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

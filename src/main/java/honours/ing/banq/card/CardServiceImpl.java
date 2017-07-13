@@ -80,10 +80,10 @@ public class CardServiceImpl implements CardService {
         // Create new Card
         Card newCard;
         if (newPin) {
-            newCard = new Card(token, customer, bankAccount, CardUtil.generateCardNumber(cardRepository), timeService.getDate().getDate());
+            newCard = new Card(token, customer, bankAccount, CardUtil.generateCardNumber(cardRepository), timeService.getDateObject());
         } else {
             newCard = new Card(token, customer, bankAccount, CardUtil.generateCardNumber(cardRepository), authorizedCard
-                    .getPin(), timeService.getDate().getDate());
+                    .getPin(), timeService.getDateObject());
         }
         cardRepository.save(newCard);
 

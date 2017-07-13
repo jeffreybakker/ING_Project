@@ -20,7 +20,6 @@ import java.util.List;
  * @since 13-7-2017.
  */
 @Service
-@AutoJsonRpcServiceImpl
 @Transactional
 public class TimeServiceImpl implements TimeService {
 
@@ -57,7 +56,7 @@ public class TimeServiceImpl implements TimeService {
         timeRepository.save(time);
 
         // Revert transactions
-        List<Transaction> futureTransactions = transactionRepository.findAllByDateAfter(getDate().getDate());
+        List<Transaction> futureTransactions = transactionRepository.findAllByDateAfter(getDateObject());
         for (Transaction transaction : futureTransactions) {
             BankAccount source = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getSource
                     ()));
@@ -85,6 +84,19 @@ public class TimeServiceImpl implements TimeService {
         long milisec = date.getTime() + times.get(0).getShift() * 24 * 60 * 60 * 1000;
         date.setTime(milisec);
         return new DateBean(date);
+    }
+
+    @Override
+    public Date getDateObject() {
+        List<Time> times = timeRepository.findAll();
+        if (times.size() != 1) {
+            throw new IllegalStateException("There should only be one time entry in the database.");
+        }
+
+        Date date = new Date();
+        long milisec = date.getTime() + times.get(0).getShift() * 24 * 60 * 60 * 1000;
+        date.setTime(milisec);
+        return date;
     }
 
 }

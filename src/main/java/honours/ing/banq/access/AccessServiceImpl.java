@@ -76,7 +76,7 @@ public class AccessServiceImpl implements AccessService {
 
         account.addHolder(holder);
         accountRepository.save(account);
-        Card card = new Card(authToken, holder, account, CardUtil.generateCardNumber(cardRepository), timeService.getDate().getDate());
+        Card card = new Card(authToken, holder, account, CardUtil.generateCardNumber(cardRepository), timeService.getDateObject());
         cardRepository.save(card);
 
         return new NewCardBean(card);
