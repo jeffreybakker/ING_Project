@@ -1,6 +1,5 @@
 package honours.ing.banq.time;
 
-import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.access.NoEffectError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -58,15 +58,15 @@ public class TimeServiceImpl implements TimeService {
         // Revert transactions
         List<Transaction> futureTransactions = transactionRepository.findAllByDateAfter(getDateObject());
         for (Transaction transaction : futureTransactions) {
-            BankAccount source = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getSource
-                    ()));
-            BankAccount destination = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction
-                    .getDestination()));
-            if (source != null) {
+            if (transaction.getSource() != null) {
+                BankAccount source = bankAccountRepository.findOne(
+                        (int) IBANUtil.getAccountNumber(transaction.getSource()));
                 source.addBalance(transaction.getAmount());
                 bankAccountRepository.save(source);
             }
 
+            BankAccount destination = bankAccountRepository.findOne(
+                    (int) IBANUtil.getAccountNumber(transaction.getDestination()));
             destination.subBalance(transaction.getAmount());
             bankAccountRepository.save(destination);
         }
@@ -80,10 +80,9 @@ public class TimeServiceImpl implements TimeService {
             throw new IllegalStateException("There should only be one time entry in the database.");
         }
 
-        Date date = new Date();
-        long milisec = date.getTime() + times.get(0).getShift() * 24 * 60 * 60 * 1000;
-        date.setTime(milisec);
-        return new DateBean(date);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, times.get(0).getShift());
+        return new DateBean(calendar.getTime());
     }
 
     @Override
@@ -93,10 +92,9 @@ public class TimeServiceImpl implements TimeService {
             throw new IllegalStateException("There should only be one time entry in the database.");
         }
 
-        Date date = new Date();
-        long milisec = date.getTime() + times.get(0).getShift() * 24 * 60 * 60 * 1000;
-        date.setTime(milisec);
-        return date;
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, times.get(0).getShift());
+        return calendar.getTime();
     }
 
 }
