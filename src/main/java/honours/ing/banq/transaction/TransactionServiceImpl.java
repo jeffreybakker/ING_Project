@@ -12,13 +12,13 @@ import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.time.Time;
 import honours.ing.banq.time.TimeRepository;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.*;
+import java.util.List;
 
 /**
  * @author Kevin Witlox
@@ -34,6 +34,9 @@ public class TransactionServiceImpl implements TransactionService {
     // Services
     @Autowired
     private AuthService auth;
+
+    @Autowired
+    private TimeService timeService;
 
     // Repositories
     @Autowired
@@ -75,7 +78,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Save transaction
         Transaction transaction = new Transaction(null, iBAN, bankAccount.getPrimaryHolder()
-                .getName(), new Date(), amount, "Deposit");
+                .getName(), timeService.getDate().getDate(), amount, "Deposit");
         transactionRepository.save(transaction);
     }
 
@@ -118,7 +121,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Save Transaction
         Transaction transaction = new Transaction(sourceIBAN, targetIBAN, toBankAccount
-                .getPrimaryHolder().getName(), new Date(), amount, "Payment with debit card.");
+                .getPrimaryHolder().getName(), timeService.getDate().getDate(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
@@ -162,8 +165,8 @@ public class TransactionServiceImpl implements TransactionService {
         bankAccountRepository.save(toBankAccount);
 
         // Save Transaction
-        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, targetName, new Date(),
-                amount, description);
+        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, targetName, timeService.getDate().getDate()
+                , amount, description);
         transactionRepository.save(transaction);
     }
 
