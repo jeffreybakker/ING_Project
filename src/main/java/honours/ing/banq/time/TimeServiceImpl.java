@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,9 +30,6 @@ public class TimeServiceImpl implements TimeService {
     private TimeRepository timeRepository;
 
     @Autowired
-    private CardRepository cardRepository;
-
-    @Autowired
     private TransactionRepository transactionRepository;
 
     @Autowired
@@ -39,7 +37,10 @@ public class TimeServiceImpl implements TimeService {
 
     @Override
     public void simulateTime(int nrOfDays) {
-
+        Date date = getDate().getDate();
+        long milisec = date.getTime() + nrOfDays * 24 * 60 * 60 * 1000;
+        date.setTime(milisec);
+        timeRepository.save(new Time(date));
     }
 
     @Override
@@ -56,8 +57,10 @@ public class TimeServiceImpl implements TimeService {
         // Revert transactions
         List<Transaction> futureTransactions = transactionRepository.findAllByDateAfter(time.getDate());
         for (Transaction transaction : futureTransactions) {
-            BankAccount source = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getSource()));
-            BankAccount destination = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getDestination()));
+            BankAccount source = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction.getSource
+                    ()));
+            BankAccount destination = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(transaction
+                    .getDestination()));
             if (source != null) {
                 source.addBalance(transaction.getAmount());
                 bankAccountRepository.save(source);
@@ -71,7 +74,8 @@ public class TimeServiceImpl implements TimeService {
 
     @Override
     public DateBean getDate() {
-        return null;
+        List<Time> times = timeRepository.findAll();
+        return new DateBean(times.get(times.size() - 1).getDate());
     }
 
 }
