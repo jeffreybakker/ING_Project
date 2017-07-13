@@ -62,7 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
         Card card = cardRepository.findByAccountAndCardNumber(bankAccount, pinCard);
 
         // Check if card is expired
-        if (card.getExpirationDate().after(timeService.getDateObject())) {
+        if (timeService.getDateObject().after(card.getExpirationDate())) {
             throw new InvalidParamValueError("The given card is expired.");
         }
 
@@ -98,7 +98,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Check if card is expired
         Card card = cardRepository.findByAccountAndCardNumber(fromBankAccount, pinCard);
-        if (card.getExpirationDate().after(timeService.getDateObject())) {
+        if (timeService.getDateObject().after(card.getExpirationDate())) {
             throw new InvalidParamValueError("The given card is expired.");
         }
 
