@@ -1,5 +1,6 @@
 package honours.ing.banq.auth;
 
+import honours.ing.banq.customer.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -9,5 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface AuthRepository extends JpaRepository<Authentication, Long> {
 
     Authentication findByToken(String token);
+    void deleteAllByCustomer(Customer customer);
 
 }

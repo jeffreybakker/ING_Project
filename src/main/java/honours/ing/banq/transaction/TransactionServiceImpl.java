@@ -10,13 +10,15 @@ import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.time.Time;
+import honours.ing.banq.time.TimeRepository;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.*;
+import java.util.List;
 
 /**
  * @author Kevin Witlox
@@ -33,6 +35,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private AuthService auth;
 
+    @Autowired
+    private TimeService timeService;
+
     // Repositories
     @Autowired
     private BankAccountRepository bankAccountRepository;
@@ -43,6 +48,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private CardRepository cardRepository;
 
+    @Autowired
+    private TimeRepository timeRepository;
+
     @Override
     public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError {
@@ -50,18 +58,12 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given IBAN is not valid.");
         }
 
-        BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
-                (iBAN));
+        BankAccount bankAccount = auth.getAuthorizedAccount(iBAN, pinCard, pinCode);
         Card card = cardRepository.findByAccountAndCardNumber(bankAccount, pinCard);
 
-        // Check for card matching iBAN
-        if (card == null) {
-            throw new InvalidParamValueError("The given card does not belong to the given iBAN.");
-        }
-
-        // Check pin code
-        if (!Objects.equals(card.getPin(), pinCode)) {
-            throw new InvalidPINError();
+        // Check if card is expired
+        if (timeService.getDateObject().after(card.getExpirationDate())) {
+            throw new InvalidParamValueError("The given card is expired.");
         }
 
         // Check balance
@@ -75,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Save transaction
         Transaction transaction = new Transaction(null, iBAN, bankAccount.getPrimaryHolder()
-                .getName(), new Date(), amount, "Deposit");
+                .getName(), timeService.getDateObject(), amount, "Deposit");
         transactionRepository.save(transaction);
     }
 
@@ -90,20 +92,14 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given target IBAN is not valid.");
         }
 
-        BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil
-                .getAccountNumber(sourceIBAN));
+        BankAccount fromBankAccount = auth.getAuthorizedAccount(sourceIBAN, pinCard, pinCode);
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (targetIBAN));
+
+        // Check if card is expired
         Card card = cardRepository.findByAccountAndCardNumber(fromBankAccount, pinCard);
-
-        // Check for card matching iBAN
-        if (card == null) {
-            throw new InvalidParamValueError("The given card does not belong to the given iBAN.");
-        }
-
-        // Check pin code
-        if (!Objects.equals(card.getPin(), pinCode)) {
-            throw new InvalidPINError();
+        if (timeService.getDateObject().after(card.getExpirationDate())) {
+            throw new InvalidParamValueError("The given card is expired.");
         }
 
         // Check balance
@@ -123,7 +119,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Save Transaction
         Transaction transaction = new Transaction(sourceIBAN, targetIBAN, toBankAccount
-                .getPrimaryHolder().getName(), new Date(), amount, "Payment with debit card.");
+                .getPrimaryHolder().getName(), timeService.getDateObject(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
@@ -167,8 +163,8 @@ public class TransactionServiceImpl implements TransactionService {
         bankAccountRepository.save(toBankAccount);
 
         // Save Transaction
-        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, targetName, new Date(),
-                amount, description);
+        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, targetName, timeService.getDateObject()
+                , amount, description);
         transactionRepository.save(transaction);
     }
 

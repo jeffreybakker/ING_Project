@@ -4,6 +4,7 @@ import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
+import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -16,7 +17,7 @@ import java.util.Random;
 public class Card {
 
     @SuppressWarnings("NumericOverflow")
-    private static final long DURABILITY = 1000 * 60 * 60 * 24 * 365 * 5; // 5 years
+    public static final int DURABILITY = 5; // 5 years
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,21 +34,29 @@ public class Card {
     private String pin; // TODO: add hashing
     private Date expirationDate;
 
+    private boolean invalidated;
+
     /**
      * @deprecated empty constructor for spring
      */
     public Card() { }
 
-    public Card(Customer holder, BankAccount account, String cardNumber) {
+    public Card(String token, Customer holder, BankAccount account, String cardNumber, Date currDate) {
         this.holder = holder;
         this.account = account;
         this.cardNumber = cardNumber;
+        this.invalidated = false;
 
-        pin = generatePin();
+        pin = generatePin(token);
 
-        Calendar expiration = Calendar.getInstance();
-        expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
-        expirationDate = expiration.getTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, DURABILITY);
+        expirationDate = calendar.getTime();
+    }
+
+    public Card(String token, Customer holder, BankAccount account, String cardNumber, String pin, Date currDate) {
+        this(token, holder, account, cardNumber, currDate);
+        this.pin = pin;
     }
 
     public Integer getId() {
@@ -70,13 +79,21 @@ public class Card {
         return pin;
     }
 
+    public boolean isInvalidated() {
+        return invalidated;
+    }
+
+    public void invalidate() {
+        this.invalidated = true;
+    }
+
     public Date getExpirationDate() {
         return expirationDate;
     }
 
-    private static String generatePin() {
+    private static String generatePin(String authToken) {
         StringBuilder res = new StringBuilder();
-        Random rnd = new Random();
+        Random rnd = new SecureRandom((authToken + System.currentTimeMillis()).getBytes());
 
         for (int i = 0; i < 4; i++) {
             res.append(rnd.nextInt(10));
