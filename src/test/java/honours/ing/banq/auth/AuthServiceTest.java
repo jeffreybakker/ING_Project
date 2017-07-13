@@ -66,6 +66,12 @@ public class AuthServiceTest extends BoilerplateTest {
         authService.getAuthorizedCustomer("invalidToken");
     }
 
+    @Test(expected = NotAuthorizedError.class)
+    public void getAuthorizedCustomerExpiredToken() throws Exception {
+        timeService.simulateTime(2);
+        authService.getAuthorizedCustomer(account1.token);
+    }
+
     @Test
     public void getAuthorizedAccount() throws Exception {
         BankAccount account = authService.getAuthorizedAccount(account1.iBan, account1.cardNumber,
