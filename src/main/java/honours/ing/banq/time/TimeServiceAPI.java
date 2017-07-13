@@ -2,6 +2,7 @@ package honours.ing.banq.time;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
+import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.access.NoEffectError;
 import honours.ing.banq.time.bean.DateBean;
 
@@ -12,7 +13,7 @@ import honours.ing.banq.time.bean.DateBean;
 @JsonRpcService("/api/time")
 public interface TimeServiceAPI {
 
-    void simulateTime(@JsonRpcParam("nrOfDays") int nrOfDays);
+    void simulateTime(@JsonRpcParam("nrOfDays") int nrOfDays) throws InvalidParamValueError;
 
     void reset() throws NoEffectError;
 

@@ -1,5 +1,6 @@
 package honours.ing.banq.time;
 
+import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.access.NoEffectError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
@@ -34,11 +35,15 @@ public class TimeServiceImpl implements TimeService {
     private BankAccountRepository bankAccountRepository;
 
     @Override
-    public void simulateTime(int nrOfDays) {
+    public void simulateTime(int nrOfDays) throws InvalidParamValueError {
         // Delete previous
         List<Time> times = timeRepository.findAll();
         if (times.size() != 1) {
             throw new IllegalStateException("There should only be one time entry in the database.");
+        }
+
+        if (nrOfDays <= 0) {
+            throw new InvalidParamValueError("The nrOfDays should be positive.");
         }
 
         Time time = times.get(0);
