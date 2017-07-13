@@ -34,4 +34,9 @@ public class NewAccountBean {
     public String getPinCode() {
         return pinCode;
     }
+
+    public String getExpirationDate() {
+        return expirationDate;
+    }
+
 }
