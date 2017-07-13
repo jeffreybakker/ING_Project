@@ -101,24 +101,4 @@ public class Customer {
         return password;
     }
 
-    /**
-     * Returns true if the given string conforms the database date format, false otherwise.
-     *
-     * @param date A string representing a date
-     * @return True is success, false otherwise
-     */
-    public static boolean checkDate(String date) {
-       try {
-            DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy");
-            if (date.equals(dateFormat.format(dateFormat.parse(date)))) {
-                return true;
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-
-        return false;
-    }
-
 }

@@ -8,6 +8,7 @@ import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Random;
 
@@ -30,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private static final int TOKEN_LENGTH = 255;
     private static final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_=+[{]}|;:/?.>,<!@#$%&*()";
 
-    private static final int VALIDITY = 60 * 60 * 24; // one day
+    private static final int VALIDITY = 1; // one day
 
     @Autowired
     private AuthRepository repository;
@@ -44,6 +46,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private TimeService timeService;
+
     private Random random = new Random();
 
     @Transactional
@@ -55,8 +60,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Authentication auth = null;
+
+        Date date = timeService.getDateObject();
         Calendar exp = Calendar.getInstance();
-        exp.add(Calendar.SECOND, VALIDITY);
+        exp.setTime(date);
+        exp.add(Calendar.DAY_OF_MONTH, VALIDITY);
 
         while (auth == null) {
             try {
@@ -77,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Authentication auth = repository.findByToken(token);
-        if (auth == null || auth.hasExpired()) {
+        if (auth == null || auth.hasExpired(timeService.getDateObject())) {
             throw new NotAuthorizedError();
         }
 

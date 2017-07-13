@@ -48,8 +48,8 @@ public class Authentication {
         return expiration;
     }
 
-    public boolean hasExpired() {
-        return System.currentTimeMillis() >= expiration.getTime();
+    public boolean hasExpired(Date date) {
+        return date.getTime() >= expiration.getTime();
     }
 
 }

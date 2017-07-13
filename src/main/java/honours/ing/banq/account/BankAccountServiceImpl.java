@@ -12,6 +12,7 @@ import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.card.CardUtil;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     // Services
     @Autowired
     private AuthService auth;
+
+    @Autowired
+    private TimeService timeService;
 
     // Repositories
     @Autowired
@@ -66,7 +70,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         Card card = null;
         try {
             card = new Card(auth.getAuthToken(username, password).getAuthToken(), customer, account, CardUtil
-                    .generateCardNumber(cardRepository));
+                    .generateCardNumber(cardRepository), timeService.getDateObject());
         } catch (AuthenticationError e) {
             // Should be impossible
             e.printStackTrace();
@@ -83,7 +87,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount account = new BankAccount(customer);
         repository.save(account);
 
-        Card card = new Card(authToken, customer, account, CardUtil.generateCardNumber(cardRepository));
+        Card card = new Card(authToken, customer, account, CardUtil.generateCardNumber(cardRepository), timeService.getDateObject());
         cardRepository.save(card);
 
         return new NewAccountBean(card);
