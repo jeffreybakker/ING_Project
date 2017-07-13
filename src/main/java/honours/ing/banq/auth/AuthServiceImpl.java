@@ -93,7 +93,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError {
+    public BankAccount getAuthorizedAccount(String iBAN, String pinCard,
+                                            String pinCode) throws InvalidPINError, InvalidParamValueError {
         if (iBAN == null || iBAN.length() <= 8 || pinCard == null || pinCode == null) {
             throw new InvalidParamValueError("One of the parameters is null or the IBAN is not long enough");
         }
@@ -108,6 +109,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (!card.getPin().equals(pinCode)) {
+            throw new InvalidPINError();
+        }
+
+        if (timeService.getDateObject().getTime() >= card.getExpirationDate().getTime()) {
             throw new InvalidPINError();
         }
 

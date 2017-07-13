@@ -2,6 +2,7 @@ package honours.ing.banq.auth;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
+import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.customer.Customer;
 
@@ -12,9 +13,12 @@ import honours.ing.banq.customer.Customer;
 @JsonRpcService("/api/auth")
 public interface AuthService {
 
-    AuthToken getAuthToken(@JsonRpcParam("username") String username, @JsonRpcParam("password") String password) throws AuthenticationError;
+    AuthToken getAuthToken(@JsonRpcParam("username") String username,
+                           @JsonRpcParam("password") String password) throws AuthenticationError;
 
     Customer getAuthorizedCustomer(String token) throws NotAuthorizedError;
-    BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError;
+
+    BankAccount getAuthorizedAccount(String iBAN, String pinCard,
+                                     String pinCode) throws InvalidPINError, InvalidParamValueError;
 
 }
