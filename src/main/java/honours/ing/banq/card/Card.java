@@ -119,6 +119,10 @@ public class Card {
         this.blocked = true;
     }
 
+    public void unblock() {
+        this.blocked = false;
+    }
+
     public Date getExpirationDate() {
         return expirationDate;
     }
