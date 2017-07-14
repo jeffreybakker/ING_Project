@@ -3,8 +3,11 @@ package honours.ing.banq;
 import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.bean.AccountInfo;
+import honours.ing.banq.card.CardService;
 import honours.ing.banq.config.TestConfiguration;
 import honours.ing.banq.info.InfoService;
+import honours.ing.banq.time.TimeService;
+import honours.ing.banq.transaction.TransactionService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -33,13 +36,22 @@ public class BoilerplateTest {
 
     // Services
     @Autowired
+    protected CardService cardService;
+
+    @Autowired
     protected BankAccountService bankAccountService;
+
+    @Autowired
+    protected TransactionService transactionService;
 
     @Autowired
     protected AuthService authService;
 
     @Autowired
     protected InfoService infoService;
+
+    @Autowired
+    protected TimeService timeService;
 
     // Fields
     protected AccountInfo account1, account2;
@@ -59,6 +71,9 @@ public class BoilerplateTest {
                 (0d));
         assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
                 (0d));
+
+        // Reset time
+        timeService.reset();
     }
 
     @After

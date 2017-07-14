@@ -42,10 +42,6 @@ public class InfoServiceImpl implements InfoService {
     @Override
     public BalanceBean getBalance(String autToken, String iBAN) throws InvalidParamValueError,
             NotAuthorizedError {
-        if (!IBANUtil.isValidIBAN(iBAN)) {
-            throw new InvalidParamValueError("The given IBAN is invalid.");
-        }
-
         Customer customer = auth.getAuthorizedCustomer(autToken);
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (iBAN));
@@ -64,10 +60,6 @@ public class InfoServiceImpl implements InfoService {
     @Override
     public List<Transaction> getTransactionsOverview(String authToken, String iBAN, Integer
             nrOfTransactions) throws InvalidParamValueError, NotAuthorizedError {
-        if (!IBANUtil.isValidIBAN(iBAN)) {
-            throw new InvalidParamValueError("The given IBAN is invalid.");
-        }
-
         Customer customer = auth.getAuthorizedCustomer(authToken);
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (iBAN));
@@ -87,7 +79,7 @@ public class InfoServiceImpl implements InfoService {
         List<Transaction> list = transactionRepository.findBySourceOrDestinationOrderByDateDesc(iBAN, iBAN);
         return list.size() > nrOfTransactions ? list.subList(0, nrOfTransactions) : transactionRepository
                 .findBySourceOrDestinationOrderByDateDesc(iBAN,
-                iBAN);
+                                                          iBAN);
     }
 
     @Transactional
@@ -100,14 +92,16 @@ public class InfoServiceImpl implements InfoService {
         }
 
         List<BankAccount> accounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
-        BankAccount primaryAccount = bankAccountRepository.findBankAccountsByPrimaryHolder(customer);
+        List<BankAccount> primaryAccounts = bankAccountRepository.findBankAccountsByPrimaryHolder(customer);
 
         List<UserAccessBean> userAccessBeanList = new ArrayList<>();
         for (BankAccount account : accounts) {
             userAccessBeanList.add(new UserAccessBean(account, account.getPrimaryHolder()));
         }
 
-            userAccessBeanList.add(new UserAccessBean(primaryAccount, primaryAccount.getPrimaryHolder()));
+        for (BankAccount account : primaryAccounts) {
+            userAccessBeanList.add(new UserAccessBean(account, account.getPrimaryHolder()));
+        }
 
         return userAccessBeanList;
     }
