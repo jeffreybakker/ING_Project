@@ -44,10 +44,6 @@ public class CardServiceImpl implements CardService {
     @Override
     public NewCardBean invalidateCard(String token, String iBan, String cardNumber,
                                       boolean newPin) throws InvalidParamValueError, NotAuthorizedError {
-        if (!IBANUtil.isValidIBAN(iBan)) {
-            throw new InvalidParamValueError("The given IBAN is invalid.");
-        }
-
         Customer customer = authService.getAuthorizedCustomer(token);
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(iBan));
 
