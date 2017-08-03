@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -68,6 +69,12 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return new AuthToken(auth.getToken());
+    }
+
+    @Override
+    public void deleteForCustomer(Customer customer) {
+        List<Authentication> authenticationList = repository.findByCustomer(customer);
+        repository.delete(authenticationList);
     }
 
     @Override
