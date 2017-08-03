@@ -15,7 +15,7 @@ import java.util.List;
  * @author Kevin Witlox
  * @since 4-6-2017
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/transaction")
 public interface TransactionService {
 
     /**
@@ -26,9 +26,9 @@ public interface TransactionService {
      * @param pinCode The code used for authorizing the use of the {@link Card}
      * @param amount  The amount to be deposited
      */
-    void depositIntoAccount(@JsonRpcParam("iBAN") String iBAN, @JsonRpcParam("pinCard") Integer
+    void depositIntoAccount(@JsonRpcParam("iBAN") String iBAN, @JsonRpcParam("pinCard") String
             pinCard,
-                            @JsonRpcParam("pinCode") Integer pinCode, @JsonRpcParam("amount")
+                            @JsonRpcParam("pinCode") String pinCode, @JsonRpcParam("amount")
                                     Double amount)
             throws InvalidParamValueError, InvalidPINError;
 
@@ -44,8 +44,8 @@ public interface TransactionService {
      * @throws InvalidPINError
      */
     void payFromAccount(@JsonRpcParam("sourceIBAN") String sourceIBAN, @JsonRpcParam
-            ("targetIBAN") String targetIBAN, @JsonRpcParam("pinCard") Integer pinCard,
-                        @JsonRpcParam("pinCode") Integer pinCode, @JsonRpcParam("amount") Double
+            ("targetIBAN") String targetIBAN, @JsonRpcParam("pinCard") String pinCard,
+                        @JsonRpcParam("pinCode") String pinCode, @JsonRpcParam("amount") Double
                                 amount) throws InvalidParamValueError, InvalidPINError;
 
     /**
@@ -66,7 +66,7 @@ public interface TransactionService {
     void transferMoney(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("sourceIBAN")
             String sourceIBAN, @JsonRpcParam("targetIBAN") String targetIBAN, @JsonRpcParam
                                ("targetName") String targetName, @JsonRpcParam("amount") Double
-            amount,
+                               amount,
                        @JsonRpcParam("description") String description) throws
             InvalidParamValueError, NotAuthorizedError;
 }

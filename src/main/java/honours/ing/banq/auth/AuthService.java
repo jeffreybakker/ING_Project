@@ -9,12 +9,12 @@ import honours.ing.banq.customer.Customer;
  * @author jeffrey
  * @since 14-5-17
  */
-@JsonRpcService("/api")
+@JsonRpcService("/api/auth")
 public interface AuthService {
 
-    String getAuthToken(@JsonRpcParam("username") String username, @JsonRpcParam("password") String password) throws AuthenticationError;
+    AuthToken getAuthToken(@JsonRpcParam("username") String username, @JsonRpcParam("password") String password) throws AuthenticationError;
 
     Customer getAuthorizedCustomer(String token) throws NotAuthorizedError;
-    BankAccount getAuthorizedAccount(String iBAN, int pinCard, int pinCode) throws InvalidPINError;
+    BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError;
 
 }

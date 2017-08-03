@@ -24,7 +24,7 @@ import java.util.*;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional(readOnly = true)
+@Transactional
 public class TransactionServiceImpl implements TransactionService {
 
     // TODO: Sanitize user input
@@ -44,8 +44,12 @@ public class TransactionServiceImpl implements TransactionService {
     private CardRepository cardRepository;
 
     @Override
-    public void depositIntoAccount(String iBAN, Integer pinCard, Integer pinCode, Double amount)
+    public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError {
+        if (!IBANUtil.isValidIBAN(iBAN)) {
+            throw new InvalidParamValueError("The given IBAN is not valid.");
+        }
+
         BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
                 (iBAN));
         Card card = cardRepository.findByAccountAndCardNumber(bankAccount, pinCard);
@@ -61,8 +65,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // Check balance
-        if (bankAccount.getBalance() - amount < 0) {
-            throw new InvalidParamValueError("Not enough balance on account.");
+        if (amount <= 0d) {
+            throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
         // Update balance
@@ -76,8 +80,16 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void payFromAccount(String sourceIBAN, String targetIBAN, Integer pinCard, Integer
+    public void payFromAccount(String sourceIBAN, String targetIBAN, String pinCard, String
             pinCode, Double amount) throws InvalidParamValueError, InvalidPINError {
+        if (!IBANUtil.isValidIBAN(sourceIBAN)) {
+            throw new InvalidParamValueError("The given source IBAN is not valid.");
+        }
+
+        if (!IBANUtil.isValidIBAN(targetIBAN)) {
+            throw new InvalidParamValueError("The given target IBAN is not valid.");
+        }
+
         BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil
                 .getAccountNumber(sourceIBAN));
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
@@ -99,6 +111,10 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("Not enough balance on account.");
         }
 
+        if (amount <= 0) {
+            throw new InvalidParamValueError("Amount should be greater than 0.");
+        }
+
         // Update balance
         fromBankAccount.subBalance(amount);
         toBankAccount.addBalance(amount);
@@ -115,6 +131,14 @@ public class TransactionServiceImpl implements TransactionService {
     public void transferMoney(String authToken, String sourceIBAN, String targetIBAN, String
             targetName, Double amount, String description) throws InvalidParamValueError,
             NotAuthorizedError {
+        if (!IBANUtil.isValidIBAN(sourceIBAN)) {
+            throw new InvalidParamValueError("The given source IBAN is not valid.");
+        }
+
+        if (!IBANUtil.isValidIBAN(targetIBAN)) {
+            throw new InvalidParamValueError("The given target IBAN is not valid.");
+        }
+
         BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil
                 .getAccountNumber(sourceIBAN));
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
@@ -122,13 +146,18 @@ public class TransactionServiceImpl implements TransactionService {
         Customer customer = auth.getAuthorizedCustomer(authToken);
 
         // Check if bank account is held by customer
-        if (!fromBankAccount.getHolders().contains(customer)) {
+        if (!fromBankAccount.getHolders().contains(customer) && !fromBankAccount.getPrimaryHolder
+                ().equals(customer)) {
             throw new NotAuthorizedError();
         }
 
         // Check balance
         if (fromBankAccount.getBalance() - amount < 0) {
             throw new InvalidParamValueError("Not enough balance on account.");
+        }
+
+        if (amount <= 0) {
+            throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
         // Update balance
