@@ -6,7 +6,8 @@ This project is part of one of the many projects in the current ING Honours Trac
 
 ## Implementation
 
-For implementing the initial set of requirements we have used the Spring framework which provides us with easy to use functions for storing, retrieving and updating data. And combined with a JSON RPC library we could easily create an JSON RPC API for our project.
+For implementing the extended set of requirements we have used the Spring framework which provides us with easy to use functions for storing, retrieving and updating data. And combined with a JSON RPC library we could easily create an JSON RPC API for our project.
+One issue that we had, which we hadn't tested well enough in the v1.0 was that the JSON RPC library did not support multiple classes on the same endpoint, so we ended implementing a work-around that basically redirects all HTTP traffic to the correct endpoint so that we could have everything on the same endpoint.
 
 ### General Architecture
 
@@ -37,7 +38,7 @@ Each package has:
 
 ## Instructions
 
-1. Create a MySQL database on `localhost:3306` called `ing_db` for a user with username `ing_project` and an empty or no password
+1. Create a MySQL database on `localhost:3306` called `ing_db` for a user with username `ing_project` and as password: `localhost1234`
 2. Run `honours.ing.banq.Application`
 
 All of the JSON RPC methods are described in the `**Service` classes
