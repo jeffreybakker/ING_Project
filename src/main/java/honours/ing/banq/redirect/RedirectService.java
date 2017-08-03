@@ -69,11 +69,13 @@ public class RedirectService implements ApplicationContextAware {
                     try {
                         Object service = context.getBean(serviceClass);
 
-                        JsonRpcService annotation = AnnotationUtils.findAnnotation(service.getClass(),
-                                JsonRpcService.class);
+                        JsonRpcService annotation = AnnotationUtils.findAnnotation(
+                                service.getClass(), JsonRpcService.class);
+
                         HttpPost httpPost = new HttpPost(DEFAULT_URL + annotation.value());
-                        StringEntity msg = new StringEntity(json, ContentType.create("application/json",
-                                "UTF-8"));
+                        StringEntity msg = new StringEntity(
+                                json, ContentType.create("application/json", "UTF-8"));
+
                         httpPost.setEntity(msg);
                         HttpResponse response = httpclient.execute(httpPost);
 
