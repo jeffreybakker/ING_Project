@@ -4,6 +4,7 @@ import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.auth.CardBlockedError;
 import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
@@ -30,7 +31,7 @@ public interface TransactionService {
             pinCard,
                             @JsonRpcParam("pinCode") String pinCode, @JsonRpcParam("amount")
                                     Double amount)
-            throws InvalidParamValueError, InvalidPINError;
+            throws InvalidParamValueError, InvalidPINError, CardBlockedError;
 
     /**
      * Transfer money to a {@link BankAccount} using a {@link Card}
@@ -46,7 +47,7 @@ public interface TransactionService {
     void payFromAccount(@JsonRpcParam("sourceIBAN") String sourceIBAN, @JsonRpcParam
             ("targetIBAN") String targetIBAN, @JsonRpcParam("pinCard") String pinCard,
                         @JsonRpcParam("pinCode") String pinCode, @JsonRpcParam("amount") Double
-                                amount) throws InvalidParamValueError, InvalidPINError;
+                                amount) throws InvalidParamValueError, InvalidPINError, CardBlockedError;
 
     /**
      * Transer money from one {@link BankAccount} to another {@link BankAccount}

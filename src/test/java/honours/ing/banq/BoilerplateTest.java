@@ -46,19 +46,23 @@ public class BoilerplateTest {
 
     @Before
     public void setUp() throws Exception {
-        account1 = new AccountInfo(bankAccountService.openAccount("Jan", "Jansen", "J.", "1996-1-1",
-                "1234567890", "Klaverstraat 1", "0612345678", "janjansen@gmail.com", "jantje96",
-                "1234"), "jantje96", "1234");
-        account2 = new AccountInfo(bankAccountService.openAccount("Piet", "Pietersen", "p.p", "1998-8-8",
-                "012345789", "Huisstraat 1", "0607080910", "piet@gmail.com", "piet1", "1234"), "piet1", "1234");
+        account1 = new AccountInfo(
+                bankAccountService.openAccount(
+                        "Jan", "Jansen", "J.", "1996-1-1",
+                        "1234567890", "Klaverstraat 1", "0612345678",
+                        "janjansen@gmail.com", "jantje96", "1234"),
+                "jantje96", "1234");
+        account2 = new AccountInfo(
+                bankAccountService.openAccount("Piet", "Pietersen", "p.p", "1998-8-8",
+                        "012345789", "Huisstraat 1", "0607080910",
+                        "piet@gmail.com", "piet1", "1234"),
+                "piet1", "1234");
 
         account1.token = authService.getAuthToken("jantje96", "1234").getAuthToken();
         account2.token = authService.getAuthToken("piet1", "1234").getAuthToken();
 
-        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo
-                (0d));
-        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo
-                (0d));
+        assertThat(infoService.getBalance(account1.token, account1.iBan).getBalance(), equalTo(0d));
+        assertThat(infoService.getBalance(account2.token, account2.iBan).getBalance(), equalTo(0d));
     }
 
     @After

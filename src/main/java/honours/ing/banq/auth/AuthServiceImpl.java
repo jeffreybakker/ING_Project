@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError {
+    public BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError {
         if (iBAN == null || iBAN.length() <= 8 || pinCard == null || pinCode == null) {
             throw new InvalidParamValueError("One of the parameters is null or the IBAN is not long enough");
         }
@@ -106,8 +106,18 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidParamValueError("Card does not exist");
         }
 
+        if (card.isBlocked()) {
+            throw new CardBlockedError(
+                    "There have been " + card.getFailedAttempts() + " consecutive failed attempts.");
+        }
+
         if (!card.getPin().equals(pinCode)) {
+            card.addFailedAttempt();
+            cardRepository.save(card);
             throw new InvalidPINError();
+        } else if (card.getFailedAttempts() > 0) {
+            card.resetAttempts();
+            cardRepository.save(card);
         }
 
         return account;

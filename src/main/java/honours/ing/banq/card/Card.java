@@ -15,6 +15,8 @@ import java.util.Random;
 @Entity
 public class Card {
 
+    private static final int PIN_ATTEMPTS_BEFORE_BLOCK = 3;
+
     @SuppressWarnings("NumericOverflow")
     private static final long DURABILITY = 1000 * 60 * 60 * 24 * 365 * 5; // 5 years
 
@@ -33,6 +35,8 @@ public class Card {
     private String pin; // TODO: add hashing
     private Date expirationDate;
 
+    private int failedAttempts;
+
     /**
      * @deprecated empty constructor for spring
      */
@@ -48,6 +52,8 @@ public class Card {
         Calendar expiration = Calendar.getInstance();
         expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
         expirationDate = expiration.getTime();
+
+        failedAttempts = 0;
     }
 
     public Integer getId() {
@@ -72,6 +78,22 @@ public class Card {
 
     public Date getExpirationDate() {
         return expirationDate;
+    }
+
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+
+    public boolean isBlocked() {
+        return failedAttempts >= PIN_ATTEMPTS_BEFORE_BLOCK;
+    }
+
+    public void addFailedAttempt() {
+        failedAttempts++;
+    }
+
+    public void resetAttempts() {
+        failedAttempts = 0;
     }
 
     private static String generatePin() {

@@ -5,6 +5,7 @@ import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.AuthService;
+import honours.ing.banq.auth.CardBlockedError;
 import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
@@ -45,7 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
-            throws InvalidParamValueError, InvalidPINError {
+            throws InvalidParamValueError, InvalidPINError, CardBlockedError {
         if (!IBANUtil.isValidIBAN(iBAN)) {
             throw new InvalidParamValueError("The given IBAN is not valid.");
         }
@@ -69,7 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void payFromAccount(String sourceIBAN, String targetIBAN, String pinCard, String pinCode, Double amount)
-            throws InvalidParamValueError, InvalidPINError {
+            throws InvalidParamValueError, InvalidPINError, CardBlockedError {
         if (!IBANUtil.isValidIBAN(sourceIBAN)) {
             throw new InvalidParamValueError("The given source IBAN is not valid.");
         }
