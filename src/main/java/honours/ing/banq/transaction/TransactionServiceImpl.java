@@ -50,19 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given IBAN is not valid.");
         }
 
-        BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
-                (iBAN));
-        Card card = cardRepository.findByAccountAndCardNumber(bankAccount, pinCard);
-
-        // Check for card matching iBAN
-        if (card == null) {
-            throw new InvalidParamValueError("The given card does not belong to the given iBAN.");
-        }
-
-        // Check pin code
-        if (!Objects.equals(card.getPin(), pinCode)) {
-            throw new InvalidPINError();
-        }
+        BankAccount bankAccount = auth.getAuthorizedAccount(iBAN, pinCard, pinCode);
 
         // Check balance
         if (amount <= 0d) {
@@ -80,8 +68,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void payFromAccount(String sourceIBAN, String targetIBAN, String pinCard, String
-            pinCode, Double amount) throws InvalidParamValueError, InvalidPINError {
+    public void payFromAccount(String sourceIBAN, String targetIBAN, String pinCard, String pinCode, Double amount)
+            throws InvalidParamValueError, InvalidPINError {
         if (!IBANUtil.isValidIBAN(sourceIBAN)) {
             throw new InvalidParamValueError("The given source IBAN is not valid.");
         }
@@ -90,21 +78,8 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given target IBAN is not valid.");
         }
 
-        BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil
-                .getAccountNumber(sourceIBAN));
-        BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
-                (targetIBAN));
-        Card card = cardRepository.findByAccountAndCardNumber(fromBankAccount, pinCard);
-
-        // Check for card matching iBAN
-        if (card == null) {
-            throw new InvalidParamValueError("The given card does not belong to the given iBAN.");
-        }
-
-        // Check pin code
-        if (!Objects.equals(card.getPin(), pinCode)) {
-            throw new InvalidPINError();
-        }
+        BankAccount fromBankAccount = auth.getAuthorizedAccount(sourceIBAN, pinCard, pinCode);
+        BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
 
         // Check balance
         if (fromBankAccount.getBalance() - amount < 0) {
@@ -128,9 +103,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void transferMoney(String authToken, String sourceIBAN, String targetIBAN, String
-            targetName, Double amount, String description) throws InvalidParamValueError,
-            NotAuthorizedError {
+    public void transferMoney(String authToken, String sourceIBAN, String targetIBAN, String targetName,
+                              Double amount, String description) throws InvalidParamValueError, NotAuthorizedError {
         if (!IBANUtil.isValidIBAN(sourceIBAN)) {
             throw new InvalidParamValueError("The given source IBAN is not valid.");
         }
@@ -146,8 +120,7 @@ public class TransactionServiceImpl implements TransactionService {
         Customer customer = auth.getAuthorizedCustomer(authToken);
 
         // Check if bank account is held by customer
-        if (!fromBankAccount.getHolders().contains(customer) && !fromBankAccount.getPrimaryHolder
-                ().equals(customer)) {
+        if (!fromBankAccount.getHolders().contains(customer) && !fromBankAccount.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
         }
 

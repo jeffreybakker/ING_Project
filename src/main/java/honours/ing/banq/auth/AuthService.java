@@ -14,6 +14,8 @@ public interface AuthService {
 
     AuthToken getAuthToken(@JsonRpcParam("username") String username, @JsonRpcParam("password") String password) throws AuthenticationError;
 
+    void deleteForCustomer(Customer customer);
+
     Customer getAuthorizedCustomer(String token) throws NotAuthorizedError;
     BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError;
 
