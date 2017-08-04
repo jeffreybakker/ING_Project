@@ -18,7 +18,7 @@ public interface AuthService {
 
     void deleteForCustomer(Customer customer);
 
-    Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError;
+    Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError, InvalidPINError;
     Customer getAuthorizedCustomer(String token) throws NotAuthorizedError;
     BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError;
 

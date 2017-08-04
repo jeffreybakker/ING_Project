@@ -77,6 +77,10 @@ public class Card {
         return pin;
     }
 
+    public boolean hasExpired() {
+        return expirationDate.getTime() >= TimeUtil.getDate().getTime();
+    }
+
     public Date getExpirationDate() {
         return expirationDate;
     }

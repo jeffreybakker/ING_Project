@@ -6,6 +6,7 @@ import honours.ing.banq.access.NoEffectError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.AuthService;
+import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.util.IBANUtil;
@@ -29,7 +30,7 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @Override
     public Object unblockCard(String authToken, String iBAN, String pinCard)
-            throws InvalidParamValueError, NotAuthorizedError, NoEffectError {
+            throws InvalidParamValueError, NotAuthorizedError, NoEffectError, InvalidPINError {
         Card card = auth.getAuthorizedCard(authToken, iBAN, pinCard);
 
         if (!card.isBlocked()) {

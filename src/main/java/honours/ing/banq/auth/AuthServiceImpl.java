@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError {
+    public Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError, InvalidPINError {
         Customer customer = getAuthorizedCustomer(token);
 
         // Retrieve the bank account and check whether we are authorized to access it
@@ -97,6 +97,10 @@ public class AuthServiceImpl implements AuthService {
         Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
         if (card == null) {
             throw new InvalidParamValueError("There is no pin card with the given card number");
+        }
+
+        if (card.hasExpired()) {
+            throw new InvalidPINError();
         }
 
         if (card.getHolder() != customer) {
@@ -134,6 +138,10 @@ public class AuthServiceImpl implements AuthService {
         Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
         if (card == null) {
             throw new InvalidParamValueError("Card does not exist");
+        }
+
+        if (card.hasExpired()) {
+            throw new InvalidPINError();
         }
 
         if (card.isBlocked()) {
