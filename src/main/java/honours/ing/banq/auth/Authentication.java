@@ -1,7 +1,7 @@
 package honours.ing.banq.auth;
 
 import honours.ing.banq.customer.Customer;
-import honours.ing.banq.util.TimeUtil;
+import honours.ing.banq.time.TimeUtil;
 
 import javax.persistence.*;
 import java.util.Date;

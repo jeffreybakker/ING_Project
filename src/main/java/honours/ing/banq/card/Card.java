@@ -2,7 +2,7 @@ package honours.ing.banq.card;
 
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.customer.Customer;
-import honours.ing.banq.util.TimeUtil;
+import honours.ing.banq.time.TimeUtil;
 
 import javax.persistence.*;
 import java.util.Calendar;

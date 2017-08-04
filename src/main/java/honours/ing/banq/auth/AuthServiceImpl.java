@@ -10,7 +10,7 @@ import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
 import honours.ing.banq.util.IBANUtil;
-import honours.ing.banq.util.TimeUtil;
+import honours.ing.banq.time.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ import java.util.Random;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
     private static final int TOKEN_LENGTH = 255;
@@ -72,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
         return new AuthToken(auth.getToken());
     }
 
+    @Transactional
     @Override
     public void deleteForCustomer(Customer customer) {
         List<Authentication> authenticationList = repository.findByCustomer(customer);
@@ -92,6 +93,7 @@ public class AuthServiceImpl implements AuthService {
         return auth.getCustomer();
     }
 
+    @Transactional
     @Override
     public BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError {
         if (iBAN == null || iBAN.length() <= 8 || pinCard == null || pinCode == null) {
