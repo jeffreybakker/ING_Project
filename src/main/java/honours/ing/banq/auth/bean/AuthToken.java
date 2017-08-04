@@ -1,4 +1,4 @@
-package honours.ing.banq.auth;
+package honours.ing.banq.auth.bean;
 
 /**
  * @author Kevin Witlox

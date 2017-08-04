@@ -3,6 +3,7 @@ package honours.ing.banq.auth;
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.auth.bean.AuthToken;
 import honours.ing.banq.customer.Customer;
 
 /**

@@ -4,19 +4,19 @@ import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
+import honours.ing.banq.auth.bean.AuthToken;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
 import honours.ing.banq.util.IBANUtil;
-import org.aspectj.weaver.ast.Not;
+import honours.ing.banq.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -57,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
 
         Authentication auth = null;
         Calendar exp = Calendar.getInstance();
+        exp.setTime(TimeUtil.getDate());
         exp.add(Calendar.SECOND, VALIDITY);
 
         while (auth == null) {

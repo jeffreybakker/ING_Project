@@ -12,6 +12,7 @@ import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.util.IBANUtil;
+import honours.ing.banq.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,8 +64,9 @@ public class TransactionServiceImpl implements TransactionService {
         bankAccountRepository.save(bankAccount);
 
         // Save transaction
-        Transaction transaction = new Transaction(null, iBAN, bankAccount.getPrimaryHolder()
-                .getName(), new Date(), amount, "Deposit");
+        Transaction transaction = new Transaction(
+                null, iBAN, bankAccount.getPrimaryHolder().getName(),
+                TimeUtil.getDate(), amount, "Deposit");
         transactionRepository.save(transaction);
     }
 
@@ -98,8 +100,9 @@ public class TransactionServiceImpl implements TransactionService {
         bankAccountRepository.save(toBankAccount);
 
         // Save Transaction
-        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, toBankAccount
-                .getPrimaryHolder().getName(), new Date(), amount, "Payment with debit card.");
+        Transaction transaction = new Transaction(
+                sourceIBAN, targetIBAN, toBankAccount.getPrimaryHolder().getName(),
+                TimeUtil.getDate(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
@@ -114,10 +117,8 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given target IBAN is not valid.");
         }
 
-        BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil
-                .getAccountNumber(sourceIBAN));
-        BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber
-                (targetIBAN));
+        BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(sourceIBAN));
+        BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
         Customer customer = auth.getAuthorizedCustomer(authToken);
 
         // Check if bank account is held by customer
@@ -141,8 +142,9 @@ public class TransactionServiceImpl implements TransactionService {
         bankAccountRepository.save(toBankAccount);
 
         // Save Transaction
-        Transaction transaction = new Transaction(sourceIBAN, targetIBAN, targetName, new Date(),
-                amount, description);
+        Transaction transaction = new Transaction(
+                sourceIBAN, targetIBAN, targetName,
+                TimeUtil.getDate(), amount, description);
         transactionRepository.save(transaction);
     }
 

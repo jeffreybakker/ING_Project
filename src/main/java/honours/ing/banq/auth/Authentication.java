@@ -1,6 +1,7 @@
 package honours.ing.banq.auth;
 
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.util.TimeUtil;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -49,7 +50,7 @@ public class Authentication {
     }
 
     public boolean hasExpired() {
-        return System.currentTimeMillis() >= expiration.getTime();
+        return TimeUtil.currentTimeMillis() >= expiration.getTime();
     }
 
 }

@@ -2,6 +2,7 @@ package honours.ing.banq.card;
 
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.util.TimeUtil;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -50,7 +51,7 @@ public class Card {
         pin = generatePin();
 
         Calendar expiration = Calendar.getInstance();
-        expiration.setTimeInMillis(System.currentTimeMillis() + DURABILITY);
+        expiration.setTimeInMillis(TimeUtil.currentTimeMillis() + DURABILITY);
         expirationDate = expiration.getTime();
 
         failedAttempts = 0;
