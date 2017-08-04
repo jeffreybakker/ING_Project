@@ -1,5 +1,6 @@
 package honours.ing.banq.time;
 
+import java.io.*;
 import java.util.Date;
 
 /**
@@ -11,7 +12,33 @@ public class TimeUtil {
 
     private static final long DAY = 1000 * 60 * 60 * 24; // second * minute * hour * day
 
-    private static long addedMillis = 0;
+    private static long addedMillis = init();
+
+    private static long init() {
+        try {
+            File time = new File("time.txt");
+            if (!time.exists()) {
+                time.createNewFile();
+                PrintWriter out = new PrintWriter(new FileOutputStream(time));
+                out.println(0L);
+                out.close();
+            }
+
+            try (BufferedReader in = new BufferedReader(new FileReader(time))) {
+                return Long.parseLong(in.readLine());
+            }
+        } catch (Exception ignored) { }
+        return 0;
+    }
+
+    private static void save() {
+        try {
+            File time = new File("time.txt");
+            PrintWriter out = new PrintWriter(new FileOutputStream(time));
+            out.println(0L);
+            out.close();
+        } catch (Exception ignored) { }
+    }
 
     /**
      * Simulates the passing of x days.
@@ -23,6 +50,7 @@ public class TimeUtil {
         }
 
         addedMillis += days * DAY;
+        save();
     }
 
     /**
@@ -30,6 +58,7 @@ public class TimeUtil {
      */
     public static void resetTime() {
         addedMillis = 0;
+        save();
     }
 
     /**
