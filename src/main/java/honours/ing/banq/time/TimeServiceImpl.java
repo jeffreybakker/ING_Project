@@ -55,9 +55,9 @@ public class TimeServiceImpl implements TimeService {
         }
 
         entityManager.flush();
-        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=0;").executeUpdate();
         tableNames.forEach((name) -> entityManager.createNativeQuery("TRUNCATE TABLE " + name).executeUpdate());
-        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=1;").executeUpdate();
 
         return new Object();
     }

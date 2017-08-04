@@ -6,6 +6,7 @@ import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
 import honours.ing.banq.util.StringUtil;
 import org.junit.After;
@@ -40,6 +41,9 @@ public class AuthServiceTest {
     @Autowired
     private BankAccountService accountService;
 
+    @Autowired
+    private TimeService timeService;
+
     // Variables
     private AccountInfo accountInfo;
 
@@ -60,6 +64,7 @@ public class AuthServiceTest {
 
     @After
     public void tearDown() throws Exception {
+        accountInfo.token = service.getAuthToken(accountInfo.username, accountInfo.password).getAuthToken();
         accountService.closeAccount(accountInfo.token, accountInfo.iBan);
     }
 
@@ -109,6 +114,18 @@ public class AuthServiceTest {
         Customer customer = service.getAuthorizedCustomer(token);
         assertEquals(accountInfo.username, customer.getUsername());
         assertEquals(accountInfo.password, customer.getPassword());
+    }
+
+    @Test(expected = NotAuthorizedError.class)
+    public void getAuthorizedCustomerExpiredToken() throws Exception {
+        String token = service.getAuthToken(accountInfo.username, accountInfo.password).getAuthToken();
+
+        assertNotNull(token);
+        assertTrue(token.length() > 0);
+
+        timeService.simulateTime(50);
+
+        service.getAuthorizedCustomer(token);
     }
 
     @Test

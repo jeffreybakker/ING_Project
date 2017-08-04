@@ -5,6 +5,7 @@ import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.config.TestConfiguration;
 import honours.ing.banq.info.InfoService;
+import honours.ing.banq.time.TimeService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -19,6 +20,7 @@ import javax.transaction.Transactional;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Kevin Witlox
@@ -31,6 +33,8 @@ import static org.junit.Assert.assertThat;
 @ActiveProfiles("test")
 public class BoilerplateTest {
 
+    protected final long MAX_TIME_DIFF = 1000;
+
     // Services
     @Autowired
     protected BankAccountService bankAccountService;
@@ -41,11 +45,18 @@ public class BoilerplateTest {
     @Autowired
     protected InfoService infoService;
 
+    @Autowired
+    protected TimeService timeService;
+
     // Fields
     protected AccountInfo account1, account2;
 
     @Before
     public void setUp() throws Exception {
+        timeService.reset();
+        assertTrue((System.currentTimeMillis() - MAX_TIME_DIFF) <= timeService.getDate().getDate().getTime());
+        assertTrue((System.currentTimeMillis() + MAX_TIME_DIFF) >= timeService.getDate().getDate().getTime());
+
         account1 = new AccountInfo(
                 bankAccountService.openAccount(
                         "Jan", "Jansen", "J.", "1996-1-1",
@@ -67,8 +78,13 @@ public class BoilerplateTest {
 
     @After
     public void tearDown() throws Exception {
+        account1.token = authService.getAuthToken("jantje96", "1234").getAuthToken();
+        account2.token = authService.getAuthToken("piet1", "1234").getAuthToken();
+
         bankAccountService.closeAccount(account1.token, account1.iBan);
         bankAccountService.closeAccount(account2.token, account2.iBan);
+
+        timeService.reset();
     }
 
 }
