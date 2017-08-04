@@ -4,19 +4,19 @@ import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
+import honours.ing.banq.auth.bean.AuthToken;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
 import honours.ing.banq.util.IBANUtil;
-import org.aspectj.weaver.ast.Not;
+import honours.ing.banq.time.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -25,7 +25,7 @@ import java.util.Random;
  */
 @Service
 @AutoJsonRpcServiceImpl
-@Transactional
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
     private static final int TOKEN_LENGTH = 255;
@@ -57,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
 
         Authentication auth = null;
         Calendar exp = Calendar.getInstance();
+        exp.setTime(TimeUtil.getDate());
         exp.add(Calendar.SECOND, VALIDITY);
 
         while (auth == null) {
@@ -71,10 +72,42 @@ public class AuthServiceImpl implements AuthService {
         return new AuthToken(auth.getToken());
     }
 
+    @Transactional
     @Override
     public void deleteForCustomer(Customer customer) {
         List<Authentication> authenticationList = repository.findByCustomer(customer);
         repository.delete(authenticationList);
+    }
+
+    @Override
+    public Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError, InvalidPINError {
+        Customer customer = getAuthorizedCustomer(token);
+
+        // Retrieve the bank account and check whether we are authorized to access it
+        BankAccount account = accountRepository.findOne((int) IBANUtil.getAccountNumber(iBan));
+        if (account == null) {
+            throw new InvalidParamValueError("There is no bank account with the given iBAN");
+        }
+
+        if (account.getPrimaryHolder() != customer && !account.getHolders().contains(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        // Retrieve the pin card and check whether we are authorized to access it
+        Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
+        if (card == null) {
+            throw new InvalidParamValueError("There is no pin card with the given card number");
+        }
+
+        if (card.hasExpired()) {
+            throw new InvalidPINError();
+        }
+
+        if (card.getHolder() != customer) {
+            throw new NotAuthorizedError();
+        }
+
+        return card;
     }
 
     @Override
@@ -91,6 +124,7 @@ public class AuthServiceImpl implements AuthService {
         return auth.getCustomer();
     }
 
+    @Transactional
     @Override
     public BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError {
         if (iBAN == null || iBAN.length() <= 8 || pinCard == null || pinCode == null) {
@@ -104,6 +138,10 @@ public class AuthServiceImpl implements AuthService {
         Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
         if (card == null) {
             throw new InvalidParamValueError("Card does not exist");
+        }
+
+        if (card.hasExpired()) {
+            throw new InvalidPINError();
         }
 
         if (card.isBlocked()) {

@@ -4,6 +4,7 @@ import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.access.NoEffectError;
+import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.auth.NotAuthorizedError;
 
 /**
@@ -25,6 +26,6 @@ public interface CardService {
      */
     Object unblockCard(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN,
                        @JsonRpcParam("pinCard") String pinCard)
-                       throws InvalidParamValueError, NotAuthorizedError, NoEffectError;
+            throws InvalidParamValueError, NotAuthorizedError, NoEffectError, InvalidPINError;
 
 }

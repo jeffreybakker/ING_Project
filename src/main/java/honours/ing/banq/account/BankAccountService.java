@@ -7,7 +7,8 @@ import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.auth.NotAuthorizedError;
 
 /**
- * @author jeffrey
+ * This service provides the methods for the Account module.
+ * @author Jeffrey Bakker
  * @since 17-4-17
  */
 @JsonRpcService("/api/account")
@@ -16,7 +17,6 @@ public interface BankAccountService {
     /**
      * Open a bank account. This method also creates a <code>Customer</code> and a <code>Card</code> or this bank
      * account.
-     *
      * @param name            the name of the customer
      * @param surname         the surname of the customer
      * @param initials        the initials of the customer
@@ -41,14 +41,21 @@ public interface BankAccountService {
 
     /**
      * Open a additional account for an existing logged in customer. Also creates a <code>Card</code> for this account.
-     *
      * @param authToken the authentication token, obtained with <code>getAuthToken</code>
      * @return an object containing basic information about the newly created bank account
      * @throws NotAuthorizedError if something went wrong with the authentication module
      */
     NewAccountBean openAdditionalAccount(@JsonRpcParam("authToken") String authToken) throws NotAuthorizedError;
 
-    void closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN) throws
+    /**
+     * Closes the bank account.
+     * @param authToken the authentication token of the logged in user
+     * @param iBAN the iBAN of the account that should be closed
+     * @return an empty dictionary
+     * @throws NotAuthorizedError if the user is not authorized to close the account
+     * @throws InvalidParamValueError if some of the parameters are invalid, please see the message
+     */
+    Object closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN) throws
             NotAuthorizedError, InvalidParamValueError;
 
 }
