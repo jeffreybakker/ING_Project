@@ -9,10 +9,18 @@ import java.util.Date;
  */
 public class TimeUtil {
 
+    /**
+     * Returns the Date object representing the current time in the system (may be in the future).
+     * @return a Date object
+     */
     public static Date getDate() {
         return new Date();
     }
 
+    /**
+     * Returns the system's current time in milliseconds (may be in the future).
+     * @return the time in milliseconds since January 1, 1970
+     */
     public static long currentTimeMillis() {
         return System.currentTimeMillis();
     }

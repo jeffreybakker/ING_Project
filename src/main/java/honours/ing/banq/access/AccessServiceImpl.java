@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author jeffrey
+ * An implementation of the {@link AccessService}.
+ * @author Jeffrey Bakker
  * @since 31-5-17
  */
 @Service
