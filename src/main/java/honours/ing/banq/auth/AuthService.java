@@ -4,6 +4,7 @@ import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.auth.bean.AuthToken;
+import honours.ing.banq.card.Card;
 import honours.ing.banq.customer.Customer;
 
 /**
@@ -17,6 +18,7 @@ public interface AuthService {
 
     void deleteForCustomer(Customer customer);
 
+    Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError;
     Customer getAuthorizedCustomer(String token) throws NotAuthorizedError;
     BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError;
 

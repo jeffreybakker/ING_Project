@@ -80,6 +80,33 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError {
+        Customer customer = getAuthorizedCustomer(token);
+
+        // Retrieve the bank account and check whether we are authorized to access it
+        BankAccount account = accountRepository.findOne((int) IBANUtil.getAccountNumber(iBan));
+        if (account == null) {
+            throw new InvalidParamValueError("There is no bank account with the given iBAN");
+        }
+
+        if (account.getPrimaryHolder() != customer && !account.getHolders().contains(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        // Retrieve the pin card and check whether we are authorized to access it
+        Card card = cardRepository.findByAccountAndCardNumber(account, pinCard);
+        if (card == null) {
+            throw new InvalidParamValueError("There is no pin card with the given card number");
+        }
+
+        if (card.getHolder() != customer) {
+            throw new NotAuthorizedError();
+        }
+
+        return card;
+    }
+
+    @Override
     public Customer getAuthorizedCustomer(String token) throws NotAuthorizedError {
         if (token == null || token.length() == 0) {
             throw new InvalidParamValueError("Token cannot be null/empty");
