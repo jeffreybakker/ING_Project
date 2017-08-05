@@ -3,6 +3,7 @@ package honours.ing.banq.time;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.time.bean.DateBean;
+import honours.ing.banq.variables.VarService;
 import org.hibernate.Session;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.persister.entity.AbstractEntityPersister;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +27,23 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class TimeServiceImpl implements TimeService {
 
-    @Autowired
+    private static final long DAY = 1000 * 60 * 60 * 24; // second * minute * hour * day
+
+    private static long addedMillis;
+    private static TimeService instance;
+
     private EntityManager entityManager;
+
+    private VarService vars;
+
+    @Autowired
+    public TimeServiceImpl(EntityManager em, VarService vars) {
+        instance = this;
+        entityManager = em;
+        this.vars = vars;
+
+        addedMillis = Long.parseLong(vars.getVariable("time", "0"));
+    }
 
     @Override
     public Object simulateTime(int nrOfDays) throws InvalidParamValueError {
@@ -34,7 +51,8 @@ public class TimeServiceImpl implements TimeService {
             throw new InvalidParamValueError("The amount of days may not be less than 0");
         }
 
-        TimeUtil.addDays(nrOfDays);
+        addedMillis += nrOfDays * DAY;
+        save();
 
         return new Object();
     }
@@ -42,7 +60,7 @@ public class TimeServiceImpl implements TimeService {
     @Transactional
     @Override
     public Object reset() {
-        TimeUtil.resetTime();
+        addedMillis = 0L;
 
         // Truncate all tables in the database
         List<String> tableNames = new ArrayList<>();
@@ -63,8 +81,21 @@ public class TimeServiceImpl implements TimeService {
     }
 
     @Override
+    public void save() {
+        vars.setVariable("time", "" + addedMillis);
+    }
+
+    @Override
     public DateBean getDate() {
-        return new DateBean(TimeUtil.getDate());
+        return new DateBean(getCurDate());
+    }
+
+    public static long currentTimeMillis() {
+        return System.currentTimeMillis() + addedMillis;
+    }
+
+    public static Date getCurDate() {
+        return new Date(currentTimeMillis());
     }
 
 }

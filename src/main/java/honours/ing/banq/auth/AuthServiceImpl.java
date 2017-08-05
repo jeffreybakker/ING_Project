@@ -9,8 +9,8 @@ import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.time.TimeServiceImpl;
 import honours.ing.banq.util.IBANUtil;
-import honours.ing.banq.time.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
 
         Authentication auth = null;
         Calendar exp = Calendar.getInstance();
-        exp.setTime(TimeUtil.getDate());
+        exp.setTime(TimeServiceImpl.getCurDate());
         exp.add(Calendar.SECOND, VALIDITY);
 
         while (auth == null) {

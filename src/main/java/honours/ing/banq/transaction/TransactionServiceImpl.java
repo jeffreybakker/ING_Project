@@ -10,8 +10,8 @@ import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
-import honours.ing.banq.time.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +41,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private CardRepository cardRepository;
 
+    @Autowired
+    private TimeService timeService;
+
     @Override
     public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError, CardBlockedError {
@@ -62,7 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
         // Save transaction
         Transaction transaction = new Transaction(
                 null, iBAN, bankAccount.getPrimaryHolder().getName(),
-                TimeUtil.getDate(), amount, "Deposit");
+                timeService.getDate().getDate(), amount, "Deposit");
         transactionRepository.save(transaction);
     }
 
@@ -98,7 +101,7 @@ public class TransactionServiceImpl implements TransactionService {
         // Save Transaction
         Transaction transaction = new Transaction(
                 sourceIBAN, targetIBAN, toBankAccount.getPrimaryHolder().getName(),
-                TimeUtil.getDate(), amount, "Payment with debit card.");
+                timeService.getDate().getDate(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
@@ -140,7 +143,7 @@ public class TransactionServiceImpl implements TransactionService {
         // Save Transaction
         Transaction transaction = new Transaction(
                 sourceIBAN, targetIBAN, targetName,
-                TimeUtil.getDate(), amount, description);
+                timeService.getDate().getDate(), amount, description);
         transactionRepository.save(transaction);
     }
 
