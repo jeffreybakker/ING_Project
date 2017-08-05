@@ -4,6 +4,7 @@ import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
+import honours.ing.banq.account.bean.OverdraftBean;
 import honours.ing.banq.auth.NotAuthorizedError;
 
 /**
@@ -55,7 +56,32 @@ public interface BankAccountService {
      * @throws NotAuthorizedError if the user is not authorized to close the account
      * @throws InvalidParamValueError if some of the parameters are invalid, please see the message
      */
-    Object closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN) throws
-            NotAuthorizedError, InvalidParamValueError;
+    Object closeAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN)
+            throws NotAuthorizedError, InvalidParamValueError;
+
+    /**
+     * Method that asks the server for the overdraft limit of a bank account.
+     * @param authToken the authentication token, obtained with {@code getAuthToken}
+     * @param iBAN      the number of the bank account
+     * @return a dictionary containing the overdraft limit
+     * @throws NotAuthorizedError if the user is not authorized to see the overdraft limit on this account
+     * @throws InvalidParamValueError if one of the parameters was invalid
+     */
+    OverdraftBean getOverdraftLimit(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN)
+            throws NotAuthorizedError, InvalidParamValueError;
+
+    /**
+     * Method that sets the overdraft limit for a bank account.
+     * @param authToken      the authentication token, obtained with {@code getAuthToken}
+     * @param iBAN           the number of the bank account
+     * @param overdraftLimit the new overdraft limit of the account
+     * @return an empty dictionary if successful
+     * @throws NotAuthorizedError if the user is not authorized to set the overdraft limit on this account
+     * @throws InvalidParamValueError if one of the parameters was invalid
+     */
+    Object setOverdraftLimit(
+            @JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN,
+            @JsonRpcParam("overdraftLimit") double overdraftLimit)
+            throws NotAuthorizedError, InvalidParamValueError;
 
 }

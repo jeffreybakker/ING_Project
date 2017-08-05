@@ -3,6 +3,7 @@ package honours.ing.banq.account;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
+import honours.ing.banq.account.bean.OverdraftBean;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -114,4 +116,49 @@ public class BankAccountServiceImpl implements BankAccountService {
 
         return new Object();
     }
+
+    @Override
+    public OverdraftBean getOverdraftLimit(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+
+        long accountNumber = IBANUtil.getAccountNumber(iBAN);
+        BankAccount account = repository.findOne((int) accountNumber);
+
+        if (account == null) {
+            throw new InvalidParamValueError("Bank account does not exist");
+        }
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        return new OverdraftBean(account.getOverdraftLimit());
+    }
+
+    @Transactional
+    @Override
+    public Object setOverdraftLimit(String authToken, String iBAN, double overdraftLimit) throws NotAuthorizedError, InvalidParamValueError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+
+        long accountNumber = IBANUtil.getAccountNumber(iBAN);
+        BankAccount account = repository.findOne((int) accountNumber);
+
+        if (account == null) {
+            throw new InvalidParamValueError("Bank account does not exist");
+        }
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        if (overdraftLimit < 0.0d) {
+            throw new InvalidParamValueError("The overdraft limit must be a positive value");
+        }
+
+        account.setOverdraftLimit(new BigDecimal(overdraftLimit));
+        repository.save(account);
+
+        return new Object();
+    }
+
 }

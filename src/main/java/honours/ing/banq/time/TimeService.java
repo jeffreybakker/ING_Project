@@ -28,6 +28,11 @@ public interface TimeService {
     Object reset();
 
     /**
+     * Saves the current time state.
+     */
+    void save();
+
+    /**
      * Method that ask the server to get it's simulated date.
      * @return an object containing the simulated date
      */

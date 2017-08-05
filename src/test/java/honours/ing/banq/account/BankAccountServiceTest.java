@@ -3,6 +3,7 @@ package honours.ing.banq.account;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.auth.AuthService;
+import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.util.IBANUtil;
 import honours.ing.banq.util.StringUtil;
@@ -20,6 +21,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Calendar;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author jeffrey
@@ -144,6 +147,15 @@ public class BankAccountServiceTest {
     @Test(expected = InvalidParamValueError.class)
     public void closeNonExistingAccount() throws Exception {
         service.closeAccount(token, IBANUtil.generateIBAN(123456789));
+    }
+
+    @Test
+    public void overdraftLimit() throws Exception {
+        String account = accounts.peek();
+
+        assertEquals(0.0, service.getOverdraftLimit(token, account).getOverdraftLimit(), 0.005);
+        service.setOverdraftLimit(token, account, 1000.0);
+        assertEquals(1000.0, service.getOverdraftLimit(token, account).getOverdraftLimit(), 0.005);
     }
 
 }

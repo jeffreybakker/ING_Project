@@ -10,11 +10,13 @@ import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
-import honours.ing.banq.time.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 /**
  * @author Kevin Witlox
@@ -41,6 +43,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private CardRepository cardRepository;
 
+    @Autowired
+    private TimeService timeService;
+
     @Override
     public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError, CardBlockedError {
@@ -56,13 +61,13 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // Update balance
-        bankAccount.addBalance(amount);
+        bankAccount.addBalance(new BigDecimal(amount));
         bankAccountRepository.save(bankAccount);
 
         // Save transaction
         Transaction transaction = new Transaction(
                 null, iBAN, bankAccount.getPrimaryHolder().getName(),
-                TimeUtil.getDate(), amount, "Deposit");
+                timeService.getDate().getDate(), amount, "Deposit");
         transactionRepository.save(transaction);
     }
 
@@ -80,25 +85,39 @@ public class TransactionServiceImpl implements TransactionService {
         BankAccount fromBankAccount = auth.getAuthorizedAccount(sourceIBAN, pinCard, pinCode);
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
 
-        // Check balance
-        if (fromBankAccount.getBalance() - amount < 0) {
-            throw new InvalidParamValueError("Not enough balance on account.");
-        }
+        BigDecimal amt = new BigDecimal(amount);
 
-        if (amount <= 0) {
+        // Check balance
+        if (amount <= 0.0d) {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
+        if (!fromBankAccount.canPayAmount(amt)) {
+            throw new InvalidParamValueError("Not enough balance on account.");
+        }
+
         // Update balance
-        fromBankAccount.subBalance(amount);
-        toBankAccount.addBalance(amount);
+        fromBankAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
+        toBankAccount.addBalance(amt);
         bankAccountRepository.save(fromBankAccount);
         bankAccountRepository.save(toBankAccount);
 
         // Save Transaction
         Transaction transaction = new Transaction(
                 sourceIBAN, targetIBAN, toBankAccount.getPrimaryHolder().getName(),
-                TimeUtil.getDate(), amount, "Payment with debit card.");
+                timeService.getDate().getDate(), amount, "Payment with debit card.");
+        transactionRepository.save(transaction);
+    }
+
+    @Override
+    public void forcePayFromAccount(BankAccount account, BigDecimal amount, String description) {
+        account.addBalance(amount.multiply(new BigDecimal(-1.0)));
+        bankAccountRepository.save(account);
+
+        // Save Transaction
+        Transaction transaction = new Transaction(
+                IBANUtil.generateIBAN(account), "", "Banq",
+                timeService.getDate().getDate(), amount.doubleValue(), description);
         transactionRepository.save(transaction);
     }
 
@@ -122,25 +141,27 @@ public class TransactionServiceImpl implements TransactionService {
             throw new NotAuthorizedError();
         }
 
-        // Check balance
-        if (fromBankAccount.getBalance() - amount < 0) {
-            throw new InvalidParamValueError("Not enough balance on account.");
-        }
+        BigDecimal amt = new BigDecimal(amount);
 
-        if (amount <= 0) {
+        // Check balance
+        if (amount <= 0.0d) {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
+        if (!fromBankAccount.canPayAmount(amt)) {
+            throw new InvalidParamValueError("Not enough balance on account.");
+        }
+
         // Update balance
-        fromBankAccount.subBalance(amount);
-        toBankAccount.addBalance(amount);
+        fromBankAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
+        toBankAccount.addBalance(amt);
         bankAccountRepository.save(fromBankAccount);
         bankAccountRepository.save(toBankAccount);
 
         // Save Transaction
         Transaction transaction = new Transaction(
                 sourceIBAN, targetIBAN, targetName,
-                TimeUtil.getDate(), amount, description);
+                timeService.getDate().getDate(), amount, description);
         transactionRepository.save(transaction);
     }
 
