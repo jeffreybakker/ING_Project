@@ -1,17 +1,44 @@
 package honours.ing.banq.variables;
 
-import com.googlecode.jsonrpc4j.JsonRpcService;
+import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Jeffrey Bakker
+ * @author jeffrey
  * @since 5-8-17
  */
-@JsonRpcService("/api/var")
-public interface VarService {
+@Service
+@Transactional(readOnly = true)
+public class VarService {
 
-    String getVariable(String key);
-    String getVariable(String key, String expectedValue);
+    @Autowired
+    private VarRepository repository;
 
-    void setVariable(String key, String value);
+    public String getVariable(String key) {
+        return getVariable(key, "");
+    }
+
+    public String getVariable(String key, String expectedValue) {
+        Variable var = repository.findOne(key);
+
+        if (var == null) {
+            return expectedValue;
+        }
+
+        return var.getValue();
+    }
+
+    public void setVariable(String key, String value) {
+        Variable var = repository.findOne(key);
+        if (var == null) {
+            var = new Variable(key, value);
+        } else {
+            var.setValue(value);
+        }
+
+        repository.save(var);
+    }
 
 }

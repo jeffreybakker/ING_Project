@@ -2,6 +2,7 @@ package honours.ing.banq.time;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.event.EventInterceptor;
 import honours.ing.banq.time.bean.DateBean;
 import honours.ing.banq.variables.VarService;
 import org.hibernate.Session;
@@ -33,13 +34,15 @@ public class TimeServiceImpl implements TimeService {
     private static TimeService instance;
 
     private EntityManager entityManager;
+    private EventInterceptor eventInterceptor;
 
     private VarService vars;
 
     @Autowired
-    public TimeServiceImpl(EntityManager em, VarService vars) {
+    public TimeServiceImpl(EntityManager em, VarService vars, EventInterceptor eventInterceptor) {
         instance = this;
         entityManager = em;
+        this.eventInterceptor = eventInterceptor;
         this.vars = vars;
 
         addedMillis = Long.parseLong(vars.getVariable("time", "0"));
@@ -76,6 +79,8 @@ public class TimeServiceImpl implements TimeService {
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=0;").executeUpdate();
         tableNames.forEach((name) -> entityManager.createNativeQuery("TRUNCATE TABLE " + name).executeUpdate());
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=1;").executeUpdate();
+
+        eventInterceptor.calcTimers();
 
         return new Object();
     }
