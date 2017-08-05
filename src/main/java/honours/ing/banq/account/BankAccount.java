@@ -75,8 +75,67 @@ public class BankAccount {
         }
     }
 
+    /**
+     * Returns whether the amount can be payed from this bank account with respect to the overdraft limit.
+     * @param amount the amount the user wishes to pay
+     * @return {@code true} if the account has enough balance
+     */
     public boolean canPayAmount(BigDecimal amount) {
         return balance.subtract(amount).compareTo(overdraftLimit) >= 0;
+    }
+
+    /**
+     * Adds interest to the interest that will have to be payed at the end of the month.
+     * @param delta the amount of interest to add
+     */
+    public void addInterest(BigDecimal delta) {
+        interest = interest.add(delta);
+    }
+
+    /**
+     * Returns the amount of interest that will have to be payed at the end of the month.
+     * @return the amount of interest
+     */
+    public BigDecimal getInterest() {
+        return interest;
+    }
+
+    /**
+     * Resets the amount of interest that still has to be cashed in.
+     */
+    public void resetInterest() {
+        interest = new BigDecimal(0.0);
+    }
+
+    /**
+     * Returns the lowest balance on this account since the last reset.
+     * @return the lowest balance
+     */
+    public BigDecimal getLowestBalance() {
+        return lowestBalance;
+    }
+
+    /**
+     * Resets the lowest balance to the current balance.
+     */
+    public void resetLowestBalance() {
+        lowestBalance = balance;
+    }
+
+    /**
+     * Returns the maximum amount of negative balance that this account may have.
+     * @return the overdraft limit
+     */
+    public BigDecimal getOverdraftLimit() {
+        return overdraftLimit.multiply(new BigDecimal(-1.0));
+    }
+
+    /**
+     * Sets the maximum amount of negative balance that this account may have.
+     * @param overdraftLimit the overdraft limit
+     */
+    public void setOverdraftLimit(BigDecimal overdraftLimit) {
+        this.overdraftLimit = overdraftLimit.multiply(new BigDecimal(-1.0));
     }
 
     /**

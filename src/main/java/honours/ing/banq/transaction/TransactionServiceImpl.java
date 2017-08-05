@@ -110,6 +110,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public void forcePayFromAccount(BankAccount account, BigDecimal amount, String description) {
+        account.addBalance(amount.multiply(new BigDecimal(-1.0)));
+        bankAccountRepository.save(account);
+
+        // Save Transaction
+        Transaction transaction = new Transaction(
+                IBANUtil.generateIBAN(account), "", "Banq",
+                timeService.getDate().getDate(), amount.doubleValue(), description);
+        transactionRepository.save(transaction);
+    }
+
+    @Override
     public void transferMoney(String authToken, String sourceIBAN, String targetIBAN, String targetName,
                               Double amount, String description) throws InvalidParamValueError, NotAuthorizedError {
         if (!IBANUtil.isValidIBAN(sourceIBAN)) {

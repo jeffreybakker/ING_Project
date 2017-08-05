@@ -10,6 +10,7 @@ import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.customer.Customer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -27,10 +28,9 @@ public interface TransactionService {
      * @param pinCode The code used for authorizing the use of the {@link Card}
      * @param amount  The amount to be deposited
      */
-    void depositIntoAccount(@JsonRpcParam("iBAN") String iBAN, @JsonRpcParam("pinCard") String
-            pinCard,
-                            @JsonRpcParam("pinCode") String pinCode, @JsonRpcParam("amount")
-                                    Double amount)
+    void depositIntoAccount(
+            @JsonRpcParam("iBAN") String iBAN, @JsonRpcParam("pinCard") String pinCard,
+            @JsonRpcParam("pinCode") String pinCode, @JsonRpcParam("amount") Double amount)
             throws InvalidParamValueError, InvalidPINError, CardBlockedError;
 
     /**
@@ -44,30 +44,29 @@ public interface TransactionService {
      * @throws InvalidParamValueError
      * @throws InvalidPINError
      */
-    void payFromAccount(@JsonRpcParam("sourceIBAN") String sourceIBAN, @JsonRpcParam
-            ("targetIBAN") String targetIBAN, @JsonRpcParam("pinCard") String pinCard,
-                        @JsonRpcParam("pinCode") String pinCode, @JsonRpcParam("amount") Double
-                                amount) throws InvalidParamValueError, InvalidPINError, CardBlockedError;
+    void payFromAccount(
+            @JsonRpcParam("sourceIBAN") String sourceIBAN, @JsonRpcParam("targetIBAN") String targetIBAN,
+            @JsonRpcParam("pinCard") String pinCard, @JsonRpcParam("pinCode") String pinCode,
+            @JsonRpcParam("amount") Double amount) throws InvalidParamValueError, InvalidPINError, CardBlockedError;
+
+    void forcePayFromAccount(BankAccount account, BigDecimal amount, String description);
 
     /**
-     * Transer money from one {@link BankAccount} to another {@link BankAccount}
+     * Transer money from one {@link BankAccount} to another {@link BankAccount}.
      *
-     * @param authToken   The authorization token of the {@link Customer} to transfer the money
-     *                    from
-     * @param sourceIBAN  The {@link BankAccount} to transfer the money from ({@link Customer} must
-     *                    have access to it)
+     * @param authToken   The authorization token of the {@link Customer} to transfer the money from
+     * @param sourceIBAN  The {@link BankAccount} to transfer the money from ({@link Customer} must have access to it)
      * @param targetIBAN  The {@link BankAccount} to transfer the money to
-     * @param targetName  The name of the {@link Customer} holding the receiving {@link
-     *                    BankAccount}
+     * @param targetName  The name of the {@link Customer} holding the receiving {@link BankAccount}
      * @param amount      The amount to be transferred
      * @param description A description for the transaction
      * @throws InvalidParamValueError
      * @throws NotAuthorizedError
      */
-    void transferMoney(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("sourceIBAN")
-            String sourceIBAN, @JsonRpcParam("targetIBAN") String targetIBAN, @JsonRpcParam
-                               ("targetName") String targetName, @JsonRpcParam("amount") Double
-                               amount,
-                       @JsonRpcParam("description") String description) throws
-            InvalidParamValueError, NotAuthorizedError;
+    void transferMoney(
+            @JsonRpcParam("authToken") String authToken, @JsonRpcParam("sourceIBAN") String sourceIBAN,
+            @JsonRpcParam("targetIBAN") String targetIBAN, @JsonRpcParam ("targetName") String targetName,
+            @JsonRpcParam("amount") Double amount, @JsonRpcParam("description") String description)
+            throws InvalidParamValueError, NotAuthorizedError;
+
 }
