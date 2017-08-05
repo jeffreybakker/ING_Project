@@ -12,7 +12,7 @@ public class BalanceBean {
     private Double balance;
 
     public BalanceBean(BankAccount bankAccount) {
-        balance = bankAccount.getBalance();
+        balance = bankAccount.getBalance().doubleValue();
     }
 
     public Double getBalance() {

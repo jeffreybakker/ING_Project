@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 /**
  * @author Kevin Witlox
  * @since 4-6-2017
@@ -59,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // Update balance
-        bankAccount.addBalance(amount);
+        bankAccount.addBalance(new BigDecimal(amount));
         bankAccountRepository.save(bankAccount);
 
         // Save transaction
@@ -83,18 +85,20 @@ public class TransactionServiceImpl implements TransactionService {
         BankAccount fromBankAccount = auth.getAuthorizedAccount(sourceIBAN, pinCard, pinCode);
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
 
-        // Check balance
-        if (fromBankAccount.getBalance() - amount < 0) {
-            throw new InvalidParamValueError("Not enough balance on account.");
-        }
+        BigDecimal amt = new BigDecimal(amount);
 
-        if (amount <= 0) {
+        // Check balance
+        if (amount <= 0.0d) {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
+        if (!fromBankAccount.canPayAmount(amt)) {
+            throw new InvalidParamValueError("Not enough balance on account.");
+        }
+
         // Update balance
-        fromBankAccount.subBalance(amount);
-        toBankAccount.addBalance(amount);
+        fromBankAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
+        toBankAccount.addBalance(amt);
         bankAccountRepository.save(fromBankAccount);
         bankAccountRepository.save(toBankAccount);
 
@@ -125,18 +129,20 @@ public class TransactionServiceImpl implements TransactionService {
             throw new NotAuthorizedError();
         }
 
-        // Check balance
-        if (fromBankAccount.getBalance() - amount < 0) {
-            throw new InvalidParamValueError("Not enough balance on account.");
-        }
+        BigDecimal amt = new BigDecimal(amount);
 
-        if (amount <= 0) {
+        // Check balance
+        if (amount <= 0.0d) {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
+        if (!fromBankAccount.canPayAmount(amt)) {
+            throw new InvalidParamValueError("Not enough balance on account.");
+        }
+
         // Update balance
-        fromBankAccount.subBalance(amount);
-        toBankAccount.addBalance(amount);
+        fromBankAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
+        toBankAccount.addBalance(amt);
         bankAccountRepository.save(fromBankAccount);
         bankAccountRepository.save(toBankAccount);
 

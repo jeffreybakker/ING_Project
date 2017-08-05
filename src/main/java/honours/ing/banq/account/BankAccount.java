@@ -3,6 +3,7 @@ package honours.ing.banq.account;
 import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,10 @@ public class BankAccount {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private Double balance;
+    private BigDecimal balance;
+    private BigDecimal interest;
+    private BigDecimal lowestBalance;
+    private BigDecimal overdraftLimit;
 
     @ManyToOne(targetEntity = Customer.class)
     private Customer primaryHolder;
@@ -28,8 +32,8 @@ public class BankAccount {
     /**
      * @deprecated empty constructor for spring
      */
-    public BankAccount() {
-    }
+    @Deprecated
+    public BankAccount() { }
 
     /**
      * Creates a new {@link BankAccount} with the given primary holder and 0.0 for balance.
@@ -37,7 +41,10 @@ public class BankAccount {
      */
     public BankAccount(Customer primaryHolder) {
         this.primaryHolder = primaryHolder;
-        balance = 0.0;
+        balance = new BigDecimal(0.0);
+        interest = new BigDecimal(0.0);
+        lowestBalance = new BigDecimal(0.0);
+        overdraftLimit = new BigDecimal(0.0);
         holders = new ArrayList<>();
     }
 
@@ -53,24 +60,23 @@ public class BankAccount {
      * Returns the balance of the account.
      * @return the balance
      */
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
     /**
-     * Subtracts balance from the account.
-     * @param balance the difference in balance
+     * Adds balance on the account.
+     * @param delta the difference in balance
      */
-    public void subBalance(Double balance) {
-        this.balance -= balance;
+    public void addBalance(BigDecimal delta) {
+        balance = balance.add(delta);
+        if (balance.compareTo(lowestBalance) < 0) {
+            lowestBalance = balance;
+        }
     }
 
-    /**
-     * Adds balance on the account.
-     * @param balance the difference in balance
-     */
-    public void addBalance(Double balance) {
-        this.balance += balance;
+    public boolean canPayAmount(BigDecimal amount) {
+        return balance.subtract(amount).compareTo(overdraftLimit) >= 0;
     }
 
     /**
