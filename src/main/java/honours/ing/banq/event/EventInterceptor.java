@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Jeffrey Bakker
@@ -34,6 +35,8 @@ public class EventInterceptor implements ApplicationContextAware {
     private Set<Event> nextEvents;
     private long nextEventTime;
 
+    private AtomicBoolean running;
+
     @SuppressWarnings("unchecked")
     @Autowired
     public EventInterceptor(VarService varService) {
@@ -41,6 +44,7 @@ public class EventInterceptor implements ApplicationContextAware {
         nextEvents = new HashSet<>();
 
         vars = varService;
+        running = new AtomicBoolean(false);
     }
 
     private void init() {
@@ -82,15 +86,26 @@ public class EventInterceptor implements ApplicationContextAware {
 
     @Before("@within(com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl)")
     public void intercept() {
-        while (TimeServiceImpl.currentTimeMillis() > nextEventTime) {
-            vars.setVariable("lastEvent", "" + nextEventTime);
-
-            for (Event e : nextEvents) {
-                e.execute(nextEventTime);
-                events.put(e, e.nextIteration(nextEventTime));
+        synchronized (running) {
+            if (running.get()) {
+                return;
             }
 
-            calcNextEvent();
+            running.set(true);
+        }
+        try {
+            while (TimeServiceImpl.currentTimeMillis() > nextEventTime) {
+                vars.setVariable("lastEvent", "" + nextEventTime);
+
+                for (Event e : nextEvents) {
+                    e.execute(nextEventTime);
+                    events.put(e, e.nextIteration(nextEventTime));
+                }
+
+                calcNextEvent();
+            }
+        } finally {
+            running.set(false);
         }
     }
 
