@@ -12,6 +12,7 @@ import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.card.CardUtil;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.log.LogService;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

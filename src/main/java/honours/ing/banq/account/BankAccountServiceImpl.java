@@ -48,6 +48,12 @@ public class BankAccountServiceImpl implements BankAccountService {
                                       String dob, String ssn,
                                       String address, String telephoneNumber,
                                       String email, String username, String password) throws InvalidParamValueError {
+        Customer existing = customerRepository.findBySsn(ssn);
+        if (existing != null) {
+            throw new InvalidParamValueError(
+                    "Could not create customer because the given information was invalid");
+        }
+
         Customer customer = new Customer(
                 name, surname, initials,
                 dob, ssn,
