@@ -42,9 +42,6 @@ public class AccessServiceImpl implements AccessService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @Autowired
-    private LogService log;
-
     @Transactional
     @Override
     public NewCardBean provideAccess(String authToken, String iBAN, String username) throws InvalidParamValueError, NotAuthorizedError, NoEffectError {
@@ -54,39 +51,24 @@ public class AccessServiceImpl implements AccessService {
         BankAccount account = accountRepository.findOne((int) accountNumber);
 
         if (account == null) {
-            log.e(String.format(
-                    "%s tried to give %s access to non-existing account %s",
-                    customer.getUsername(), username, iBAN));
             throw new InvalidParamValueError("Account does not exist");
         }
 
         if (!account.getPrimaryHolder().equals(customer)) {
-            log.e(String.format(
-                    "%s tried to give %s access to account %s over which he/she has no authorisation",
-                    customer.getUsername(), username, iBAN));
             throw new NotAuthorizedError();
         }
 
         Customer holder = customerRepository.findByUsername(username);
 
         if (holder == null) {
-            log.e(String.format(
-                    "%s tried to give non-existing user %s access to account %s",
-                    customer.getUsername(), username, iBAN));
             throw new InvalidParamValueError("The given username does not exist.");
         }
 
         if (account.getPrimaryHolder().equals(holder)) {
-            log.w(String.format(
-                    "%s tried to give him/herself access to his/her own account %s",
-                    username, iBAN));
             throw new InvalidParamValueError("You can't provide access to yourself for your own account");
         }
 
         if (account.getHolders().contains(holder)) {
-            log.w(String.format(
-                    "%s tried to give %s access to account %s to which he/she already had access",
-                    customer.getUsername(), username, iBAN));
             throw new NoEffectError();
         }
 
@@ -107,32 +89,20 @@ public class AccessServiceImpl implements AccessService {
         BankAccount account = accountRepository.findOne((int) accountNumber);
 
         if (!account.getPrimaryHolder().equals(customer)) {
-            log.e(String.format(
-                    "%s tried to revoke access from %s for %s, but he had no authorisation",
-                    customer.getUsername(), iBAN, username));
             throw new NotAuthorizedError();
         }
 
         Customer holder = customerRepository.findByUsername(username);
 
         if (holder == null) {
-            log.e(String.format(
-                    "%s tried to revoke access from %s for non-existing user %s",
-                    customer.getUsername(), iBAN, username));
             throw new InvalidParamValueError("The given username does not exist.");
         }
 
         if (account.getPrimaryHolder().equals(holder)) {
-            log.w(String.format(
-                    "%s tried to revoke his own access to his own account %s",
-                    customer.getUsername(), iBAN));
             throw new InvalidParamValueError("You can't revoke access from yourself for your own account");
         }
 
         if (!account.getHolders().contains(holder)) {
-            log.w(String.format(
-                    "%s tried to revoke access from %s for non-holder %s",
-                    customer.getUsername(), iBAN, username));
             throw new NoEffectError();
         }
 
