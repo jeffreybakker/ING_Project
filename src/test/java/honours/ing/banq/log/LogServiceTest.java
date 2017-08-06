@@ -19,15 +19,13 @@ import static org.junit.Assert.*;
  */
 public class LogServiceTest extends BoilerplateTest {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
     @Autowired
     private LogService log;
 
     @Test
     public void getEventLogs() throws Exception {
         List<LogBean> logs = log.getEventLogs(
-                DATE_FORMAT.format(new Date(1)), DATE_FORMAT.format(timeService.getDate().getDate()));
+                "1970-1-1", "2100-1-1");
 
         assertTrue(logs.size() > 0);
     }
