@@ -24,7 +24,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LogServiceImpl implements LogService {
 
-    private static final String BASE_MESSAGE = "[%s] %s";
     private static final DateFormat INPUT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private Logger logger = Application.getLogger();
@@ -37,16 +36,13 @@ public class LogServiceImpl implements LogService {
         this.repository = repository;
     }
 
+    @LogIgnore
     @Transactional
     @Override
-    public void log(Priority priority, String message) {
-        String msg = String.format(
-                BASE_MESSAGE,
-                priority.name(), message);
+    public void log(String message) {
+        logger.info(message);
 
-        logger.info(msg);
-
-        Log log = new Log(msg);
+        Log log = new Log(message);
         repository.save(log);
     }
 

@@ -2,10 +2,7 @@ package honours.ing.banq.log;
 
 import honours.ing.banq.time.TimeServiceImpl;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * The model for a log message that is saved in the database.
@@ -16,10 +13,12 @@ import javax.persistence.Id;
 public class Log {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
     private long timeStamp;
+
+    @Column(columnDefinition = "TEXT")
     private String eventLog;
 
     /**
@@ -84,5 +83,23 @@ public class Log {
      */
     public void setMessage(String message) {
         this.eventLog = message;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Log log = (Log) o;
+
+        if (timeStamp != log.timeStamp) return false;
+        return id != null ? id.equals(log.id) : log.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
+        return result;
     }
 }

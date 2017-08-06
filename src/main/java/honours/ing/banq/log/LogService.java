@@ -14,51 +14,7 @@ import java.util.List;
 @JsonRpcService("/api/log")
 public interface LogService {
 
-    enum Priority {
-
-        DEBUG       (0),
-        VERBOSE     (1),
-        INFO        (2),
-        WARNING     (3),
-        ERROR       (4),
-        WTF         (5);
-
-        private int priority;
-
-        Priority(int priority) {
-            this.priority = priority;
-        }
-
-        public int getPriority() {
-            return priority;
-        }
-    }
-
-    default void d(String message) {
-        log(Priority.DEBUG, message);
-    }
-
-    default void v(String message) {
-        log(Priority.VERBOSE, message);
-    }
-
-    default void i(String message) {
-        log(Priority.INFO, message);
-    }
-
-    default void w(String message) {
-        log(Priority.WARNING, message);
-    }
-
-    default void e(String message) {
-        log(Priority.ERROR, message);
-    }
-
-    default void wtf(String message) {
-        log(Priority.WTF, message);
-    }
-
-    void log(Priority priority, String message);
+    void log(String message);
 
     /**
      * Returns all event logs from a given time period.
