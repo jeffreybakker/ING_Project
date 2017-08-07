@@ -12,10 +12,10 @@ import java.math.BigDecimal;
 public abstract class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
 
-    @OneToOne
+    @OneToOne(targetEntity = BankAccount.class, cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     protected BankAccount account;
 
     protected BigDecimal balance;
@@ -31,6 +31,7 @@ public abstract class Account {
      * @param account the bank account to which this account belongs
      */
     public Account(BankAccount account) {
+        this.account = account;
         this.balance = BigDecimal.ZERO;
     }
 

@@ -2,8 +2,10 @@ package honours.ing.banq.transaction;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.account.Account;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
+import honours.ing.banq.account.CheckingAccount;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.CardBlockedError;
 import honours.ing.banq.auth.InvalidPINError;
@@ -33,19 +35,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private AuthService auth;
 
+    @Autowired
+    private TimeService timeService;
+
     // Repositories
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
     @Autowired
     private TransactionRepository transactionRepository;
-
-    @Autowired
-    private CardRepository cardRepository;
-
-    @Autowired
-    private TimeService timeService;
-
     @Override
     public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError, CardBlockedError {
@@ -53,15 +51,17 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given IBAN is not valid.");
         }
 
-        BankAccount bankAccount = auth.getAuthorizedAccount(iBAN, pinCard, pinCode);
+        BankAccount bankAccount = auth.getAuthorizedBankAccount(iBAN, pinCard, pinCode);
 
         // Check balance
         if (amount <= 0d) {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
+        CheckingAccount account = bankAccount.getCheckingAccount();
+
         // Update balance
-        bankAccount.addBalance(new BigDecimal(amount));
+        account.addBalance(new BigDecimal(amount));
         bankAccountRepository.save(bankAccount);
 
         // Save transaction
@@ -82,8 +82,13 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given target IBAN is not valid.");
         }
 
-        BankAccount fromBankAccount = auth.getAuthorizedAccount(sourceIBAN, pinCard, pinCode);
-        BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
+        BankAccount sourceBankAccount = auth.getAuthorizedBankAccount(sourceIBAN, pinCard, pinCode);
+        Account sourceAccount = sourceIBAN.endsWith("S") ?
+                sourceBankAccount.getSavingAccount() : sourceBankAccount.getCheckingAccount();
+
+        BankAccount destBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
+        Account destAccount = targetIBAN.endsWith("S") ?
+                destBankAccount.getSavingAccount() : destBankAccount.getCheckingAccount();
 
         BigDecimal amt = new BigDecimal(amount);
 
@@ -92,32 +97,43 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
-        if (!fromBankAccount.canPayAmount(amt)) {
+        if (!sourceAccount.canPayAmount(amt)) {
             throw new InvalidParamValueError("Not enough balance on account.");
         }
 
         // Update balance
-        fromBankAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
-        toBankAccount.addBalance(amt);
-        bankAccountRepository.save(fromBankAccount);
-        bankAccountRepository.save(toBankAccount);
+        sourceAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
+        destAccount.addBalance(amt);
+        bankAccountRepository.save(sourceBankAccount);
+        bankAccountRepository.save(destBankAccount);
 
         // Save Transaction
         Transaction transaction = new Transaction(
-                sourceIBAN, targetIBAN, toBankAccount.getPrimaryHolder().getName(),
+                sourceIBAN, targetIBAN, destBankAccount.getPrimaryHolder().getName(),
                 timeService.getDate().getDate(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
     @Override
-    public void forcePayFromAccount(BankAccount account, BigDecimal amount, String description) {
-        account.addBalance(amount.multiply(new BigDecimal(-1.0)));
-        bankAccountRepository.save(account);
+    public void forceTransactionAccount(Account account, BigDecimal amount, String description) {
+        account.addBalance(amount);
+        bankAccountRepository.save(account.getAccount());
+
+        String iBAN = IBANUtil.generateIBAN(account.getAccount()) + (account instanceof CheckingAccount ? "S" : "");
 
         // Save Transaction
-        Transaction transaction = new Transaction(
-                IBANUtil.generateIBAN(account), "", "Banq",
-                timeService.getDate().getDate(), amount.doubleValue(), description);
+        Transaction transaction;
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            transaction = new Transaction(
+                    iBAN, "", "Banq",
+                    timeService.getDate().getDate(), amount.multiply(new BigDecimal("-1.0")).doubleValue(), description);
+        } else {
+            transaction = new Transaction(
+                    "", iBAN,
+                    account.getAccount().getPrimaryHolder().getName()
+                            + " " + account.getAccount().getPrimaryHolder().getSurname(),
+                    timeService.getDate().getDate(), amount.doubleValue(), description);
+        }
         transactionRepository.save(transaction);
     }
 
@@ -132,14 +148,8 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given target IBAN is not valid.");
         }
 
-        BankAccount fromBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(sourceIBAN));
         BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
-        Customer customer = auth.getAuthorizedCustomer(authToken);
-
-        // Check if bank account is held by customer
-        if (!fromBankAccount.getHolders().contains(customer) && !fromBankAccount.getPrimaryHolder().equals(customer)) {
-            throw new NotAuthorizedError();
-        }
+        BankAccount fromBankAccount = auth.getAuthorizedBankAccount(authToken, sourceIBAN);
 
         BigDecimal amt = new BigDecimal(amount);
 
@@ -148,13 +158,13 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
-        if (!fromBankAccount.canPayAmount(amt)) {
+        if (!fromBankAccount.getCheckingAccount().canPayAmount(amt)) {
             throw new InvalidParamValueError("Not enough balance on account.");
         }
 
         // Update balance
-        fromBankAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
-        toBankAccount.addBalance(amt);
+        fromBankAccount.getCheckingAccount().addBalance(amt.multiply(new BigDecimal(-1.0)));
+        toBankAccount.getCheckingAccount().addBalance(amt);
         bankAccountRepository.save(fromBankAccount);
         bankAccountRepository.save(toBankAccount);
 

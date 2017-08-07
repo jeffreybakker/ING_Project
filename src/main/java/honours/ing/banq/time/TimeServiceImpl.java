@@ -77,7 +77,15 @@ public class TimeServiceImpl implements TimeService {
 
         entityManager.flush();
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=0;").executeUpdate();
-        tableNames.forEach((name) -> entityManager.createNativeQuery("TRUNCATE TABLE " + name).executeUpdate());
+
+        tableNames.forEach((name) -> {
+            // This is to test for some weird glitch where there is also a table name containing a select query for some
+            // table, last time I checked it was for the "checking_account" table
+            if (!name.startsWith("(")) {
+                entityManager.createNativeQuery("TRUNCATE TABLE " + name).executeUpdate();
+            }
+        });
+
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=1;").executeUpdate();
 
         eventInterceptor.calcTimers();

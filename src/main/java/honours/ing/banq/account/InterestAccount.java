@@ -3,14 +3,14 @@ package honours.ing.banq.account;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.MappedSuperclass;
 import java.math.BigDecimal;
 
 /**
  * @author Jeffrey Bakker
  * @since 7-8-17
  */
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@MappedSuperclass
 public abstract class InterestAccount extends Account {
 
     private BigDecimal interest;

@@ -15,12 +15,18 @@ public class IBANUtil {
         }
 
         String check = iBAN.substring(2, 4);
+        int offset = iBAN.endsWith("S") ? 1 : 0;
 
-        return calculateChecksum(iBAN.substring(4, iBAN.length())).equals(check);
+        return calculateChecksum(iBAN.substring(4, iBAN.length() - offset)).equals(check);
     }
 
     public static long getAccountNumber(String iBAN) {
-        return Long.parseLong(iBAN.substring(8, iBAN.length()));
+        String nr = iBAN;
+        if (nr.endsWith("S")) {
+            nr = nr.substring(0, nr.length() - 1);
+        }
+
+        return Long.parseLong(nr.substring(8, nr.length()));
     }
 
     public static String generateIBAN(BankAccount account) {

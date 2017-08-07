@@ -55,17 +55,19 @@ public class OverdraftInterestEvent implements Event {
         List<BankAccount> accounts = accountRepository.findAll();
 
         for (BankAccount account : accounts) {
-            if (account.getLowestBalance().compareTo(ZERO) >= 0) {
+            if (account.getCheckingAccount().getLowestBalance().compareTo(ZERO) >= 0) {
                 continue;
             }
 
-            account.addInterest(account.getLowestBalance().multiply(interest).multiply(new BigDecimal(-1.0)));
-            account.resetLowestBalance();
+            account.getCheckingAccount().addInterest(account.getCheckingAccount().getLowestBalance().multiply(interest).multiply(new BigDecimal(-1.0)));
+            account.getCheckingAccount().resetLowestBalance();
 
             if (firstOfMonth) {
-                transactionService.forcePayFromAccount(
-                        account, account.getInterest().setScale(2, BigDecimal.ROUND_HALF_UP), "Interest");
-                account.resetInterest();
+                transactionService.forceTransactionAccount(
+                        account.getCheckingAccount(), account.getCheckingAccount().getInterest()
+                                .multiply(new BigDecimal("-1.0"))
+                                .setScale(2, BigDecimal.ROUND_HALF_UP), "Interest");
+                account.getCheckingAccount().resetInterest();
             }
 
             accountRepository.save(account);
