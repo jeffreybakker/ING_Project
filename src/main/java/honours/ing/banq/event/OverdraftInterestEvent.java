@@ -19,7 +19,7 @@ import static java.util.Calendar.*;
  * @since 5-8-17
  */
 @Component
-public class InterestEvent implements Event {
+public class OverdraftInterestEvent implements Event {
 
     private static final BigDecimal INTEREST = new BigDecimal("0.10");
     private static final BigDecimal MONTHLY_RATE = new BigDecimal(Math.pow(INTEREST.doubleValue() + 1.0, 1.0 / 12.0))
@@ -34,7 +34,7 @@ public class InterestEvent implements Event {
     private BankAccountRepository accountRepository;
 
     @Autowired
-    public InterestEvent(TransactionService transactionService, BankAccountRepository accountRepository) {
+    public OverdraftInterestEvent(TransactionService transactionService, BankAccountRepository accountRepository) {
         this.transactionService = transactionService;
         this.accountRepository = accountRepository;
     }

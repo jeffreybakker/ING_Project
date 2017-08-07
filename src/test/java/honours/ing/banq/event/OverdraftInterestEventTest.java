@@ -11,7 +11,7 @@ import java.util.Date;
  * @author jeffrey
  * @since 5-8-17
  */
-public class InterestEventTest extends BoilerplateTest {
+public class OverdraftInterestEventTest extends BoilerplateTest {
 
     @Test
     public void testInterest() throws Exception {
