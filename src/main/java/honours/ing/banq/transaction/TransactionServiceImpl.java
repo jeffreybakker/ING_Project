@@ -148,8 +148,11 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("The given target IBAN is not valid.");
         }
 
-        BankAccount toBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
-        BankAccount fromBankAccount = auth.getAuthorizedBankAccount(authToken, sourceIBAN);
+        BankAccount sourceBankAccount = auth.getAuthorizedBankAccount(authToken, sourceIBAN);
+        Account sourceAccount = sourceBankAccount.getCheckingAccount();
+
+        BankAccount destBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
+        Account destAccount = destBankAccount.getCheckingAccount();
 
         BigDecimal amt = new BigDecimal(amount);
 
@@ -158,15 +161,15 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
-        if (!fromBankAccount.getCheckingAccount().canPayAmount(amt)) {
+        if (!sourceBankAccount.getCheckingAccount().canPayAmount(amt)) {
             throw new InvalidParamValueError("Not enough balance on account.");
         }
 
         // Update balance
-        fromBankAccount.getCheckingAccount().addBalance(amt.multiply(new BigDecimal(-1.0)));
-        toBankAccount.getCheckingAccount().addBalance(amt);
-        bankAccountRepository.save(fromBankAccount);
-        bankAccountRepository.save(toBankAccount);
+        sourceAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
+        destAccount.addBalance(amt);
+        bankAccountRepository.save(sourceBankAccount);
+        bankAccountRepository.save(destBankAccount);
 
         // Save Transaction
         Transaction transaction = new Transaction(

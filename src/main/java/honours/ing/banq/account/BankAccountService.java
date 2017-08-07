@@ -84,4 +84,10 @@ public interface BankAccountService {
             @JsonRpcParam("overdraftLimit") double overdraftLimit)
             throws NotAuthorizedError, InvalidParamValueError;
 
+    Object openSavingsAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN)
+            throws InvalidParamValueError, NotAuthorizedError;
+
+    Object closeSavingsAccount(@JsonRpcParam("authToken") String authToken, @JsonRpcParam("iBAN") String iBAN)
+            throws InvalidParamValueError, NotAuthorizedError;
+
 }

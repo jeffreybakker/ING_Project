@@ -143,4 +143,38 @@ public class BankAccountServiceImpl implements BankAccountService {
         return new Object();
     }
 
+    @Transactional
+    @Override
+    public Object openSavingsAccount(String authToken, String iBAN) throws InvalidParamValueError, NotAuthorizedError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+        BankAccount account = auth.getAuthorizedBankAccount(authToken, iBAN);
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        account.addSavingAccount();
+        repository.save(account);
+
+        return new Object();
+    }
+
+    @Override
+    public Object closeSavingsAccount(String authToken, String iBAN) throws InvalidParamValueError, NotAuthorizedError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+        BankAccount account = auth.getAuthorizedBankAccount(authToken, iBAN);
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        if (!account.getSavingAccount().getBalance().equals(BigDecimal.ZERO)) {
+            throw new InvalidParamValueError("Account balance needs to be cleared");
+        }
+
+        account.removeSavingAccount();
+        repository.save(account);
+
+        return new Object();
+    }
 }
