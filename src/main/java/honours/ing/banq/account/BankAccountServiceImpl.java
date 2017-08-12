@@ -100,6 +100,16 @@ public class BankAccountServiceImpl implements BankAccountService {
             throw new NotAuthorizedError();
         }
 
+        Account savingsAccount = account.getSavingAccount();
+        if (savingsAccount != null && !savingsAccount.getBalance().equals(BigDecimal.ZERO)) {
+            throw new InvalidParamValueError("Account balance needs to be cleared");
+        }
+
+        Account checkingAccount = account.getCheckingAccount();
+        if (checkingAccount != null && !checkingAccount.getBalance().equals(BigDecimal.ZERO)) {
+            throw new InvalidParamValueError("Account balance needs to be cleared");
+        }
+
         List<Card> cards = cardRepository.findByAccount(account);
         cardRepository.delete(cards);
 
