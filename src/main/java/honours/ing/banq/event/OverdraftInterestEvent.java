@@ -2,6 +2,7 @@ package honours.ing.banq.event;
 
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
+import honours.ing.banq.account.CheckingAccount;
 import honours.ing.banq.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import static java.util.Calendar.*;
  * @since 5-8-17
  */
 @Component
-public class OverdraftInterestEvent implements Event {
+public class OverdraftInterestEvent extends InterestEvent {
 
     private static final BigDecimal INTEREST = new BigDecimal("0.10");
     private static final BigDecimal MONTHLY_RATE = new BigDecimal(Math.pow(INTEREST.doubleValue() + 1.0, 1.0 / 12.0))
@@ -59,33 +60,21 @@ public class OverdraftInterestEvent implements Event {
                 continue;
             }
 
-            account.getCheckingAccount().addInterest(account.getCheckingAccount().getLowestBalance().multiply(interest).multiply(new BigDecimal(-1.0)));
-            account.getCheckingAccount().resetLowestBalance();
+            CheckingAccount ca = account.getCheckingAccount();
+
+            ca.addInterest(ca.getLowestBalance().multiply(interest).multiply(new BigDecimal(-1.0)));
+            ca.resetLowestBalance();
 
             if (firstOfMonth) {
                 transactionService.forceTransactionAccount(
-                        account.getCheckingAccount(), account.getCheckingAccount().getInterest()
+                        ca, ca.getInterest()
                                 .multiply(new BigDecimal("-1.0"))
                                 .setScale(2, BigDecimal.ROUND_HALF_UP), "Interest");
-                account.getCheckingAccount().resetInterest();
+                ca.resetInterest();
             }
 
             accountRepository.save(account);
         }
-    }
-
-    @Override
-    public long nextIteration(long lastIteration) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date(lastIteration));
-
-        c.set(HOUR_OF_DAY, 0);
-        c.set(MINUTE, 0);
-        c.set(SECOND, 0);
-        c.set(MILLISECOND, 0);
-
-        c.add(DAY_OF_MONTH, 1);
-        return c.getTimeInMillis();
     }
 
 }

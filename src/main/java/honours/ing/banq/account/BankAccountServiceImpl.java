@@ -101,12 +101,12 @@ public class BankAccountServiceImpl implements BankAccountService {
         }
 
         Account savingsAccount = account.getSavingAccount();
-        if (savingsAccount != null && !savingsAccount.getBalance().equals(BigDecimal.ZERO)) {
+        if (savingsAccount != null && savingsAccount.getBalance().compareTo(BigDecimal.ZERO) != 0) {
             throw new InvalidParamValueError("Account balance needs to be cleared");
         }
 
         Account checkingAccount = account.getCheckingAccount();
-        if (checkingAccount != null && !checkingAccount.getBalance().equals(BigDecimal.ZERO)) {
+        if (checkingAccount != null && checkingAccount.getBalance().compareTo(BigDecimal.ZERO) != 0) {
             throw new InvalidParamValueError("Account balance needs to be cleared");
         }
 

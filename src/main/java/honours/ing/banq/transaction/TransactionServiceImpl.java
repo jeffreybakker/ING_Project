@@ -58,10 +58,14 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidParamValueError("Amount should be greater than 0.");
         }
 
-        CheckingAccount account = bankAccount.getCheckingAccount();
+        Account account = iBAN.endsWith("S")
+                ? bankAccount.getSavingAccount() : bankAccount.getCheckingAccount();
+        if (account == null) {
+            throw new InvalidParamValueError("The account does not exist");
+        }
 
         // Update balance
-        account.addBalance(new BigDecimal(amount));
+        account.addBalance(new BigDecimal(amount).setScale(2, BigDecimal.ROUND_HALF_UP));
         bankAccountRepository.save(bankAccount);
 
         // Save transaction
@@ -87,10 +91,17 @@ public class TransactionServiceImpl implements TransactionService {
                 sourceBankAccount.getSavingAccount() : sourceBankAccount.getCheckingAccount();
 
         BankAccount destBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
-        Account destAccount = targetIBAN.endsWith("S") ?
-                destBankAccount.getSavingAccount() : destBankAccount.getCheckingAccount();
+        Account destAccount = null;
+        String destName = "";
 
-        BigDecimal amt = new BigDecimal(amount);
+        if (destBankAccount != null) {
+            destAccount = targetIBAN.endsWith("S") ?
+                    destBankAccount.getSavingAccount() : destBankAccount.getCheckingAccount();
+            destName = destBankAccount.getPrimaryHolder().getName() + " "
+                    + destBankAccount.getPrimaryHolder().getSurname();
+        }
+
+        BigDecimal amt = new BigDecimal(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
 
         // Check balance
         if (amount <= 0.0d) {
@@ -103,20 +114,23 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Update balance
         sourceAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
-        destAccount.addBalance(amt);
         bankAccountRepository.save(sourceBankAccount);
-        bankAccountRepository.save(destBankAccount);
+
+        if (destBankAccount != null) {
+            destAccount.addBalance(amt);
+            bankAccountRepository.save(destBankAccount);
+        }
 
         // Save Transaction
         Transaction transaction = new Transaction(
-                sourceIBAN, targetIBAN, destBankAccount.getPrimaryHolder().getName(),
+                sourceIBAN, targetIBAN, destName,
                 timeService.getDate().getDate(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
     @Override
     public void forceTransactionAccount(Account account, BigDecimal amount, String description) {
-        account.addBalance(amount);
+        account.addBalance(amount.setScale(2, BigDecimal.ROUND_HALF_UP));
         bankAccountRepository.save(account.getAccount());
 
         String iBAN = IBANUtil.generateIBAN(account.getAccount()) + (account instanceof CheckingAccount ? "S" : "");
@@ -154,7 +168,7 @@ public class TransactionServiceImpl implements TransactionService {
         BankAccount destBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
         Account destAccount = destBankAccount.getCheckingAccount();
 
-        BigDecimal amt = new BigDecimal(amount);
+        BigDecimal amt = new BigDecimal(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
 
         // Check balance
         if (amount <= 0.0d) {
