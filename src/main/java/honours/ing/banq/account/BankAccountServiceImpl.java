@@ -93,17 +93,21 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Transactional
     @Override
     public Object closeAccount(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
+        BankAccount account = auth.getAuthorizedBankAccount(authToken, iBAN);
         Customer customer = auth.getAuthorizedCustomer(authToken);
-
-        long accountNumber = IBANUtil.getAccountNumber(iBAN);
-        BankAccount account = repository.findOne((int) accountNumber);
-
-        if (account == null) {
-            throw new InvalidParamValueError("Bank account does not exist");
-        }
 
         if (!account.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
+        }
+
+        Account savingsAccount = account.getSavingAccount();
+        if (savingsAccount != null && savingsAccount.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+            throw new InvalidParamValueError("Account balance needs to be cleared");
+        }
+
+        Account checkingAccount = account.getCheckingAccount();
+        if (checkingAccount != null && checkingAccount.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+            throw new InvalidParamValueError("Account balance needs to be cleared");
         }
 
         List<Card> cards = cardRepository.findByAccount(account);
@@ -125,33 +129,15 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public OverdraftBean getOverdraftLimit(String authToken, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
-        Customer customer = auth.getAuthorizedCustomer(authToken);
-
-        long accountNumber = IBANUtil.getAccountNumber(iBAN);
-        BankAccount account = repository.findOne((int) accountNumber);
-
-        if (account == null) {
-            throw new InvalidParamValueError("Bank account does not exist");
-        }
-
-        if (!account.getPrimaryHolder().equals(customer)) {
-            throw new NotAuthorizedError();
-        }
-
-        return new OverdraftBean(account.getOverdraftLimit());
+        return new OverdraftBean(
+                auth.getAuthorizedBankAccount(authToken, iBAN).getCheckingAccount().getOverdraftLimit());
     }
 
     @Transactional
     @Override
     public Object setOverdraftLimit(String authToken, String iBAN, double overdraftLimit) throws NotAuthorizedError, InvalidParamValueError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
-
-        long accountNumber = IBANUtil.getAccountNumber(iBAN);
-        BankAccount account = repository.findOne((int) accountNumber);
-
-        if (account == null) {
-            throw new InvalidParamValueError("Bank account does not exist");
-        }
+        BankAccount account = auth.getAuthorizedBankAccount(authToken, iBAN);
 
         if (!account.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();
@@ -161,10 +147,44 @@ public class BankAccountServiceImpl implements BankAccountService {
             throw new InvalidParamValueError("The overdraft limit must be a positive value");
         }
 
-        account.setOverdraftLimit(new BigDecimal(overdraftLimit));
+        account.getCheckingAccount().setOverdraftLimit(new BigDecimal(overdraftLimit));
         repository.save(account);
 
         return new Object();
     }
 
+    @Transactional
+    @Override
+    public Object openSavingsAccount(String authToken, String iBAN) throws InvalidParamValueError, NotAuthorizedError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+        BankAccount account = auth.getAuthorizedBankAccount(authToken, iBAN);
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        account.addSavingAccount();
+        repository.save(account);
+
+        return new Object();
+    }
+
+    @Override
+    public Object closeSavingsAccount(String authToken, String iBAN) throws InvalidParamValueError, NotAuthorizedError {
+        Customer customer = auth.getAuthorizedCustomer(authToken);
+        BankAccount account = auth.getAuthorizedBankAccount(authToken, iBAN);
+
+        if (!account.getPrimaryHolder().equals(customer)) {
+            throw new NotAuthorizedError();
+        }
+
+        if (!account.getSavingAccount().getBalance().equals(BigDecimal.ZERO)) {
+            throw new InvalidParamValueError("Account balance needs to be cleared");
+        }
+
+        account.removeSavingAccount();
+        repository.save(account);
+
+        return new Object();
+    }
 }

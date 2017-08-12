@@ -7,11 +7,13 @@ import org.junit.Test;
 import java.util.Calendar;
 import java.util.Date;
 
+import static org.junit.Assert.*;
+
 /**
  * @author jeffrey
- * @since 5-8-17
+ * @since 12-8-17
  */
-public class InterestEventTest extends BoilerplateTest {
+public class SavingsInterestEventTest extends BoilerplateTest {
 
     @Test
     public void testInterest() throws Exception {
@@ -34,19 +36,14 @@ public class InterestEventTest extends BoilerplateTest {
         timeService.simulateTime((int) diff);
 
         account1.token = authService.getAuthToken(account1.username, account1.password).getAuthToken();
-        accountService.setOverdraftLimit(account1.token, account1.iBan, 1000.0);
-        transactionService.transferMoney(
-                account1.token, account1.iBan,
-                account2.iBan, "Piet",
-                1000.0, "Ha maat");
+        accountService.openSavingsAccount(account1.token, account1.iBan);
+        transactionService.depositIntoAccount(account1.iBan + "S", account1.cardNumber, account1.pin, 1000.0);
 
-        testBalance(account1, -1000.0, 0.01);
-        testBalance(account2, 1000.0, 0.01);
+        testSavingsBalance(account1, 1000.0, 0.01);
 
         timeService.simulateTime(365);
 
-        testBalance(account1, -1100.0, 0.01);
-        testBalance(account2, 1000.0, 0.01);
+        testSavingsBalance(account1, 1001.50, 0.01);
     }
 
 }

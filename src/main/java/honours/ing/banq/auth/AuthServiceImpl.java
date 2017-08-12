@@ -2,6 +2,7 @@ package honours.ing.banq.auth;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.account.Account;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.bean.AuthToken;
@@ -124,9 +125,16 @@ public class AuthServiceImpl implements AuthService {
         return auth.getCustomer();
     }
 
+    @Override
+    public Account getAuthorizedAccount(String token, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
+        BankAccount account = getAuthorizedBankAccount(token, iBAN);
+
+        return iBAN.endsWith("S") ? account.getSavingAccount() : account.getCheckingAccount();
+    }
+
     @Transactional
     @Override
-    public BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError {
+    public BankAccount getAuthorizedBankAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError {
         if (iBAN == null || iBAN.length() <= 8 || pinCard == null || pinCode == null) {
             throw new InvalidParamValueError("One of the parameters is null or the IBAN is not long enough");
         }
@@ -156,6 +164,24 @@ public class AuthServiceImpl implements AuthService {
         } else if (card.getFailedAttempts() > 0) {
             card.resetAttempts();
             cardRepository.save(card);
+        }
+
+        return account;
+    }
+
+    @Override
+    public BankAccount getAuthorizedBankAccount(String token, String iBAN) throws NotAuthorizedError, InvalidParamValueError {
+        Customer customer = getAuthorizedCustomer(token);
+
+        long accountNumber = IBANUtil.getAccountNumber(iBAN);
+        BankAccount account = accountRepository.findOne((int) accountNumber);
+
+        if (account == null) {
+            throw new InvalidParamValueError("Bank account does not exist");
+        }
+
+        if (!account.getPrimaryHolder().equals(customer) && !account.getHolders().contains(customer)) {
+            throw new NotAuthorizedError();
         }
 
         return account;

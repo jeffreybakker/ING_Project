@@ -1,12 +1,16 @@
 package honours.ing.banq;
 
+import honours.ing.banq.access.NoEffectError;
 import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.bean.AccountInfo;
+import honours.ing.banq.card.CardService;
 import honours.ing.banq.config.TestConfiguration;
 import honours.ing.banq.info.InfoService;
+import honours.ing.banq.info.bean.BalanceBean;
 import honours.ing.banq.time.TimeService;
 import honours.ing.banq.transaction.TransactionService;
+import honours.ing.banq.util.IBANUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -43,6 +47,9 @@ public class BoilerplateTest {
 
     @Autowired
     protected AuthService authService;
+
+    @Autowired
+    protected CardService cardService;
 
     @Autowired
     protected InfoService infoService;
@@ -86,6 +93,51 @@ public class BoilerplateTest {
         account1.token = authService.getAuthToken("jantje96", "1234").getAuthToken();
         account2.token = authService.getAuthToken("piet1", "1234").getAuthToken();
 
+        // Unblock pin cards
+        try {
+            cardService.unblockCard(account1.token, account1.iBan, account1.cardNumber);
+        } catch (NoEffectError ignored) { }
+
+        try {
+            cardService.unblockCard(account2.token, account2.iBan, account2.cardNumber);
+        } catch (NoEffectError ignored) { }
+
+        // Clear balance from account 1
+        BalanceBean acc1 = infoService.getBalance(account1.token, account1.iBan);
+        if (acc1.getBalance() <= -0.01d) {
+            transactionService.depositIntoAccount(
+                    account1.iBan, account1.cardNumber, account1.pin, acc1.getBalance() * -1.0d);
+        } else if (acc1.getBalance() >= 0.01d) {
+            transactionService.payFromAccount(account1.iBan, IBANUtil.generateIBAN(12345678),
+                    account1.cardNumber, account1.pin, acc1.getBalance());
+        }
+
+        if (acc1.getSavingsAccountBalance() <= -0.01d) {
+            transactionService.depositIntoAccount(
+                    account1.iBan + "S", account1.cardNumber, account1.pin, acc1.getSavingsAccountBalance() * -1.0d);
+        } else if (acc1.getSavingsAccountBalance() >= 0.01d) {
+            transactionService.payFromAccount(account1.iBan + "S", IBANUtil.generateIBAN(12345678),
+                    account1.cardNumber, account1.pin, acc1.getSavingsAccountBalance());
+        }
+
+        // Clear balance from account 2
+        BalanceBean acc2 = infoService.getBalance(account2.token, account2.iBan);
+        if (acc2.getBalance() <= -0.01d) {
+            transactionService.depositIntoAccount(
+                    account2.iBan, account2.cardNumber, account2.pin, acc2.getBalance() * -1.0d);
+        } else if (acc2.getBalance() >= 0.01d) {
+            transactionService.payFromAccount(account2.iBan, IBANUtil.generateIBAN(12345678),
+                    account2.cardNumber, account2.pin, acc2.getBalance());
+        }
+
+        if (acc2.getSavingsAccountBalance() <= -0.01d) {
+            transactionService.depositIntoAccount(
+                    account2.iBan + "S", account2.cardNumber, account2.pin, acc2.getSavingsAccountBalance() * -1.0d);
+        } else if (acc2.getSavingsAccountBalance() >= 0.01d) {
+            transactionService.payFromAccount(account2.iBan + "S", IBANUtil.generateIBAN(12345678),
+                    account2.cardNumber, account2.pin, acc2.getSavingsAccountBalance());
+        }
+
         accountService.closeAccount(account1.token, account1.iBan);
         accountService.closeAccount(account2.token, account2.iBan);
 
@@ -95,6 +147,11 @@ public class BoilerplateTest {
     protected void testBalance(AccountInfo account, double expected, double accuracy) throws Exception {
         account.token = authService.getAuthToken(account.username, account.password).getAuthToken();
         assertEquals(expected, infoService.getBalance(account.token, account.iBan).getBalance(), accuracy);
+    }
+
+    protected void testSavingsBalance(AccountInfo account, double expected, double accuracy) throws Exception {
+        account.token = authService.getAuthToken(account.username, account.password).getAuthToken();
+        assertEquals(expected, infoService.getBalance(account.token, account.iBan).getSavingsAccountBalance(), accuracy);
     }
 
 }

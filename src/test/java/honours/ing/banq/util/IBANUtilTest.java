@@ -20,7 +20,9 @@ public class IBANUtilTest {
             String iban = generateIBAN(accountNumber);
 
             assertTrue(isValidIBAN(iban));
+            assertTrue(isValidIBAN(iban + "S"));
             assertEquals(accountNumber, getAccountNumber(iban));
+            assertEquals(accountNumber, getAccountNumber(iban + "S"));
         }
     }
 

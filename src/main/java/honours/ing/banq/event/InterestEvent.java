@@ -1,76 +1,16 @@
 package honours.ing.banq.event;
 
-import honours.ing.banq.account.BankAccount;
-import honours.ing.banq.account.BankAccountRepository;
-import honours.ing.banq.transaction.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import static java.util.Calendar.*;
+import static java.util.Calendar.DAY_OF_MONTH;
 
 /**
- * @author Jeffrey Bakker
- * @since 5-8-17
+ * @author jeffrey
+ * @since 12-8-17
  */
-@Component
-public class InterestEvent implements Event {
-
-    private static final BigDecimal INTEREST = new BigDecimal("0.10");
-    private static final BigDecimal MONTHLY_RATE = new BigDecimal(Math.pow(INTEREST.doubleValue() + 1.0, 1.0 / 12.0))
-            .subtract(new BigDecimal(1.0));
-
-    private static final BigDecimal ZERO = new BigDecimal(0.0d);
-
-    // Services
-    private TransactionService transactionService;
-
-    // Repositories
-    private BankAccountRepository accountRepository;
-
-    @Autowired
-    public InterestEvent(TransactionService transactionService, BankAccountRepository accountRepository) {
-        this.transactionService = transactionService;
-        this.accountRepository = accountRepository;
-    }
-
-    @Override
-    public void execute(long time) {
-        final Calendar c = Calendar.getInstance();
-        c.setTime(new Date(time));
-
-        //noinspection MagicConstant
-        final boolean firstOfMonth = c.get(DAY_OF_MONTH) == 1;
-
-        final int daysInMonth = c.getActualMaximum(DAY_OF_MONTH);
-        final BigDecimal interest = MONTHLY_RATE.divide(
-                new BigDecimal((double) daysInMonth),
-                7, RoundingMode.HALF_UP);
-
-        List<BankAccount> accounts = accountRepository.findAll();
-
-        for (BankAccount account : accounts) {
-            if (account.getLowestBalance().compareTo(ZERO) >= 0) {
-                continue;
-            }
-
-            account.addInterest(account.getLowestBalance().multiply(interest).multiply(new BigDecimal(-1.0)));
-            account.resetLowestBalance();
-
-            if (firstOfMonth) {
-                transactionService.forcePayFromAccount(
-                        account, account.getInterest().setScale(2, BigDecimal.ROUND_HALF_UP), "Interest");
-                account.resetInterest();
-            }
-
-            accountRepository.save(account);
-        }
-    }
+public abstract class InterestEvent implements Event {
 
     @Override
     public long nextIteration(long lastIteration) {

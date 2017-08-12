@@ -3,6 +3,7 @@ package honours.ing.banq.transaction;
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.account.Account;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.auth.CardBlockedError;
 import honours.ing.banq.auth.InvalidPINError;
@@ -49,7 +50,7 @@ public interface TransactionService {
             @JsonRpcParam("pinCard") String pinCard, @JsonRpcParam("pinCode") String pinCode,
             @JsonRpcParam("amount") Double amount) throws InvalidParamValueError, InvalidPINError, CardBlockedError;
 
-    void forcePayFromAccount(BankAccount account, BigDecimal amount, String description);
+    void forceTransactionAccount(Account account, BigDecimal amount, String description);
 
     /**
      * Transer money from one {@link BankAccount} to another {@link BankAccount}.

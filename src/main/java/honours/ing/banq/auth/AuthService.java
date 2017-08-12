@@ -2,6 +2,8 @@ package honours.ing.banq.auth;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
+import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.account.Account;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.auth.bean.AuthToken;
 import honours.ing.banq.card.Card;
@@ -20,6 +22,10 @@ public interface AuthService {
 
     Card getAuthorizedCard(String token, String iBan, String pinCard) throws NotAuthorizedError, InvalidPINError;
     Customer getAuthorizedCustomer(String token) throws NotAuthorizedError;
-    BankAccount getAuthorizedAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError;
+
+    Account getAuthorizedAccount(String token, String iBAN) throws NotAuthorizedError, InvalidParamValueError;
+
+    BankAccount getAuthorizedBankAccount(String iBAN, String pinCard, String pinCode) throws InvalidPINError, CardBlockedError;
+    BankAccount getAuthorizedBankAccount(String token, String iBAN) throws NotAuthorizedError, InvalidParamValueError;
 
 }

@@ -20,8 +20,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Calendar;
-
 import static org.junit.Assert.*;
 
 /**
@@ -157,7 +155,7 @@ public class AuthServiceTest {
 
     @Test
     public void getAuthorizedAccount() throws Exception {
-        BankAccount account = service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, accountInfo.pin);
+        BankAccount account = service.getAuthorizedBankAccount(accountInfo.iBan, accountInfo.cardNumber, accountInfo.pin);
 
         assertNotNull(account);
         assertEquals(accountInfo.iBan, IBANUtil.generateIBAN(account));
@@ -166,19 +164,19 @@ public class AuthServiceTest {
     @Test
     public void getAuthorizedAccountInvalidIBan() throws Exception {
         try {
-            service.getAuthorizedAccount(null, accountInfo.cardNumber, accountInfo.pin);
+            service.getAuthorizedBankAccount(null, accountInfo.cardNumber, accountInfo.pin);
             fail();
         } catch (InvalidParamValueError ignored) {
         }
 
         try {
-            service.getAuthorizedAccount("", accountInfo.cardNumber, accountInfo.pin);
+            service.getAuthorizedBankAccount("", accountInfo.cardNumber, accountInfo.pin);
             fail();
         } catch (InvalidParamValueError ignored) {
         }
 
         try {
-            service.getAuthorizedAccount("NL45INGB0705001903", accountInfo.cardNumber, accountInfo.pin);
+            service.getAuthorizedBankAccount("NL45INGB0705001903", accountInfo.cardNumber, accountInfo.pin);
             fail();
         } catch (InvalidParamValueError ignored) {
         }
@@ -187,19 +185,19 @@ public class AuthServiceTest {
     @Test
     public void getAuthorizedAccountInvalidCardNumber() throws Exception {
         try {
-            service.getAuthorizedAccount(accountInfo.iBan, null, accountInfo.pin);
+            service.getAuthorizedBankAccount(accountInfo.iBan, null, accountInfo.pin);
             fail();
         } catch (InvalidParamValueError ignored) {
         }
 
         try {
-            service.getAuthorizedAccount(accountInfo.iBan, "", accountInfo.pin);
+            service.getAuthorizedBankAccount(accountInfo.iBan, "", accountInfo.pin);
             fail();
         } catch (InvalidParamValueError ignored) {
         }
 
         try {
-            service.getAuthorizedAccount(accountInfo.iBan, "-1", accountInfo.pin);
+            service.getAuthorizedBankAccount(accountInfo.iBan, "-1", accountInfo.pin);
             fail();
         } catch (InvalidParamValueError ignored) {
         }
@@ -208,13 +206,13 @@ public class AuthServiceTest {
     @Test
     public void getAuthorizedAccountInvalidPin() throws Exception {
         try {
-            service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, null);
+            service.getAuthorizedBankAccount(accountInfo.iBan, accountInfo.cardNumber, null);
             fail();
         } catch (InvalidParamValueError ignored) {
         }
 
         try {
-            service.getAuthorizedAccount(accountInfo.iBan, accountInfo.cardNumber, "");
+            service.getAuthorizedBankAccount(accountInfo.iBan, accountInfo.cardNumber, "");
             fail();
         } catch (InvalidPINError ignored) {
         }
