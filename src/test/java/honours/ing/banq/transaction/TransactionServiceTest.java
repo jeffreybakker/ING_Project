@@ -1,9 +1,9 @@
 package honours.ing.banq.transaction;
 
 import honours.ing.banq.BoilerplateTest;
-import honours.ing.banq.InvalidParamValueError;
-import honours.ing.banq.auth.InvalidPINError;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.InvalidParamValueError;
+import honours.ing.banq.error.InvalidPINError;
+import honours.ing.banq.error.NotAuthorizedError;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,9 +1,9 @@
 package honours.ing.banq.info;
 
 import honours.ing.banq.BoilerplateTest;
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.access.AccessService;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.info.bean.BalanceBean;
 import honours.ing.banq.info.bean.BankAccountAccessBean;
 import honours.ing.banq.info.bean.UserAccessBean;

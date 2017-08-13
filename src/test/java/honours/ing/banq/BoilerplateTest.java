@@ -1,6 +1,6 @@
 package honours.ing.banq;
 
-import honours.ing.banq.access.NoEffectError;
+import honours.ing.banq.error.NoEffectError;
 import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.bean.AccountInfo;

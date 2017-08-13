@@ -2,10 +2,10 @@ package honours.ing.banq.account;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.account.bean.OverdraftBean;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.NotAuthorizedError;
 
 /**
  * This service provides the methods for the Account module.

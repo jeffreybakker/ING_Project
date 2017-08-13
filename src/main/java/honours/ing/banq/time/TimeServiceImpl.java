@@ -1,7 +1,7 @@
 package honours.ing.banq.time;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.event.EventInterceptor;
 import honours.ing.banq.time.bean.DateBean;
 import honours.ing.banq.variables.VarService;

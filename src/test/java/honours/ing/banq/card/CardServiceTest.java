@@ -2,13 +2,11 @@ package honours.ing.banq.card;
 
 import honours.ing.banq.BoilerplateTest;
 import honours.ing.banq.access.bean.NewCardBean;
-import honours.ing.banq.auth.CardBlockedError;
-import honours.ing.banq.auth.InvalidPINError;
+import honours.ing.banq.error.CardBlockedError;
+import honours.ing.banq.error.InvalidPINError;
 import honours.ing.banq.transaction.TransactionService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.Assert.*;
 
 /**
  * @author jeffrey

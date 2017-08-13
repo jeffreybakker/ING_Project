@@ -2,9 +2,9 @@ package honours.ing.banq.info;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.info.bean.BalanceBean;
 import honours.ing.banq.info.bean.BankAccountAccessBean;

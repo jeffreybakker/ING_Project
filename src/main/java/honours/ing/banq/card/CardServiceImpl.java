@@ -1,17 +1,13 @@
 package honours.ing.banq.card;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import honours.ing.banq.InvalidParamValueError;
-import honours.ing.banq.access.NoEffectError;
+import honours.ing.banq.error.InvalidParamValueError;
+import honours.ing.banq.error.NoEffectError;
 import honours.ing.banq.access.bean.NewCardBean;
-import honours.ing.banq.account.BankAccount;
-import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.AuthService;
-import honours.ing.banq.auth.InvalidPINError;
-import honours.ing.banq.auth.NotAuthorizedError;
-import honours.ing.banq.customer.Customer;
+import honours.ing.banq.error.InvalidPINError;
+import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.transaction.TransactionService;
-import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

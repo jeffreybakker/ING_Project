@@ -1,11 +1,14 @@
 package honours.ing.banq.auth;
 
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.error.AuthenticationError;
+import honours.ing.banq.error.InvalidPINError;
+import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.time.TimeService;
 import honours.ing.banq.util.IBANUtil;
 import honours.ing.banq.util.StringUtil;
