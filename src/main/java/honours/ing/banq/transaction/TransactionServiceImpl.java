@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 /**
+ * An implementation for the {@link TransactionService}.
  * @author Kevin Witlox
  * @since 4-6-2017
  */
@@ -27,21 +28,23 @@ import java.math.BigDecimal;
 @Transactional
 public class TransactionServiceImpl implements TransactionService {
 
-    // TODO: Sanitize user input
-
     // Services
-    @Autowired
     private AuthService auth;
-
-    @Autowired
     private TimeService timeService;
 
     // Repositories
-    @Autowired
-    private BankAccountRepository bankAccountRepository;
+    private BankAccountRepository accountRepository;
+    private TransactionRepository transactionRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    public TransactionServiceImpl(AuthService auth, TimeService timeService, BankAccountRepository accountRepository,
+                                  TransactionRepository transactionRepository) {
+        this.auth = auth;
+        this.timeService = timeService;
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
+    }
+
     @Override
     public void depositIntoAccount(String iBAN, String pinCard, String pinCode, Double amount)
             throws InvalidParamValueError, InvalidPINError, CardBlockedError {
@@ -64,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Update balance
         account.addBalance(new BigDecimal(amount).setScale(2, BigDecimal.ROUND_HALF_UP));
-        bankAccountRepository.save(bankAccount);
+        accountRepository.save(bankAccount);
 
         // Save transaction
         Transaction transaction = new Transaction(
@@ -88,7 +91,7 @@ public class TransactionServiceImpl implements TransactionService {
         Account sourceAccount = sourceIBAN.endsWith("S") ?
                 sourceBankAccount.getSavingAccount() : sourceBankAccount.getCheckingAccount();
 
-        BankAccount destBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
+        BankAccount destBankAccount = accountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
         Account destAccount = null;
         String destName = "";
 
@@ -112,11 +115,11 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Update balance
         sourceAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
-        bankAccountRepository.save(sourceBankAccount);
+        accountRepository.save(sourceBankAccount);
 
         if (destBankAccount != null) {
             destAccount.addBalance(amt);
-            bankAccountRepository.save(destBankAccount);
+            accountRepository.save(destBankAccount);
         }
 
         // Save Transaction
@@ -129,7 +132,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void forceTransactionAccount(Account account, BigDecimal amount, String description) {
         account.addBalance(amount.setScale(2, BigDecimal.ROUND_HALF_UP));
-        bankAccountRepository.save(account.getAccount());
+        accountRepository.save(account.getAccount());
 
         String iBAN = IBANUtil.generateIBAN(account.getAccount()) + (account instanceof CheckingAccount ? "S" : "");
 
@@ -163,7 +166,7 @@ public class TransactionServiceImpl implements TransactionService {
         BankAccount sourceBankAccount = auth.getAuthorizedBankAccount(authToken, sourceIBAN);
         Account sourceAccount = sourceBankAccount.getCheckingAccount();
 
-        BankAccount destBankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
+        BankAccount destBankAccount = accountRepository.findOne((int) IBANUtil.getAccountNumber(targetIBAN));
         Account destAccount = destBankAccount.getCheckingAccount();
 
         BigDecimal amt = new BigDecimal(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -180,8 +183,8 @@ public class TransactionServiceImpl implements TransactionService {
         // Update balance
         sourceAccount.addBalance(amt.multiply(new BigDecimal(-1.0)));
         destAccount.addBalance(amt);
-        bankAccountRepository.save(sourceBankAccount);
-        bankAccountRepository.save(destBankAccount);
+        accountRepository.save(sourceBankAccount);
+        accountRepository.save(destBankAccount);
 
         // Save Transaction
         Transaction transaction = new Transaction(

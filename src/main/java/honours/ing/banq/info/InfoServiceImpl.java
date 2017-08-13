@@ -86,6 +86,8 @@ public class InfoServiceImpl implements InfoService {
         }
 
         List<Transaction> list = transactionRepository.findBySourceOrDestinationOrderByDateDesc(iBAN, iBAN);
+        list.addAll(transactionRepository.findBySourceOrDestinationOrderByDateDesc(iBAN + "S", iBAN + "S"));
+
         return list.size() > nrOfTransactions ?
                 list.subList(0, nrOfTransactions)
                 : transactionRepository.findBySourceOrDestinationOrderByDateDesc(iBAN, iBAN);
