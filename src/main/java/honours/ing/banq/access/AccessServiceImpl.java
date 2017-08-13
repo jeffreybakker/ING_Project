@@ -29,18 +29,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccessServiceImpl implements AccessService {
 
     // Services
-    @Autowired
     private AuthService auth;
 
     // Repositories
-    @Autowired
     private BankAccountRepository accountRepository;
-
-    @Autowired
     private CardRepository cardRepository;
+    private CustomerRepository customerRepository;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    public AccessServiceImpl(AuthService auth,
+                             BankAccountRepository accountRepository, CardRepository cardRepository, CustomerRepository customerRepository) {
+        this.auth = auth;
+        this.accountRepository = accountRepository;
+        this.cardRepository = cardRepository;
+        this.customerRepository = customerRepository;
+    }
 
     @Transactional
     @Override

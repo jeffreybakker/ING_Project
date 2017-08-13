@@ -7,6 +7,7 @@ import javax.persistence.MappedSuperclass;
 import java.math.BigDecimal;
 
 /**
+ * An account that has some extra variables to make calculating interest a lot easier.
  * @author Jeffrey Bakker
  * @since 7-8-17
  */

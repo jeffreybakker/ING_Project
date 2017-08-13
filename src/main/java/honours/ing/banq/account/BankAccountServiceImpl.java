@@ -19,7 +19,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * @author jeffrey
+ * An implementation for the {@link BankAccountService}.
+ * @author Jeffrey Bakker
  * @since 17-4-17
  */
 @Service

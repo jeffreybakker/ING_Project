@@ -3,7 +3,8 @@ package honours.ing.banq.account;
 import javax.persistence.Entity;
 
 /**
- * @author jeffrey
+ * An account with interest over the positive balance.
+ * @author Jeffrey Bakker
  * @since 7-8-17
  */
 @Entity
