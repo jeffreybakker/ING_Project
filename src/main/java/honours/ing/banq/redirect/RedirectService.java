@@ -65,6 +65,9 @@ public class RedirectService implements ApplicationContextAware {
             // Loop through methods of service
             for (Method method : serviceClass.getMethods()) {
                 if (method.getName().equals(jsonRequest.getMethod())) {
+                    // method.invoke() hopefully works and gives less overhead (compared to HTTP)
+                    // TODO: method.invoke()
+
                     // Method found in Service
                     try {
                         Object service = context.getBean(serviceClass);
