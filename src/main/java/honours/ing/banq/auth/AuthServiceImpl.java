@@ -108,6 +108,10 @@ public class AuthServiceImpl implements AuthService {
             throw new NotAuthorizedError();
         }
 
+        if (card.isInvalidated()) {
+            throw new InvalidPINError();
+        }
+
         return card;
     }
 
@@ -155,6 +159,10 @@ public class AuthServiceImpl implements AuthService {
         if (card.isBlocked()) {
             throw new CardBlockedError(
                     "There have been " + card.getFailedAttempts() + " consecutive failed attempts.");
+        }
+
+        if (card.isInvalidated()) {
+            throw new InvalidPINError();
         }
 
         if (!card.getPin().equals(pinCode)) {

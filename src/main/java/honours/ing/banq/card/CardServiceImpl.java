@@ -3,6 +3,7 @@ package honours.ing.banq.card;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.InvalidParamValueError;
 import honours.ing.banq.access.NoEffectError;
+import honours.ing.banq.access.bean.NewCardBean;
 import honours.ing.banq.account.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.AuthService;
@@ -41,5 +42,30 @@ public class CardServiceImpl implements CardService {
         repository.save(card);
 
         return new Object();
+    }
+
+    @Override
+    public NewCardBean invalidateCard(String authToken, String iBAN, String pinCard, boolean newPin)
+            throws InvalidParamValueError, NotAuthorizedError, InvalidPINError, NoEffectError {
+        Card old = auth.getAuthorizedCard(authToken, iBAN, pinCard);
+
+        if (old.isInvalidated()) {
+            throw new NoEffectError();
+        }
+
+        old.setInvalidated(true);
+
+        Card res;
+
+        if (newPin) {
+            res = new Card(old.getHolder(), old.getAccount(), CardUtil.generateCardNumber(repository));
+        } else {
+            res = new Card(old.getHolder(), old.getAccount(), CardUtil.generateCardNumber(repository), old.getPin());
+        }
+
+        repository.save(old);
+        repository.save(res);
+
+        return new NewCardBean(res);
     }
 }
