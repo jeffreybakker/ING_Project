@@ -1,6 +1,7 @@
 package honours.ing.banq.card;
 
 import honours.ing.banq.BoilerplateTest;
+import honours.ing.banq.access.bean.NewCardBean;
 import honours.ing.banq.auth.CardBlockedError;
 import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.transaction.TransactionService;
@@ -42,6 +43,13 @@ public class CardServiceTest extends BoilerplateTest {
 
         // Now test if the card is usable again
         transactionService.depositIntoAccount(account1.iBan, account1.cardNumber, account1.pin, 10.0);
+    }
+
+    @Test
+    public void invalidateCard() throws Exception {
+        NewCardBean res = service.invalidateCard(account1.token, account1.iBan, account1.cardNumber, false);
+        account1.cardNumber = res.getPinCard();
+        account1.pin = res.getPinCode();
     }
 
 }

@@ -33,9 +33,10 @@ public class Card {
 
     @Column(unique = true, nullable = false)
     private String cardNumber;
-    private String pin; // TODO: add hashing
-    private Date expirationDate;
+    private String pin;
 
+    private Date expirationDate;
+    private boolean invalidated;
     private int failedAttempts;
 
     /**
@@ -44,17 +45,21 @@ public class Card {
     public Card() { }
 
     public Card(Customer holder, BankAccount account, String cardNumber) {
+        this(holder, account, cardNumber, generatePin());
+    }
+
+    public Card(Customer holder, BankAccount account, String cardNumber, String pin) {
         this.holder = holder;
         this.account = account;
         this.cardNumber = cardNumber;
-
-        pin = generatePin();
+        this.pin = pin;
 
         Calendar expiration = Calendar.getInstance();
         expiration.setTimeInMillis(TimeServiceImpl.currentTimeMillis() + DURABILITY);
         expirationDate = expiration.getTime();
 
         failedAttempts = 0;
+        invalidated = false;
     }
 
     public Integer getId() {
@@ -75,6 +80,14 @@ public class Card {
 
     public String getPin() {
         return pin;
+    }
+
+    public boolean isInvalidated() {
+        return invalidated;
+    }
+
+    public void setInvalidated(boolean invalidated) {
+        this.invalidated = invalidated;
     }
 
     public boolean hasExpired() {
