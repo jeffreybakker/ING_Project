@@ -6,7 +6,19 @@ package honours.ing.banq.error;
  */
 public class AuthenticationError extends Exception {
 
+    private static final String MESSAGE =
+            "The user could not be authenticated. Invalid username, password or combination.";
+
     public AuthenticationError() {
-        super("The user could not be authenticated. Invalid username, password or combination.");
+        super(MESSAGE);
     }
+
+    public AuthenticationError(Throwable throwable) {
+        super(MESSAGE, throwable);
+    }
+
+    protected AuthenticationError(Throwable throwable, boolean b, boolean b1) {
+        super(MESSAGE, throwable, b, b1);
+    }
+
 }

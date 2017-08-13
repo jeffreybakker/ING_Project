@@ -6,8 +6,23 @@ package honours.ing.banq.error;
  */
 public class InvalidParamValueError extends RuntimeException {
 
-    public InvalidParamValueError(String msg) {
-        super(msg);
+    public InvalidParamValueError() {
+        super();
     }
 
+    public InvalidParamValueError(String s) {
+        super(s);
+    }
+
+    public InvalidParamValueError(String s, Throwable throwable) {
+        super(s, throwable);
+    }
+
+    public InvalidParamValueError(Throwable throwable) {
+        super(throwable);
+    }
+
+    protected InvalidParamValueError(String s, Throwable throwable, boolean b, boolean b1) {
+        super(s, throwable, b, b1);
+    }
 }
