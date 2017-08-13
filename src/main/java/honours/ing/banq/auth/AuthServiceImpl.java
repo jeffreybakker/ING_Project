@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * @author jeffrey
+ * The implementation for the {@link AuthService}.
+ * @author Jeffrey Bakker
  * @since 14-5-17
  */
 @Service
@@ -38,19 +39,21 @@ public class AuthServiceImpl implements AuthService {
 
     private static final int VALIDITY = 60 * 60 * 24; // one day
 
-    @Autowired
     private AuthRepository repository;
-
-    @Autowired
     private BankAccountRepository accountRepository;
-
-    @Autowired
     private CardRepository cardRepository;
-
-    @Autowired
     private CustomerRepository customerRepository;
 
     private Random random = new Random();
+
+    @Autowired
+    public AuthServiceImpl(AuthRepository repository, BankAccountRepository accountRepository,
+                           CardRepository cardRepository, CustomerRepository customerRepository) {
+        this.repository = repository;
+        this.accountRepository = accountRepository;
+        this.cardRepository = cardRepository;
+        this.customerRepository = customerRepository;
+    }
 
     @Transactional
     @Override
