@@ -11,6 +11,7 @@ import honours.ing.banq.error.CardBlockedError;
 import honours.ing.banq.error.InvalidPINError;
 import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.time.TimeService;
+import honours.ing.banq.time.TimeServiceImpl;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,17 +31,15 @@ public class TransactionServiceImpl implements TransactionService {
 
     // Services
     private AuthService auth;
-    private TimeService timeService;
 
     // Repositories
     private BankAccountRepository accountRepository;
     private TransactionRepository transactionRepository;
 
     @Autowired
-    public TransactionServiceImpl(AuthService auth, TimeService timeService, BankAccountRepository accountRepository,
+    public TransactionServiceImpl(AuthService auth, BankAccountRepository accountRepository,
                                   TransactionRepository transactionRepository) {
         this.auth = auth;
-        this.timeService = timeService;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
     }
@@ -72,7 +71,7 @@ public class TransactionServiceImpl implements TransactionService {
         // Save transaction
         Transaction transaction = new Transaction(
                 null, iBAN, bankAccount.getPrimaryHolder().getName(),
-                timeService.getDate().getDate(), amount, "Deposit");
+                TimeServiceImpl.getCurDate(), amount, "Deposit");
         transactionRepository.save(transaction);
     }
 
@@ -125,7 +124,7 @@ public class TransactionServiceImpl implements TransactionService {
         // Save Transaction
         Transaction transaction = new Transaction(
                 sourceIBAN, targetIBAN, destName,
-                timeService.getDate().getDate(), amount, "Payment with debit card.");
+                TimeServiceImpl.getCurDate(), amount, "Payment with debit card.");
         transactionRepository.save(transaction);
     }
 
@@ -141,13 +140,13 @@ public class TransactionServiceImpl implements TransactionService {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             transaction = new Transaction(
                     iBAN, "", "Banq",
-                    timeService.getDate().getDate(), amount.multiply(new BigDecimal("-1.0")).doubleValue(), description);
+                    TimeServiceImpl.getCurDate(), amount.multiply(new BigDecimal("-1.0")).doubleValue(), description);
         } else {
             transaction = new Transaction(
                     "", iBAN,
                     account.getAccount().getPrimaryHolder().getName()
                             + " " + account.getAccount().getPrimaryHolder().getSurname(),
-                    timeService.getDate().getDate(), amount.doubleValue(), description);
+                    TimeServiceImpl.getCurDate(), amount.doubleValue(), description);
         }
         transactionRepository.save(transaction);
     }
@@ -189,7 +188,7 @@ public class TransactionServiceImpl implements TransactionService {
         // Save Transaction
         Transaction transaction = new Transaction(
                 sourceIBAN, targetIBAN, targetName,
-                timeService.getDate().getDate(), amount, description);
+                TimeServiceImpl.getCurDate(), amount, description);
         transactionRepository.save(transaction);
     }
 
