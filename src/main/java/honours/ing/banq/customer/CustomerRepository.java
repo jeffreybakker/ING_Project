@@ -2,8 +2,6 @@ package honours.ing.banq.customer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 /**
  * The repository for the {@link Customer} entity.
  * @author Jeffrey Bakker

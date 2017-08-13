@@ -27,11 +27,4 @@ public class OverdraftBean {
         return overdraftLimit;
     }
 
-    /**
-     * Sets the overdraft limit.
-     * @param overdraftLimit the overdraft limit
-     */
-    public void setOverdraftLimit(double overdraftLimit) {
-        this.overdraftLimit = overdraftLimit;
-    }
 }
