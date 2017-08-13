@@ -57,53 +57,96 @@ public class Customer {
         this.password = password;
     }
 
+    /**
+     * Returns the ID of this customer.
+     * @return the ID
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * Returns the first name of this customer.
+     * @return the first name
+     */
     public String getName() {
         return name + " " + surname;
     }
 
+    /**
+     * Returns the surname of this customer.
+     * @return the surname
+     */
     public String getSurname() {
         return surname;
     }
 
+    /**
+     * Returns the initials of this customer.
+     * @return the initials
+     */
     public String getInitials() {
         return initials;
     }
 
+    /**
+     * Returns the date of birth in dd-MM-yyy format.
+     * @return the date of birth
+     */
     public String getDob() {
         return dob;
     }
 
+    /**
+     * Returns the customer's social security number.
+     * @return the social security number
+     */
     public String getSsn() {
         return ssn;
     }
 
+    /**
+     * Returns this customer's address.
+     * @return the address
+     */
     public String getAddress() {
         return address;
     }
 
+    /**
+     * Returns this customer's phone number.
+     * @return the phone number
+     */
     public String getTelephoneNumber() {
         return telephoneNumber;
     }
 
+    /**
+     * Returns this customer's email-address.
+     * @return the email-address
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Returns this customer's username.
+     * @return the username
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Returns this customer's password.
+     * @return the password
+     */
     public String getPassword() {
         return password;
     }
 
     /**
      * Returns true if the given string conforms the database date format, false otherwise.
-     *
      * @param date A string representing a date
      * @return True is success, false otherwise
      */
