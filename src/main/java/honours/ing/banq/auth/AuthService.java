@@ -5,7 +5,7 @@ import com.googlecode.jsonrpc4j.JsonRpcService;
 import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.account.model.Account;
 import honours.ing.banq.account.model.BankAccount;
-import honours.ing.banq.auth.bean.AuthToken;
+import honours.ing.banq.auth.bean.AuthTokenBean;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.error.AuthenticationError;
@@ -20,7 +20,7 @@ import honours.ing.banq.error.NotAuthorizedError;
 @JsonRpcService("/api/auth")
 public interface AuthService {
 
-    AuthToken getAuthToken(@JsonRpcParam("username") String username, @JsonRpcParam("password") String password) throws AuthenticationError;
+    AuthTokenBean getAuthToken(@JsonRpcParam("username") String username, @JsonRpcParam("password") String password) throws AuthenticationError;
 
     void deleteForCustomer(Customer customer);
 

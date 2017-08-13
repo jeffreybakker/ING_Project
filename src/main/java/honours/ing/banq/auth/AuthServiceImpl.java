@@ -5,7 +5,7 @@ import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.account.model.Account;
 import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
-import honours.ing.banq.auth.bean.AuthToken;
+import honours.ing.banq.auth.bean.AuthTokenBean;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public AuthToken getAuthToken(String username, String password) throws AuthenticationError {
+    public AuthTokenBean getAuthToken(String username, String password) throws AuthenticationError {
         Customer customer = customerRepository.findByUsernameAndPassword(username, password);
         if (customer == null) {
             throw new AuthenticationError();
@@ -74,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        return new AuthToken(auth.getToken());
+        return new AuthTokenBean(auth.getToken());
     }
 
     @Transactional
