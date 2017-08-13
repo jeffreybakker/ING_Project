@@ -1,7 +1,5 @@
 package honours.ing.banq.transaction;
 
-import honours.ing.banq.account.BankAccount;
-
 import javax.persistence.*;
 import java.util.Date;
 

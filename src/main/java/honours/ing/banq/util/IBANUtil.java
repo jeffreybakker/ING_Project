@@ -1,6 +1,6 @@
 package honours.ing.banq.util;
 
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.BankAccount;
 
 public class IBANUtil {
 

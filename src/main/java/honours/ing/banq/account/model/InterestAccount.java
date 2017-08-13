@@ -1,8 +1,5 @@
-package honours.ing.banq.account;
+package honours.ing.banq.account.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import java.math.BigDecimal;
 

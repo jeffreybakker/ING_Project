@@ -1,9 +1,8 @@
-package honours.ing.banq.account;
+package honours.ing.banq.account.model;
 
 import honours.ing.banq.customer.Customer;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 

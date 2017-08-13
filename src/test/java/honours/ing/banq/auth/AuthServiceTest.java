@@ -1,7 +1,7 @@
 package honours.ing.banq.auth;
 
 import honours.ing.banq.error.InvalidParamValueError;
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.account.BankAccountService;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.bean.AccountInfo;

@@ -1,6 +1,6 @@
 package honours.ing.banq.card;
 
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.time.TimeServiceImpl;
 

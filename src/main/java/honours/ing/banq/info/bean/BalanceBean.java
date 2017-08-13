@@ -1,6 +1,6 @@
 package honours.ing.banq.info.bean;
 
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.BankAccount;
 
 /**
  * Used to represent the balance of a {@link BankAccount}

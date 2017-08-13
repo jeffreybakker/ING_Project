@@ -2,10 +2,10 @@ package honours.ing.banq.transaction;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.error.InvalidParamValueError;
-import honours.ing.banq.account.Account;
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.Account;
+import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
-import honours.ing.banq.account.CheckingAccount;
+import honours.ing.banq.account.model.CheckingAccount;
 import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.error.CardBlockedError;
 import honours.ing.banq.error.InvalidPINError;

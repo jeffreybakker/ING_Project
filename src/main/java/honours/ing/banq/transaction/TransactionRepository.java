@@ -1,9 +1,7 @@
 package honours.ing.banq.transaction;
 
-import honours.ing.banq.account.BankAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 /**

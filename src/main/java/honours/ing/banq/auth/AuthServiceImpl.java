@@ -2,8 +2,8 @@ package honours.ing.banq.auth;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.error.InvalidParamValueError;
-import honours.ing.banq.account.Account;
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.Account;
+import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.bean.AuthToken;
 import honours.ing.banq.card.Card;

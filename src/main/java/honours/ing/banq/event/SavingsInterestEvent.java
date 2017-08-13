@@ -1,8 +1,8 @@
 package honours.ing.banq.event;
 
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
-import honours.ing.banq.account.SavingAccount;
+import honours.ing.banq.account.model.SavingAccount;
 import honours.ing.banq.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
