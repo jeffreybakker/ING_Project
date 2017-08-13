@@ -10,10 +10,13 @@ import honours.ing.banq.auth.AuthService;
 import honours.ing.banq.auth.InvalidPINError;
 import honours.ing.banq.auth.NotAuthorizedError;
 import honours.ing.banq.customer.Customer;
+import honours.ing.banq.transaction.TransactionService;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 @AutoJsonRpcServiceImpl
@@ -23,6 +26,9 @@ public class CardServiceImpl implements CardService {
     // Services
     @Autowired
     private AuthService auth;
+
+    @Autowired
+    private TransactionService transactionService;
 
     // Repositories
     @Autowired
@@ -65,6 +71,9 @@ public class CardServiceImpl implements CardService {
 
         repository.save(old);
         repository.save(res);
+
+        transactionService.forceTransactionAccount(
+                res.getAccount().getCheckingAccount(), new BigDecimal("-7.50"), "New PIN card");
 
         return new NewCardBean(res);
     }
