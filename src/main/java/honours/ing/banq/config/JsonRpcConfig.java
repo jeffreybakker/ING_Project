@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author jeffrey
+ * The configuration class for the JSON-RPC library.
+ * @author Jeffrey Bakker
  * @since 17-4-17
  */
 @Configuration
