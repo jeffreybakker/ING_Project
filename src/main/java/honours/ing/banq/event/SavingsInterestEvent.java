@@ -16,6 +16,7 @@ import java.util.List;
 import static java.util.Calendar.*;
 
 /**
+ * An interest event that calculates interest over saved up money on saving accounts.
  * @author Jeffrey Bakker
  * @since 5-8-17
  */
@@ -57,6 +58,7 @@ public class SavingsInterestEvent extends InterestEvent {
                 continue;
             }
 
+            // Calculate the interest over the balance
             BigDecimal balance = sa.getLowestBalance();
             BigDecimal lastMax = new BigDecimal("0.00");
             BigDecimal interest = new BigDecimal("0.00");
@@ -74,16 +76,19 @@ public class SavingsInterestEvent extends InterestEvent {
                 interest = interest.add(rateAmt.multiply(rate.interest));
             }
 
+            // Add the interest to the accounts total interest to be added at the end of the year
             sa.addInterest(interest);
             sa.resetLowestBalance();
 
             if (firstOfYear) {
+                // If it is the first of january, pay out the interest
                 transactionService.forceTransactionAccount(
                         sa, sa.getInterest()
                                 .setScale(2, BigDecimal.ROUND_HALF_UP), "Interest");
                 sa.resetInterest();
             }
 
+            // Finally save the account
             accountRepository.save(account);
         }
     }

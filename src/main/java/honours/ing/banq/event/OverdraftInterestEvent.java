@@ -16,6 +16,7 @@ import java.util.List;
 import static java.util.Calendar.*;
 
 /**
+ * An interest event that calculates interest over the overdraft over checking accounts.
  * @author Jeffrey Bakker
  * @since 5-8-17
  */
@@ -56,16 +57,20 @@ public class OverdraftInterestEvent extends InterestEvent {
         List<BankAccount> accounts = accountRepository.findAll();
 
         for (BankAccount account : accounts) {
+            // Skip this account if its balance is positive
             if (account.getCheckingAccount().getLowestBalance().compareTo(ZERO) >= 0) {
                 continue;
             }
 
             CheckingAccount ca = account.getCheckingAccount();
 
+            // Calculate the interest and add it to the account
             ca.addInterest(ca.getLowestBalance().multiply(interest).multiply(new BigDecimal(-1.0)));
             ca.resetLowestBalance();
 
             if (firstOfMonth) {
+                // If it is the first of the month add let the customer pay the interest that has been summed up over
+                // the last month
                 transactionService.forceTransactionAccount(
                         ca, ca.getInterest()
                                 .multiply(new BigDecimal("-1.0"))
@@ -73,6 +78,7 @@ public class OverdraftInterestEvent extends InterestEvent {
                 ca.resetInterest();
             }
 
+            // Finally save the account
             accountRepository.save(account);
         }
     }

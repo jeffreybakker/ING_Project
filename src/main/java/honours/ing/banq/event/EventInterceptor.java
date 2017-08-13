@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * An interceptor for the API calls which runs the events if they are due.
  * @author Jeffrey Bakker
  * @since 5-8-17
  */
@@ -37,6 +38,10 @@ public class EventInterceptor implements ApplicationContextAware {
 
     private AtomicBoolean running;
 
+    /**
+     * Initializes the {@link EventInterceptor}.
+     * @param varService the variable service
+     */
     @SuppressWarnings("unchecked")
     @Autowired
     public EventInterceptor(VarService varService) {
@@ -47,6 +52,9 @@ public class EventInterceptor implements ApplicationContextAware {
         running = new AtomicBoolean(false);
     }
 
+    /**
+     * Initializes the interceptor and finds all of the events.
+     */
     private void init() {
         // Scan for Events
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(
@@ -84,6 +92,9 @@ public class EventInterceptor implements ApplicationContextAware {
         calcTimers();
     }
 
+    /**
+     * Intercepts an API call.
+     */
     @Before("@within(com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl)")
     public void intercept() {
         synchronized (running) {
@@ -109,6 +120,9 @@ public class EventInterceptor implements ApplicationContextAware {
         }
     }
 
+    /**
+     * Calculates the first iterations for all of the events.
+     */
     public void calcTimers() {
         long lastEvent = Long.parseLong(vars.getVariable(
                 "lastEvent",
@@ -121,18 +135,26 @@ public class EventInterceptor implements ApplicationContextAware {
         calcNextEvent();
     }
 
+    /**
+     * Calculates the first next event (or events) that have to be run.
+     */
     private void calcNextEvent() {
+        // First clear the events
         nextEvents.clear();
 
         for (Event e : events.keySet()) {
             long time = events.get(e);
 
             if (nextEvents.isEmpty()) {
+                // If there is no event queued yet, this event should be queued
                 nextEvents.add(e);
                 nextEventTime = time;
             } else if (time == nextEventTime) {
+                // If this event's next iteration has the same time as the other queued ones, add this one to the set
                 nextEvents.add(e);
             } else if (time < nextEventTime) {
+                // If this event's next iteration has a time earlier that the already queued event(s), clear the set and
+                // only add this one
                 nextEvents.clear();
                 nextEvents.add(e);
                 nextEventTime = time;

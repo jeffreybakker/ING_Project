@@ -7,7 +7,8 @@ import static java.util.Calendar.*;
 import static java.util.Calendar.DAY_OF_MONTH;
 
 /**
- * @author jeffrey
+ * An interest event that runs once every day.
+ * @author Jeffrey Bakker
  * @since 12-8-17
  */
 public abstract class InterestEvent implements Event {
