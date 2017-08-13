@@ -29,15 +29,19 @@ import java.util.List;
 public class InfoServiceImpl implements InfoService {
 
     // Services
-    @Autowired
     private AuthService auth;
 
     // Repositories
-    @Autowired
-    private BankAccountRepository bankAccountRepository;
+    private BankAccountRepository accountRepository;
+    private TransactionRepository transactionRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    public InfoServiceImpl(AuthService auth,
+                           BankAccountRepository accountRepository, TransactionRepository transactionRepository) {
+        this.auth = auth;
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
+    }
 
     @Override
     public BalanceBean getBalance(String autToken, String iBAN) throws InvalidParamValueError, NotAuthorizedError {
@@ -46,7 +50,7 @@ public class InfoServiceImpl implements InfoService {
         }
 
         Customer customer = auth.getAuthorizedCustomer(autToken);
-        BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(iBAN));
+        BankAccount bankAccount = accountRepository.findOne((int) IBANUtil.getAccountNumber(iBAN));
 
         if (bankAccount == null) {
             throw new InvalidParamValueError("The given IBAN does not exist.");
@@ -67,7 +71,7 @@ public class InfoServiceImpl implements InfoService {
         }
 
         Customer customer = auth.getAuthorizedCustomer(authToken);
-        BankAccount bankAccount = bankAccountRepository.findOne((int) IBANUtil.getAccountNumber(iBAN));
+        BankAccount bankAccount = accountRepository.findOne((int) IBANUtil.getAccountNumber(iBAN));
 
         if (bankAccount == null) {
             throw new InvalidParamValueError("The given IBAN does not exist.");
@@ -96,8 +100,8 @@ public class InfoServiceImpl implements InfoService {
             throw new NotAuthorizedError();
         }
 
-        List<BankAccount> accounts = bankAccountRepository.findBankAccountsByHolders(customer.getId());
-        accounts.addAll(bankAccountRepository.findBankAccountsByPrimaryHolder(customer.getId()));
+        List<BankAccount> accounts = accountRepository.findBankAccountsByHolders(customer.getId());
+        accounts.addAll(accountRepository.findBankAccountsByPrimaryHolder(customer.getId()));
 
         List<UserAccessBean> userAccessBeanList = new ArrayList<>();
         for (BankAccount account : accounts) {
@@ -112,7 +116,7 @@ public class InfoServiceImpl implements InfoService {
             throws InvalidParamValueError, NotAuthorizedError {
         Customer customer = auth.getAuthorizedCustomer(authToken);
         long accountNumber = IBANUtil.getAccountNumber(iBAN);
-        BankAccount bankAccount = bankAccountRepository.findOne((int) accountNumber);
+        BankAccount bankAccount = accountRepository.findOne((int) accountNumber);
 
         if (!bankAccount.getPrimaryHolder().equals(customer)) {
             throw new NotAuthorizedError();

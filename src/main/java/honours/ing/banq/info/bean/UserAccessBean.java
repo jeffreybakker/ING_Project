@@ -7,7 +7,6 @@ import honours.ing.banq.util.IBANUtil;
 /**
  * Used to represent an account a certain user has access to. Stores its iBAN and its owner (can be
  * different than the user).
- *
  * @author Kevin Witlox
  */
 public class UserAccessBean {
