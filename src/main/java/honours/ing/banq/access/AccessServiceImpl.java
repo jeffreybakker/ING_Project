@@ -112,8 +112,7 @@ public class AccessServiceImpl implements AccessService {
 
         account.removeHolder(holder);
         accountRepository.save(account);
-        Card card = cardRepository.findByAccountAndHolder(account, holder);
-        cardRepository.delete(card);
+        cardRepository.delete(cardRepository.findByAccountAndHolder(account, holder));
     }
 
 }

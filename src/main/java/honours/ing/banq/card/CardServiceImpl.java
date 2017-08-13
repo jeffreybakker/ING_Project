@@ -14,21 +14,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+/**
+ * An implementation for the {@link CardService}.
+ * @author Jeffrey Bakker
+ */
 @Service
 @AutoJsonRpcServiceImpl
 @Transactional(readOnly = true)
 public class CardServiceImpl implements CardService {
 
     // Services
-    @Autowired
     private AuthService auth;
-
-    @Autowired
     private TransactionService transactionService;
 
     // Repositories
-    @Autowired
     private CardRepository repository;
+
+    @Autowired
+    public CardServiceImpl(AuthService auth, TransactionService transactionService, CardRepository repository) {
+        this.auth = auth;
+        this.transactionService = transactionService;
+        this.repository = repository;
+    }
 
     @Transactional
     @Override

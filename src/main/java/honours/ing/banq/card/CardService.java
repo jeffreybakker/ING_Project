@@ -9,7 +9,8 @@ import honours.ing.banq.error.InvalidPINError;
 import honours.ing.banq.error.NotAuthorizedError;
 
 /**
- * @author jeffrey
+ * A service for interacting with the server concerning PIN cards.
+ * @author Jeffrey Bakker
  * @since 3-8-17
  */
 @JsonRpcService("/api/card")

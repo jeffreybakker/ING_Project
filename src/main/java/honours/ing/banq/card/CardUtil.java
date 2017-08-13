@@ -9,6 +9,7 @@ public class CardUtil {
 
     private static final String SEED = "SecureRandomSeed";
 
+    @Deprecated
     public static String generateCardNumber(CardRepository repository) {
         SecureRandom random = new SecureRandom(SEED.getBytes());
 
