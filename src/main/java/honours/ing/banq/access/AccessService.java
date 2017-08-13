@@ -2,9 +2,10 @@ package honours.ing.banq.access;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.access.bean.NewCardBean;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.NotAuthorizedError;
+import honours.ing.banq.error.NoEffectError;
 
 /**
  * This service has methods for providing and revoking access to bank accounts for users other than the primary holder

@@ -1,17 +1,22 @@
 package honours.ing.banq.transaction;
 
-import honours.ing.banq.account.BankAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 /**
- * @author jeffrey
+ * The repository for the {@link Transaction} entity.
+ * @author Jeffrey Bakker
  * @since 24-4-17
  */
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
 
+    /**
+     * Lists all of the transactions with the given source or destination iBAN.
+     * @param src the source iBAN
+     * @param dst the destination iBAN
+     * @return a list of {@link Transaction}s
+     */
     List<Transaction> findBySourceOrDestinationOrderByDateDesc(String src, String dst);
 
 }

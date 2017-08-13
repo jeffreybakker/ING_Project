@@ -1,10 +1,8 @@
 package honours.ing.banq.account;
 
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.account.bean.NewAccountBean;
 import honours.ing.banq.auth.AuthService;
-import honours.ing.banq.auth.NotAuthorizedError;
-import honours.ing.banq.bean.AccountInfo;
 import honours.ing.banq.util.IBANUtil;
 import honours.ing.banq.util.StringUtil;
 import org.junit.After;
@@ -18,7 +16,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Calendar;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 

@@ -1,9 +1,10 @@
-package honours.ing.banq.account;
+package honours.ing.banq.account.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 /**
+ * An account that stores a balance.
  * @author Jeffrey Bakker
  * @since 7-8-17
  */

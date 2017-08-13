@@ -1,4 +1,4 @@
-package honours.ing.banq.account;
+package honours.ing.banq.account.model;
 
 import javax.persistence.Entity;
 import java.math.BigDecimal;

@@ -2,7 +2,7 @@ package honours.ing.banq.log;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 import honours.ing.banq.Application;
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.log.bean.LogBean;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

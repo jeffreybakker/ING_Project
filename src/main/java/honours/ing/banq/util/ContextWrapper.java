@@ -5,7 +5,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
- * @author jeffrey
+ * A class for easily getting the system's {@link ApplicationContext}.
+ * @author Jeffrey Bakker
  * @since 5-8-17
  */
 @Service
@@ -18,6 +19,10 @@ public class ContextWrapper {
         context = ac;
     }
 
+    /**
+     * Returns this system's {@link ApplicationContext}.
+     * @return the {@link ApplicationContext}
+     */
     public static ApplicationContext getContext() {
         return context;
     }

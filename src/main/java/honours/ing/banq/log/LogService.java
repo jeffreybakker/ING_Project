@@ -14,6 +14,10 @@ import java.util.List;
 @JsonRpcService("/api/log")
 public interface LogService {
 
+    /**
+     * Logs a message.
+     * @param message the message to be logged
+     */
     void log(String message);
 
     /**

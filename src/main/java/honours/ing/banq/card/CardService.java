@@ -2,14 +2,15 @@ package honours.ing.banq.card;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import honours.ing.banq.InvalidParamValueError;
-import honours.ing.banq.access.NoEffectError;
+import honours.ing.banq.error.InvalidParamValueError;
+import honours.ing.banq.error.NoEffectError;
 import honours.ing.banq.access.bean.NewCardBean;
-import honours.ing.banq.auth.InvalidPINError;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.InvalidPINError;
+import honours.ing.banq.error.NotAuthorizedError;
 
 /**
- * @author jeffrey
+ * A service for interacting with the server concerning PIN cards.
+ * @author Jeffrey Bakker
  * @since 3-8-17
  */
 @JsonRpcService("/api/card")

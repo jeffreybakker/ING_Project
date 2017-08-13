@@ -1,15 +1,19 @@
 package honours.ing.banq.auth;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import honours.ing.banq.InvalidParamValueError;
-import honours.ing.banq.account.Account;
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.error.InvalidParamValueError;
+import honours.ing.banq.account.model.Account;
+import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
-import honours.ing.banq.auth.bean.AuthToken;
+import honours.ing.banq.auth.bean.AuthTokenBean;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
+import honours.ing.banq.error.AuthenticationError;
+import honours.ing.banq.error.CardBlockedError;
+import honours.ing.banq.error.InvalidPINError;
+import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.time.TimeServiceImpl;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +25,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * @author jeffrey
+ * The implementation for the {@link AuthService}.
+ * @author Jeffrey Bakker
  * @since 14-5-17
  */
 @Service
@@ -34,23 +39,25 @@ public class AuthServiceImpl implements AuthService {
 
     private static final int VALIDITY = 60 * 60 * 24; // one day
 
-    @Autowired
     private AuthRepository repository;
-
-    @Autowired
     private BankAccountRepository accountRepository;
-
-    @Autowired
     private CardRepository cardRepository;
-
-    @Autowired
     private CustomerRepository customerRepository;
 
     private Random random = new Random();
 
+    @Autowired
+    public AuthServiceImpl(AuthRepository repository, BankAccountRepository accountRepository,
+                           CardRepository cardRepository, CustomerRepository customerRepository) {
+        this.repository = repository;
+        this.accountRepository = accountRepository;
+        this.cardRepository = cardRepository;
+        this.customerRepository = customerRepository;
+    }
+
     @Transactional
     @Override
-    public AuthToken getAuthToken(String username, String password) throws AuthenticationError {
+    public AuthTokenBean getAuthToken(String username, String password) throws AuthenticationError {
         Customer customer = customerRepository.findByUsernameAndPassword(username, password);
         if (customer == null) {
             throw new AuthenticationError();
@@ -70,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        return new AuthToken(auth.getToken());
+        return new AuthTokenBean(auth.getToken());
     }
 
     @Transactional

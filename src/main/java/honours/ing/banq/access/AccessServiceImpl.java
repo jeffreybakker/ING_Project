@@ -1,18 +1,18 @@
 package honours.ing.banq.access;
 
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
-import honours.ing.banq.InvalidParamValueError;
+import honours.ing.banq.error.InvalidParamValueError;
 import honours.ing.banq.access.bean.NewCardBean;
-import honours.ing.banq.account.BankAccount;
+import honours.ing.banq.account.model.BankAccount;
 import honours.ing.banq.account.BankAccountRepository;
 import honours.ing.banq.auth.AuthService;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.card.CardRepository;
 import honours.ing.banq.card.CardUtil;
 import honours.ing.banq.customer.Customer;
 import honours.ing.banq.customer.CustomerRepository;
-import honours.ing.banq.log.LogService;
+import honours.ing.banq.error.NoEffectError;
 import honours.ing.banq.util.IBANUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,18 +29,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccessServiceImpl implements AccessService {
 
     // Services
-    @Autowired
     private AuthService auth;
 
     // Repositories
-    @Autowired
     private BankAccountRepository accountRepository;
-
-    @Autowired
     private CardRepository cardRepository;
+    private CustomerRepository customerRepository;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    public AccessServiceImpl(AuthService auth,
+                             BankAccountRepository accountRepository, CardRepository cardRepository, CustomerRepository customerRepository) {
+        this.auth = auth;
+        this.accountRepository = accountRepository;
+        this.cardRepository = cardRepository;
+        this.customerRepository = customerRepository;
+    }
 
     @Transactional
     @Override
@@ -109,8 +112,7 @@ public class AccessServiceImpl implements AccessService {
 
         account.removeHolder(holder);
         accountRepository.save(account);
-        Card card = cardRepository.findByAccountAndHolder(account, holder);
-        cardRepository.delete(card);
+        cardRepository.delete(cardRepository.findByAccountAndHolder(account, holder));
     }
 
 }

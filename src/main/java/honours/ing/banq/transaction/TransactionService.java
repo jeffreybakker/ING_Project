@@ -2,17 +2,16 @@ package honours.ing.banq.transaction;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import honours.ing.banq.InvalidParamValueError;
-import honours.ing.banq.account.Account;
-import honours.ing.banq.account.BankAccount;
-import honours.ing.banq.auth.CardBlockedError;
-import honours.ing.banq.auth.InvalidPINError;
-import honours.ing.banq.auth.NotAuthorizedError;
+import honours.ing.banq.error.InvalidParamValueError;
+import honours.ing.banq.account.model.Account;
+import honours.ing.banq.account.model.BankAccount;
+import honours.ing.banq.error.CardBlockedError;
+import honours.ing.banq.error.InvalidPINError;
+import honours.ing.banq.error.NotAuthorizedError;
 import honours.ing.banq.card.Card;
 import honours.ing.banq.customer.Customer;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * @author Kevin Witlox
